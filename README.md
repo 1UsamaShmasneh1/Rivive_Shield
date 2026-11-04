@@ -17,7 +17,7 @@ The MVP contains three user stories: participate in a controlled challenge; inve
 | Item | Location |
 | --- | --- |
 | Shared GitHub repository | https://github.com/1UsamaShmasneh1/Rivive_Shield |
-| Trello backlog board | Trello selected; TODO: add the actual board URL |
+| Trello backlog board | https://trello.com/b/GeLevegk/riviveshield |
 
 The [project backlog](docs/backlog-seed.md) supplies task titles, priorities, planned owners, dependencies and acceptance evidence for the live board. It does not replace the required board.
 
