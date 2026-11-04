@@ -1,8 +1,8 @@
 # Rivive Shield
 
 **Course:** Software Development Methods  
-**Team leader:** Usama Shmasneh  
-**Team members:** Samy mansour, Ameen Abd Allader, Shehab Shehab and Yazan Ganem  
+**Team leader:** Usama Shmasneh  308127125
+**Team members:** Samy mansour   208547190, Ameen Abd Allader   212809230, Shehab Shehab   208263376, Yazan Ganem   214518342
 **Submission:** Proposal, requirements and system design, 4 November 2026  
 **Lecturer decision:** Project approved, as reported by Usama Shmasneh; approval date and any conditions not provided.
 
@@ -16,10 +16,8 @@ The MVP contains three user stories: participate in a controlled challenge; inve
 
 | Item | Location |
 | --- | --- |
-| Shared GitHub repository | TODO: add the actual repository URL |
+| Shared GitHub repository | https://github.com/1UsamaShmasneh1/Rivive_Shield |
 | Trello backlog board | Trello selected; TODO: add the actual board URL |
-| Specific submission commit | TODO: add the exact commit URL after the files are committed |
-| Actual submission contributors | TODO: confirm the members who contributed to this submission |
 
 The [project backlog](docs/backlog-seed.md) supplies task titles, priorities, planned owners, dependencies and acceptance evidence for the live board. It does not replace the required board.
 
