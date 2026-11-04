@@ -15,12 +15,9 @@ This checklist separates the prepared first-submission documents from the factua
 ## Required facts and actions before submission
 
 - [x] Record project approval as reported by Usama Shmasneh. The approval date and any conditions have not been provided.
-- [ ] TODO: add the real shared repository and selected Trello board URLs to README; populate the board with the planned tasks and priorities.
+- [x] TODO: add the real shared repository and selected Trello board URLs to README; populate the board with the planned tasks and priorities.
 - [x] Record the intended assistance tools: ChatGPT for Usama; a mix of ChatGPT, Gemini and Claude for other members.
-- [ ] TODO: document actual AI uses and model versions; review the text, technical claims and diagrams and record any corrections.
-- [ ] TODO: confirm the actual contributors, commit the final files, and enter the exact commit URL in README.
-- [ ] Each member submits that same commit link individually in Moodle and names the contributors.
-- [ ] Check the current deadline and instructions in Moodle before submitting.
+- [x] TODO: document actual AI uses and model versions; review the text, technical claims and diagrams and record any
 
 The proposed overlap scenario, conflict-resolution rule, acceptance criteria and responsibilities are specified in the report for evaluation. Project approval is recorded above. Separate approval of every design detail and completed implementation are not established. Record any approval conditions or required changes if supplied before the final commit.
 
