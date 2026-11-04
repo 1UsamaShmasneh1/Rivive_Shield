@@ -1,0 +1,40 @@
+digraph Classes {
+  graph [rankdir=TB, bgcolor="white", pad="0.3", nodesep="0.4", ranksep="0.65", splines=polyline, fontname="DejaVu Sans", fontsize=22, labelloc=t, label="Rivive Shield | Class Diagram\nDesign - incident core coordinates distinct modules"];
+  node [shape=record, fontname="DejaVu Sans", fontsize=12, color="#263b55", penwidth=1.4, style=filled, fillcolor="#f0f5fa", margin="0.12,0.08"];
+  edge [fontname="DejaVu Sans", fontsize=10, color="#52657c", arrowsize=0.7];
+  Incident [label="{Incident|+ id\l+ status\l+ causeState\l|+ attachEvidence()\l}"];
+  Evidence [label="{Evidence|+ id\l+ timestamp\l+ observation\l|+ reference()\l}"];
+  Plan [label="{RepairPlan|+ id / incidentId\l+ actionId / targetId\l+ expectedStateVersion\l|+ evidenceReferences()\l}"];
+  Approval [label="{Approval|+ planId\l+ decision\l+ decisionTime\l|+ matchesPlan()\l}"];
+  Agent [label="{DiagnosticAgent|restricted tools only|+ propose(incident)\l}"];
+  Policy [label="{PlanPolicy|allowlisted target/actions|+ validate(plan)\l+ revalidate(plan, approval)\l}"];
+  Executor [label="{RepairExecutor|registered commands|+ executeOnce(plan, approval)\l}", fillcolor="#deedf9"];
+  Command [label="{\<\<interface\>\>\nRepairCommand||+ checkPreconditions()\l+ execute()\l}"];
+  Restart [label="{RestartDemoServiceCommand||+ checkPreconditions()\l+ execute()\l}"];
+  Restore [label="{RestoreBookingInvariantCommand||+ checkPreconditions()\l+ execute()\l}"];
+  Verifier [label="{RecoveryVerifier||+ verifyHealth()\l+ verifyNormalBooking()\l+ verifyDataAndInvariant()\l}"];
+  Result [label="{VerificationResult|+ checkId\l+ passed\l+ evidenceRef\l}"];
+  Store [label="{IncidentRepository|SQLite|+ saveRecord()\l+ loadRecord()\l}"];
+  Demo [label="{DemoTargetAdapter|fixed demo target|+ readHealthAndEvidence()\l+ applyRegisteredAction()\l}"];
+  Core [label="{IncidentOrchestrator|incident / plan revision\levent queue / attempt ID\l|+ handleEvent()\l+ submitApproval()\l+ reconcileAfterRestart()\l}", fillcolor="#d9eafa"];
+  State [label="{IncidentStateMachine|state / revision\l|+ canTransition()\l+ applyEvent()\l}", fillcolor="#d9eafa"];
+  Incident -> Evidence [dir=both, arrowtail=diamond, arrowhead=none, taillabel="1", headlabel="0..*"];
+  Incident -> Plan [label="proposals", taillabel="1", headlabel="0..*"];
+  Plan -> Approval [label="decisions", taillabel="1", headlabel="0..*"];
+  Agent -> Plan [label="proposes", style=dashed];
+  Agent -> Demo [label="read only", style=dashed];
+  Executor -> Policy [label="checks"];
+  Executor -> Command [label="invokes approved"];
+  Core -> State [dir=both, arrowtail=diamond, arrowhead=none, label="owns transitions"];
+  Core -> Agent [label="requests diagnosis"];
+  Core -> Executor [label="approved dispatch"];
+  Core -> Verifier [label="requests checks"];
+  Core -> Store [label="checkpoints / recovers"];
+  Core -> Policy [label="validates plan"];
+  Restart -> Command [style=dashed, arrowhead=empty, label="implements"];
+  Restore -> Command [style=dashed, arrowhead=empty, label="implements"];
+  Command -> Demo [label="fixed target", style=dashed];
+  Verifier -> Demo [label="observes", style=dashed];
+  Verifier -> Result [label="creates", style=dashed];
+  {rank=same;Restart;Restore;}
+}

@@ -1,0 +1,29 @@
+digraph UseCases {
+  graph [rankdir=LR, bgcolor="white", pad="0.35", nodesep="0.65", ranksep="0.7", fontname="DejaVu Sans", fontsize=22, labelloc=t, label="Rivive Shield | Use Case Diagram\nProposed system scope"];
+  node [fontname="DejaVu Sans", fontsize=15, color="#263b55", penwidth=1.5, style=filled, fillcolor="#f0f5fa"];
+  edge [fontname="DejaVu Sans", fontsize=12, color="#52657c", arrowsize=0.7];
+  participant [shape=box, label="<<actor>>\nParticipant", fillcolor="#ffffff"];
+  operator [shape=box, label="<<actor>>\nDemo operator", fillcolor="#ffffff"];
+  subgraph cluster_system {
+    label="Rivive Shield + isolated demo boundary"; color="#8295aa"; style=rounded; fontsize=15;
+    challenge [shape=ellipse, label="US-01\nParticipate in a\ncontrolled challenge"];
+    recover [shape=ellipse, label="US-02 (CENTRAL)\nInvestigate and\nrecover incident", fillcolor="#deedf9"];
+    verify [shape=ellipse, label="US-03\nVerify targeted protection\nand inspect record"];
+    observe [shape=ellipse, label="Check actual\nchallenge effect"];
+    plan [shape=ellipse, label="Review evidence and\nrepair plan"];
+    approve [shape=ellipse, label="Approve bounded action"];
+    checks [shape=ellipse, label="Check recovery\nindependently"];
+    audit [shape=ellipse, label="Save / read\nincident evidence"];
+    challenge -> observe [label="<<include>>", style=dashed, arrowhead=open];
+    recover -> plan [label="<<include>>", style=dashed, arrowhead=open];
+    recover -> approve [label="<<include>>", style=dashed, arrowhead=open];
+    recover -> checks [label="<<include>>", style=dashed, arrowhead=open];
+    recover -> audit [label="<<include>>", style=dashed, arrowhead=open];
+    verify -> checks [label="<<include>>", style=dashed, arrowhead=open];
+    verify -> audit [label="<<include>>", style=dashed, arrowhead=open];
+    {rank=same;challenge;recover;verify;}
+  }
+  participant -> challenge [dir=none];
+  operator -> recover [dir=none];
+  operator -> verify [dir=none];
+}

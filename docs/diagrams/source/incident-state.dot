@@ -1,0 +1,31 @@
+digraph IncidentState {
+  graph [rankdir=TB,bgcolor="white",pad="0.35",nodesep="0.7",ranksep="0.55",fontname="DejaVu Sans",fontsize=23,labelloc=t,label="Rivive Shield | Incident State Model\nDesign - C++ incident core; one active demo"];
+  node [shape=box,style="rounded,filled",fillcolor="#eef4fa",color="#29465e",fontname="DejaVu Sans",fontsize=16,margin="0.20,0.11"];
+  edge [fontname="DejaVu Sans",fontsize=12,color="#526b80",arrowsize=.8];
+  start [shape=point,fillcolor="#29465e",width=.16];
+  detected [label="Detected"];
+  diagnosing [label="Diagnosing"];
+  approval [label="AwaitingApproval"];
+  repairing [label="Repairing\n(approved attempt recorded)"];
+  verifying [label="Verifying"];
+  recovered [label="Recovered",fillcolor="#def0e9"];
+  unresolved [label="Unresolved",fillcolor="#fff0d1"];
+  declined [label="Declined",fillcolor="#fff0d1"];
+  failed [label="Failed",fillcolor="#fce3e0"];
+  review [label="NeedsReview\n(no blind replay)",fillcolor="#fce3e0"];
+  start -> detected;
+  detected -> diagnosing [label="start read-only diagnosis"];
+  diagnosing -> approval [label="supported plan saved"];
+  diagnosing -> unresolved [label="insufficient evidence / unavailable"];
+  approval -> repairing [label="current approval + preconditions\n+ durable attempt record"];
+  approval -> declined [label="operator rejects / cancels"];
+  repairing -> verifying [label="known successful execution"];
+  repairing -> failed [label="known execution failure"];
+  repairing -> review [label="timeout / interrupted execution\noutcome uncertain"];
+  verifying -> recovered [label="all required checks + save succeed"];
+  verifying -> failed [label="any check fails"];
+  approval -> review [label="required persistence fails",style=dashed];
+  verifying -> review [label="final persistence fails",style=dashed];
+  note [shape=note,fillcolor="#ffffff",fontsize=13,label="Every event carries incident and plan revision.\nReject duplicate, stale and illegal transitions.\nAfter restart, reconcile pending attempts first.\nThis is not a universal exactly-once guarantee."];
+  recovered -> note [style=invis];
+}
