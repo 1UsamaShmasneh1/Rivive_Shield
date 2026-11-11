@@ -1,0 +1,11 @@
+digraph G { rankdir=LR; graph [bgcolor="white",pad=.2,nodesep=.4,ranksep=.65]; node [shape=box,style="rounded,filled",fillcolor="#eff6ff",fontname="DejaVu Sans",fontsize=12]; edge [fontname="DejaVu Sans",fontsize=9];
+Monitor [label="Monitor\nNEW PROPOSED"];
+DemoTargetAdapter [label="DemoTargetAdapter\nBASELINE NAME / REFINED"];
+FixedDemoTargetAdapter [label="FixedDemoTargetAdapter\nNEW PROPOSED"];
+Evidence [label="Evidence\nBASELINE NAME / REFINED"];
+FixedDemoTargetAdapter->DemoTargetAdapter [label="implements", style=dashed,arrowhead=empty];
+Monitor->DemoTargetAdapter [label="reads", ];
+FixedDemoTargetAdapter -> OwnedDemoProcess [label="serialized native ownership"];
+WindowsOwnedDemoProcess -> OwnedDemoProcess [arrowhead=empty];
+MacOwnedDemoProcess -> OwnedDemoProcess [arrowhead=empty];
+}

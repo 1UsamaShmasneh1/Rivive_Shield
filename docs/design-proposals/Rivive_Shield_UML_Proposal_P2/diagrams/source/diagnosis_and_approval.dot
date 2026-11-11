@@ -1,0 +1,10 @@
+digraph G { rankdir=LR; graph [bgcolor="white",pad=.2,nodesep=.4,ranksep=.65]; node [shape=box,style="rounded,filled",fillcolor="#eff6ff",fontname="DejaVu Sans",fontsize=12]; edge [fontname="DejaVu Sans",fontsize=9];
+DiagnosticAgent [label="DiagnosticAgent\nBASELINE NAME / REFINED"];
+PlanPolicy [label="PlanPolicy\nBASELINE NAME / REFINED"];
+RepairPlan [label="RepairPlan\nBASELINE NAME / REFINED"];
+Approval [label="Approval\nBASELINE NAME / REFINED"];
+RepairPlan->Approval [label="decisions keyed by planId", ];
+DiagnosticAgent->RepairPlan [label="proposes", style=dashed];
+DiagnosticAgent -> PlanPolicy [label="validate proposed plan"];
+DiagnosticAgent -> RuleAudit [label="evidence / matched rule / version"];
+}

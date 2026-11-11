@@ -1,0 +1,9 @@
+digraph G { rankdir=LR; graph [bgcolor="white",pad=.2,nodesep=.4,ranksep=.65]; node [shape=box,style="rounded,filled",fillcolor="#eff6ff",fontname="DejaVu Sans",fontsize=12]; edge [fontname="DejaVu Sans",fontsize=9];
+BookingService [label="BookingService\nNEW PROPOSED"];
+BookingRepository [label="BookingRepository\nNEW PROPOSED"];
+SqliteBookingRepository [label="SqliteBookingRepository\nNEW PROPOSED"];
+Booking [label="Booking\nNEW PROPOSED"];
+SqliteBookingRepository->BookingRepository [label="implements", style=dashed,arrowhead=empty];
+BookingService->BookingRepository [label="uses typed atomic store", ];
+BookingRepository->Booking [label="stores", ];
+}

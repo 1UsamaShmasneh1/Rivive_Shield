@@ -1,0 +1,281 @@
+--- P1/header
++++ P2/header
+@@ -1,6 +1,6 @@
+ #pragma once
+-// PROPOSED UML CONTRACT REVISION P1. REVIEW ONLY; NOT IMPLEMENTATION OR APPROVAL.
+-// Source: Git 3dd99832635c650e5f19210f7e4ffd12f4d01566.
++// PROPOSED UML CONTRACT REVISION P2. REVIEW ONLY; NOT IMPLEMENTATION OR APPROVAL.
++// Derived from P1; user decisions supersede runtime AI and POSIX-only assumptions.
+ // Every type/signature/private field below is proposed unless noted as a retained conceptual name.
+ #include <chrono>
+ #include <cstddef>
+@@ -31,18 +31,18 @@
+ using AttemptId = std::string;
+ using EventId = std::string;
+ using SessionId = std::string;
+-enum class ErrorCode { InvalidArgument, NotFound, StaleVersion, IllegalTransition, DuplicateEvent, Conflict, OverlapRejected, Busy, WrongTarget, UnsupportedAction, UnsupportedEvidence, ApprovalRequired, ApprovalMismatch, Expired, PreconditionFailed, ProviderUnavailable, ProviderProtocolError, LimitExceeded, TargetUnavailable, StorageUnavailable, OutcomeUncertain, CorruptRecord, InternalError };
++enum class ErrorCode { InvalidArgument, NotFound, StaleVersion, IllegalTransition, DuplicateEvent, Conflict, OverlapRejected, Busy, WrongTarget, UnsupportedAction, UnsupportedEvidence, ApprovalRequired, ApprovalMismatch, Expired, PreconditionFailed, LimitExceeded, TargetUnavailable, StorageUnavailable, OutcomeUncertain, CorruptRecord, InternalError };
+ enum class TargetId { DemoBookingService };
+ enum class ProbeCleanupPolicy { CancelCreatedProbesRetainRows };
+ enum class DataPreservationPolicy { ExactBaselineExceptApprovedDeltas };
+ enum class ActionId { RestartDemoService, RestoreBookingInvariant };
+ enum class BookingStatus { Active, CancelledByParticipant, CancelledConflict, CancelledVerificationProbe };
++enum class ProcessStatus { Running, Stopped, Unknown };
+ enum class HealthStatus { Healthy, Stopped, Unhealthy, Unknown };
+ enum class EvidenceSource { Monitor, DiagnosticTool, Verifier, Reconciliation };
+ enum class IncidentStatus { Detected, Diagnosing, AwaitingApproval, Repairing, Verifying, Recovered, Unresolved, Declined, Failed, NeedsReview };
+ enum class CauseState { Unresolved, ServiceStopped, BookingOverlap };
+ enum class ApprovalDecision { Approve, Reject, Cancel };
+-enum class DiagnosticToolId { ReadHealth, ReadBookingSnapshot, CheckInvariant };
+ enum class AttemptStatus { Prepared, Dispatching, Succeeded, Failed, Uncertain };
+ enum class ExecutionOutcome { Succeeded, KnownFailure, Uncertain };
+ enum class CheckId { ServiceHealth, NormalBooking, DataPreservation, BookingInvariant, GuardActive, OriginalConflictRejected, VariantConflictRejected, ProbeCleanup };
+@@ -123,7 +123,7 @@
+ };
+ 
+ // NEW PROPOSED TYPE. Owner: Usama Shmasneh.
+-// Fresh controller session invalidates old process plans; generation advances on each managed start/stop. Not a PID supplied by AI.
++// Fresh controller session invalidates old process plans; generation advances on each managed start/stop. Never a caller-supplied PID.
+ struct ProcessGeneration {
+ SessionId controllerSessionId;
+     Version value;
+@@ -243,19 +243,14 @@
+ };
+ 
+ // NEW PROPOSED TYPE. Owner: Shehab Shehab.
+-// Positive bounded values reviewed before coding; suggested 4 turns, 32 evidence items, 8192 text bytes, 15 seconds.
++// Positive bounded values must be selected and reviewed before implementation. No numeric defaults approved.
+ struct DiagnosticLimits {
+-std::size_t maxProviderTurns;
++std::size_t maxObservationReads;
+     std::size_t maxEvidenceItems;
+     std::size_t maxTextBytes;
+     std::chrono::milliseconds overallTimeout;
+ };
+ 
+-// NEW PROPOSED TYPE. Owner: Shehab Shehab.
+-// No arbitrary target, SQL, shell, file path, URL, challenge selector or mutable operation.
+-struct ToolRequest {
+-DiagnosticToolId tool;
+-};
+ 
+ // NEW PROPOSED TYPE. Owner: Shehab Shehab.
+ // Unresolved has no repair. Unsupported evidence/action/arguments never become executable.
+@@ -266,31 +261,11 @@
+     std::optional<ActionId> proposedAction;
+     std::optional<ActionArguments> proposedArguments;
+ };
+-using AiResponse = std::variant<ToolRequest, DiagnosisDraft>;
++
++
+ 
+ // NEW PROPOSED TYPE. Owner: Shehab Shehab.
+-// Only sanitized fictitious observations and static policy. No challenge id, expected fault label, injection metadata or secret.
+-struct AiRequest {
+-std::vector<Evidence> evidence;
+-    std::vector<DiagnosticToolId> allowedTools;
+-    std::vector<ActionId> allowedActions;
+-    std::string taskInstruction;
+-};
+-
+-// NEW PROPOSED TYPE. Owner: Usama Shmasneh.
+-// Test double must record actualRuntimeCall=false; demonstration cannot count that as runtime AI.
+-struct AiAudit {
+-std::string provider;
+-    std::string modelVersion;
+-    bool actualRuntimeCall;
+-    UtcTime requestedAt;
+-    UtcTime completedAt;
+-    std::size_t providerTurns;
+-    std::string responseSummary;
+-};
+-
+-// NEW PROPOSED TYPE. Owner: Shehab Shehab.
+-// Assigned by core; provider cannot assign lifecycle revisions or identifiers.
++// Assigned by core; diagnosis cannot assign lifecycle revisions or identifiers.
+ struct DiagnosisContext {
+ PlanId proposedPlanId;
+     Version proposedPlanRevision;
+@@ -301,12 +276,21 @@
+ 
+ // NEW PROPOSED TYPE. Owner: Shehab Shehab.
+ // No plan on unresolved; a supported plan must pass deterministic PlanPolicy before presentation.
++// P2 proposed audit of compiled-in rules; not an AI invocation or runtime rule loader.
++struct RuleAudit {
++    std::string rulesetVersion;
++    std::optional<std::string> matchedRuleId;
++    std::vector<EvidenceId> evidenceRefs;
++    UtcTime evaluatedAt;
++    std::string outcomeSummary;
++};
++
+ struct DiagnosisResult {
+ CauseState causeState;
+     std::string explanation;
+     std::optional<RepairPlan> plan;
+     std::vector<Evidence> collectedEvidence;
+-    AiAudit aiAudit;
++    RuleAudit ruleAudit;
+     std::optional<Error> failure;
+ };
+ 
+@@ -384,7 +368,7 @@
+     std::vector<ExecutionResult> executions;
+     std::vector<VerificationResult> verificationResults;
+     std::vector<EventId> acceptedEventIds;
+-    std::vector<AiAudit> aiCalls;
++    std::vector<RuleAudit> ruleEvaluations;
+     std::vector<Error> failures;
+ };
+ 
+@@ -471,14 +455,6 @@
+     std::chrono::milliseconds busyTimeout;
+ };
+ 
+-// NEW PROPOSED TYPE. Owner: Usama Shmasneh.
+-// Trusted startup configuration; secrets resolved only inside RuntimeAiProvider, never stored in evidence or request.
+-struct AiConfiguration {
+-std::string provider;
+-    std::string modelVersion;
+-    std::string endpoint;
+-    std::string credentialEnvironmentName;
+-};
+ 
+ // NEW PROPOSED TYPE. Owner: Usama Shmasneh.
+ // No shell interpolation. Configuration is operator-reviewed and immutable; only one isolated owned child; startup creates a fresh session.
+@@ -578,11 +554,58 @@
+     virtual Status stopForControlledChallenge(Deadline deadline) = 0;
+ };
+ 
+-// NEW PROPOSED TYPE. Owner: Usama Shmasneh.
+-// POSIX local prototype proposal, subject to environment review. Owned child identity must be verified against OS process start identity before signals. startForSetup only with empty active-incident store; never a repair bypass.
++// P2 proposed OS boundary. Fixed configured executable only; no arbitrary PID or shell.
++// All operations serialized by adapter; implementations must not mutate after losing ownership.
++class OwnedDemoProcess {
++public:
++    virtual ~OwnedDemoProcess();
++    virtual const DemoConfiguration& configuration() const = 0;
++    virtual Status start(Deadline deadline) = 0;
++    virtual Result<ProcessStatus> observe(Deadline deadline) const = 0;
++    virtual Status stop(Deadline deadline) = 0;
++};
++
++// Windows-only implementation proposal. Native HANDLE stored as void* solely for ABI isolation;
++// this is an OS handle, not opaque project state. No PID-based reopen or lookup is allowed.
++class WindowsOwnedDemoProcess : public OwnedDemoProcess {
++public:
++    explicit WindowsOwnedDemoProcess(const DemoConfiguration& configuration);
++    ~WindowsOwnedDemoProcess() override;
++    WindowsOwnedDemoProcess(const WindowsOwnedDemoProcess&) = delete;
++    WindowsOwnedDemoProcess& operator=(const WindowsOwnedDemoProcess&) = delete;
++    const DemoConfiguration& configuration() const override;
++    Status start(Deadline deadline) override;
++    Result<ProcessStatus> observe(Deadline deadline) const override;
++    Status stop(Deadline deadline) override;
++private:
++    const DemoConfiguration configuration_;
++    void* processHandle_;
++    bool ownershipUncertain_;
++};
++
++// macOS-only implementation proposal. Exclusive parent/reaper ownership is mandatory.
++// Never signal after wait/reap; no SIGCHLD auto-reaping and no external wait on this child.
++class MacOwnedDemoProcess : public OwnedDemoProcess {
++public:
++    explicit MacOwnedDemoProcess(const DemoConfiguration& configuration);
++    ~MacOwnedDemoProcess() override;
++    MacOwnedDemoProcess(const MacOwnedDemoProcess&) = delete;
++    MacOwnedDemoProcess& operator=(const MacOwnedDemoProcess&) = delete;
++    const DemoConfiguration& configuration() const override;
++    Status start(Deadline deadline) override;
++    Result<ProcessStatus> observe(Deadline deadline) const override;
++    Status stop(Deadline deadline) override;
++private:
++    const DemoConfiguration configuration_;
++    std::int64_t ownedChildPid_;
++    bool childReaped_;
++    bool ownershipUncertain_;
++};
++
++// Native local adapter proposal. startForSetup requires empty active-incident store; never a repair bypass.
+ class FixedDemoTargetAdapter : public DemoTargetAdapter {
+ public:
+-    FixedDemoTargetAdapter(const DemoConfiguration& configuration, BookingRepository& bookingRepository, IncidentRepository& incidentRepository, Now now);
++    FixedDemoTargetAdapter(const DemoConfiguration& configuration, OwnedDemoProcess& process, BookingRepository& bookingRepository, IncidentRepository& incidentRepository, Now now);
+     ~FixedDemoTargetAdapter() override;
+     FixedDemoTargetAdapter(const FixedDemoTargetAdapter&) = delete;
+     FixedDemoTargetAdapter& operator=(const FixedDemoTargetAdapter&) = delete;
+@@ -598,15 +621,14 @@
+     BookingRepository& bookingRepository_;
+     IncidentRepository& incidentRepository_;
+     Now now_;
+-    std::int64_t ownedProcessId_;
+-    std::optional<std::uint64_t> ownedProcessStartTicks_;
++    OwnedDemoProcess& process_;
+     ProcessGeneration generation_;
+     std::vector<AttemptId> consumedDispatches_;
+     mutable std::mutex mutex_;
+ };
+ 
+ // NEW PROPOSED TYPE. Owner: Ameen Abd Allader.
+-// Independent overlap scan does not call BookingService::overlaps, storage repair logic, or AI. No repair authority.
++// Independent overlap scan does not call BookingService::overlaps, storage repair logic, or diagnostic rules. No repair authority.
+ class Monitor {
+ public:
+     Monitor(const DemoTargetAdapter& target, Now now);
+@@ -618,31 +640,10 @@
+     Now now_;
+ };
+ 
+-// NEW PROPOSED TYPE. Owner: Usama Shmasneh.
+-// Strict bounded structured response. Test doubles explicitly labeled and cannot claim real runtime calls.
+-class AiProvider {
+-public:
+-    virtual ~AiProvider();
+-    virtual Result<AiResponse> complete(const AiRequest& request, Deadline deadline) = 0;
+-    virtual AiAudit audit() const = 0;
+-};
+-
+-// NEW PROPOSED TYPE. Owner: Usama Shmasneh.
+-// Actual provider/model/access not yet chosen; feasibility and dependency review remain blocking before implementation. No secret member.
+-class RuntimeAiProvider : public AiProvider {
+-public:
+-    RuntimeAiProvider(const AiConfiguration& configuration, DiagnosticLimits limits, Now now);
+-    Result<AiResponse> complete(const AiRequest& request, Deadline deadline) override;
+-    AiAudit audit() const override;
+-private:
+-    const AiConfiguration configuration_;
+-    const DiagnosticLimits limits_;
+-    Now now_;
+-    AiAudit lastAudit_;
+-};
++
+ 
+ // RETAINED NAME; SIGNATURE/FIELD REFINEMENT PROPOSED. Owner: Shehab Shehab.
+-// Deterministic allowlist plus action/argument/version-tag match, evidence support, expiry, approval binding, and current-plan checks. No AI decision overrides rejection.
++// Deterministic allowlist plus action/argument/version-tag match, evidence support, expiry, approval binding, and current-plan checks. No diagnostic decision overrides rejection.
+ class PlanPolicy {
+ public:
+     explicit PlanPolicy(TargetId target);
+@@ -653,17 +654,18 @@
+ };
+ 
+ // RETAINED NAME; SIGNATURE/FIELD REFINEMENT PROPOSED. Owner: Shehab Shehab.
+-// Bounded read-only tool loop; no lifecycle scheduling. At least one actual provider response is required for final demonstration diagnosis.
++// Compiled-in evidence-based rules; no external provider, rule file or challenge selector. Unknown/conflicting evidence yields Unresolved and no plan.
+ class DiagnosticAgent {
+ public:
+-    DiagnosticAgent(AiProvider& provider, const DemoTargetAdapter& target, const Monitor& monitor, const PlanPolicy& policy, DiagnosticLimits limits);
++    DiagnosticAgent(const DemoTargetAdapter& target, const Monitor& monitor, const PlanPolicy& policy, DiagnosticLimits limits);
+     Result<DiagnosisResult> propose(const Incident& incident, const DiagnosisContext& context);
+ private:
+-    AiProvider& provider_;
+     const DemoTargetAdapter& target_;
+     const Monitor& monitor_;
+     const PlanPolicy& policy_;
+     const DiagnosticLimits limits_;
++    DiagnosisDraft evaluateRules(const std::vector<Evidence>& evidence) const;
++    std::string rulesetVersion() const;
+ };
+ 
+ // RETAINED NAME; SIGNATURE/FIELD REFINEMENT PROPOSED. Owner: Yazan Ganem.

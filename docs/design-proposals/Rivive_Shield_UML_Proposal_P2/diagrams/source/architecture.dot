@@ -1,0 +1,21 @@
+digraph Architecture {
+ graph [rankdir=TB,bgcolor="white",fontname="DejaVu Sans",fontsize=16,label="Rivive Shield | Proposed architecture P2\nReview only - fixed isolated demo, one active run",labelloc=t,pad=.25,nodesep=.35,ranksep=.6];
+ node [shape=box,style="rounded,filled",fillcolor="#eef3f8",color="#37516a",fontname="DejaVu Sans",fontsize=12,margin=".16,.12"];
+ edge [fontname="DejaVu Sans",fontsize=10,color="#42556c",arrowsize=.7];
+ Participant [label="Participant browser\nSynthetic booking / lab challenge"];
+ Operator [label="Operator browser / CLI\nInspect, approve or reject"];
+ Booking [label="BOOKING PROCESS\nBooking domain + overlap guard\nSamy; infrastructure by Usama"];
+ Control [label="CONTROL PROCESS\nIncident core + monitoring\nDiagnosis + commands + verifier\nCore: Usama; modules: team",fillcolor="#dceaf7"];
+ Rules [label="Compiled-in rules in DiagnosticAgent\nEvidence-based, two scenarios\nNo external AI provider",fillcolor="#fff2d7"];
+ Audit [label="Incident SQLite store\nEvidence, approvals, attempts, results"];
+ Data [label="Booking SQLite store\nSynthetic records + rule state"];
+ {rank=same;Participant;Operator;}
+ {rank=same;Booking;Control;}
+ {rank=same;Data;Audit;Rules;}
+ Participant -> Booking;
+ Operator -> Control;
+ Control -> Booking [label="read / approved bounded repair"];
+ Booking -> Data;
+ Control -> Audit [label="durable checkpoint"];
+ Control -> Rules [label="read-only diagnosis"];
+}

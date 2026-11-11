@@ -1,0 +1,12 @@
+digraph P2 {
+ graph [rankdir=LR,bgcolor=white,nodesep=.5,ranksep=.8];
+ node [shape=box,style="rounded,filled",fillcolor="#fff7ed",fontname="DejaVu Sans",fontsize=12];
+ edge [fontname="DejaVu Sans",fontsize=10,color="#b45309",style=dashed];
+ AwaitingApproval -> Unresolved [label="plan expires before approval"];
+ Verifying -> NeedsReview [label="verification write / cleanup\noutcome uncertain"];
+ nonterminal [label="Any persisted\nnonterminal state"];
+ nonterminal -> NeedsReview [label="restart reconciliation\nno dispatch"];
+ active [label="Detected / Diagnosing / Repairing"];
+ volatile [label="Volatile NeedsReview\ndurable=false; repairs blocked"];
+ active -> volatile [label="required persistence fails"];
+}

@@ -1,0 +1,3 @@
+P2 was approved by Usama for the project baseline. Original package proposal labels record its preparation status; Samy/module-owner review and implementation/test gates remain outstanding. No declaration-only check proves runtime correctness.
+Exact source header SHA256: e1ed270f5c9c89accf46a2eacd089740540d74efb57d354358b6b72c4c5cc070
+This companion records adoption without rewriting the original P2 source package. Importing the package into Git is a documentation/declaration-baseline change, not completed implementation.

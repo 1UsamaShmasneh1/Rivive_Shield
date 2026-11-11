@@ -1,0 +1,12 @@
+digraph G { rankdir=LR; graph [bgcolor="white",pad=.2,nodesep=.4,ranksep=.65]; node [shape=box,style="rounded,filled",fillcolor="#eff6ff",fontname="DejaVu Sans",fontsize=12]; edge [fontname="DejaVu Sans",fontsize=9];
+RepairExecutor [label="RepairExecutor\nBASELINE NAME / REFINED"];
+RepairCommand [label="RepairCommand\nBASELINE NAME / REFINED"];
+RestartDemoServiceCommand [label="RestartDemoServiceCommand\nBASELINE NAME / REFINED"];
+RestoreBookingInvariantCommand [label="RestoreBookingInvariantCommand\nBASELINE NAME / REFINED"];
+RecoveryVerifier [label="RecoveryVerifier\nBASELINE NAME / REFINED"];
+VerificationResult [label="VerificationResult\nBASELINE NAME / REFINED"];
+RepairExecutor->RepairCommand [label="invokes approved", ];
+RestartDemoServiceCommand->RepairCommand [label="implements", style=dashed,arrowhead=empty];
+RestoreBookingInvariantCommand->RepairCommand [label="implements", style=dashed,arrowhead=empty];
+RecoveryVerifier->VerificationResult [label="creates", style=dashed];
+}

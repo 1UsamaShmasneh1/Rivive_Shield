@@ -1,0 +1,2773 @@
+{
+  "revision": "P2",
+  "status": "PROPOSED_NOT_APPROVED_NOT_IMPLEMENTED",
+  "language": "C++17",
+  "header_sha256": "e1ed270f5c9c89accf46a2eacd089740540d74efb57d354358b6b72c4c5cc070",
+  "classes": [
+    {
+      "name": "Error",
+      "kind": "struct",
+      "bases": "",
+      "body": "ErrorCode code;\n    std::string message;\n    std::vector<EvidenceId> evidenceRefs;\n",
+      "declaration": "struct Error {\nErrorCode code;\n    std::string message;\n    std::vector<EvidenceId> evidenceRefs;\n};",
+      "fields": [
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "ErrorCode code;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "std::string message;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "std::vector<EvidenceId> evidenceRefs;"
+        }
+      ],
+      "methods": [],
+      "owner": "All owners; Usama coordinates",
+      "group": "Shared values",
+      "status": "P2 proposed, not approved"
+    },
+    {
+      "name": "FailureObservation",
+      "kind": "struct",
+      "bases": "",
+      "body": "ErrorCode code;\n    std::string message;\n",
+      "declaration": "struct FailureObservation {\nErrorCode code;\n    std::string message;\n};",
+      "fields": [
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "ErrorCode code;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "std::string message;"
+        }
+      ],
+      "methods": [],
+      "owner": "Ameen Abd Allader",
+      "group": "Evidence values",
+      "status": "P2 proposed, not approved"
+    },
+    {
+      "name": "TimeRange",
+      "kind": "struct",
+      "bases": "",
+      "body": "UtcTime start;\n    UtcTime end;\n",
+      "declaration": "struct TimeRange {\nUtcTime start;\n    UtcTime end;\n};",
+      "fields": [
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "UtcTime start;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "UtcTime end;"
+        }
+      ],
+      "methods": [],
+      "owner": "Samy mansour",
+      "group": "Booking values",
+      "status": "P2 proposed, not approved"
+    },
+    {
+      "name": "Booking",
+      "kind": "struct",
+      "bases": "",
+      "body": "BookingId id;\n    RoomId roomId;\n    TimeRange interval;\n    std::string syntheticLabel;\n    UtcTime createdAt;\n    BookingStatus status;\n    Version version;\n    std::optional<std::string> cancellationReason;\n",
+      "declaration": "struct Booking {\nBookingId id;\n    RoomId roomId;\n    TimeRange interval;\n    std::string syntheticLabel;\n    UtcTime createdAt;\n    BookingStatus status;\n    Version version;\n    std::optional<std::string> cancellationReason;\n};",
+      "fields": [
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "BookingId id;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "RoomId roomId;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "TimeRange interval;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "std::string syntheticLabel;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "UtcTime createdAt;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "BookingStatus status;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "Version version;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "std::optional<std::string> cancellationReason;"
+        }
+      ],
+      "methods": [],
+      "owner": "Samy mansour",
+      "group": "Booking",
+      "status": "P2 proposed, not approved"
+    },
+    {
+      "name": "BookingRequest",
+      "kind": "struct",
+      "bases": "",
+      "body": "BookingId id;\n    RoomId roomId;\n    TimeRange interval;\n    std::string syntheticLabel;\n",
+      "declaration": "struct BookingRequest {\nBookingId id;\n    RoomId roomId;\n    TimeRange interval;\n    std::string syntheticLabel;\n};",
+      "fields": [
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "BookingId id;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "RoomId roomId;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "TimeRange interval;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "std::string syntheticLabel;"
+        }
+      ],
+      "methods": [],
+      "owner": "Samy mansour",
+      "group": "Booking values",
+      "status": "P2 proposed, not approved"
+    },
+    {
+      "name": "BookingSnapshot",
+      "kind": "struct",
+      "bases": "",
+      "body": "Version revision;\n    bool guardEnabled;\n    std::vector<Booking> bookings;\n",
+      "declaration": "struct BookingSnapshot {\nVersion revision;\n    bool guardEnabled;\n    std::vector<Booking> bookings;\n};",
+      "fields": [
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "Version revision;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "bool guardEnabled;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "std::vector<Booking> bookings;"
+        }
+      ],
+      "methods": [],
+      "owner": "Samy mansour",
+      "group": "Booking values",
+      "status": "P2 proposed, not approved"
+    },
+    {
+      "name": "OverlapPair",
+      "kind": "struct",
+      "bases": "",
+      "body": "BookingId earlierId;\n    BookingId laterId;\n",
+      "declaration": "struct OverlapPair {\nBookingId earlierId;\n    BookingId laterId;\n};",
+      "fields": [
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "BookingId earlierId;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "BookingId laterId;"
+        }
+      ],
+      "methods": [],
+      "owner": "Ameen Abd Allader",
+      "group": "Monitoring values",
+      "status": "P2 proposed, not approved"
+    },
+    {
+      "name": "InvariantReport",
+      "kind": "struct",
+      "bases": "",
+      "body": "Version bookingRevision;\n    bool holds;\n    std::vector<OverlapPair> conflicts;\n",
+      "declaration": "struct InvariantReport {\nVersion bookingRevision;\n    bool holds;\n    std::vector<OverlapPair> conflicts;\n};",
+      "fields": [
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "Version bookingRevision;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "bool holds;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "std::vector<OverlapPair> conflicts;"
+        }
+      ],
+      "methods": [],
+      "owner": "Ameen Abd Allader",
+      "group": "Monitoring values",
+      "status": "P2 proposed, not approved"
+    },
+    {
+      "name": "ProcessGeneration",
+      "kind": "struct",
+      "bases": "",
+      "body": "SessionId controllerSessionId;\n    Version value;\n",
+      "declaration": "struct ProcessGeneration {\nSessionId controllerSessionId;\n    Version value;\n};",
+      "fields": [
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "SessionId controllerSessionId;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "Version value;"
+        }
+      ],
+      "methods": [],
+      "owner": "Usama Shmasneh",
+      "group": "Target values",
+      "status": "P2 proposed, not approved"
+    },
+    {
+      "name": "HealthObservation",
+      "kind": "struct",
+      "bases": "",
+      "body": "HealthStatus status;\n    ProcessGeneration generation;\n    UtcTime observedAt;\n    std::string summary;\n",
+      "declaration": "struct HealthObservation {\nHealthStatus status;\n    ProcessGeneration generation;\n    UtcTime observedAt;\n    std::string summary;\n};",
+      "fields": [
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "HealthStatus status;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "ProcessGeneration generation;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "UtcTime observedAt;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "std::string summary;"
+        }
+      ],
+      "methods": [],
+      "owner": "Ameen Abd Allader",
+      "group": "Target values",
+      "status": "P2 proposed, not approved"
+    },
+    {
+      "name": "RestoreInvariantArgs",
+      "kind": "struct",
+      "bases": "",
+      "body": "BookingId earlierBookingId;\n    BookingId laterBookingId;\n    Version expectedEarlierVersion;\n    Version expectedLaterVersion;\n    Version expectedBookingRevision;\n",
+      "declaration": "struct RestoreInvariantArgs {\nBookingId earlierBookingId;\n    BookingId laterBookingId;\n    Version expectedEarlierVersion;\n    Version expectedLaterVersion;\n    Version expectedBookingRevision;\n};",
+      "fields": [
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "BookingId earlierBookingId;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "BookingId laterBookingId;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "Version expectedEarlierVersion;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "Version expectedLaterVersion;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "Version expectedBookingRevision;"
+        }
+      ],
+      "methods": [],
+      "owner": "Samy mansour",
+      "group": "Repair values",
+      "status": "P2 proposed, not approved"
+    },
+    {
+      "name": "RestartArgs",
+      "kind": "struct",
+      "bases": "",
+      "body": "ProcessGeneration expectedGeneration;\n",
+      "declaration": "struct RestartArgs {\nProcessGeneration expectedGeneration;\n};",
+      "fields": [
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "ProcessGeneration expectedGeneration;"
+        }
+      ],
+      "methods": [],
+      "owner": "Yazan Ganem",
+      "group": "Repair values",
+      "status": "P2 proposed, not approved"
+    },
+    {
+      "name": "BookingRepairReceipt",
+      "kind": "struct",
+      "bases": "",
+      "body": "AttemptId attemptId;\n    RestoreInvariantArgs arguments;\n    Version beforeRevision;\n    Version afterRevision;\n    Booking preservedBooking;\n    Booking cancelledBooking;\n    bool guardEnabled;\n    UtcTime committedAt;\n",
+      "declaration": "struct BookingRepairReceipt {\nAttemptId attemptId;\n    RestoreInvariantArgs arguments;\n    Version beforeRevision;\n    Version afterRevision;\n    Booking preservedBooking;\n    Booking cancelledBooking;\n    bool guardEnabled;\n    UtcTime committedAt;\n};",
+      "fields": [
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "AttemptId attemptId;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "RestoreInvariantArgs arguments;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "Version beforeRevision;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "Version afterRevision;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "Booking preservedBooking;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "Booking cancelledBooking;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "bool guardEnabled;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "UtcTime committedAt;"
+        }
+      ],
+      "methods": [],
+      "owner": "Samy mansour",
+      "group": "Repair values",
+      "status": "P2 proposed, not approved"
+    },
+    {
+      "name": "Evidence",
+      "kind": "struct",
+      "bases": "",
+      "body": "EvidenceId id;\n    UtcTime timestamp;\n    Observation observation;\n    EvidenceSource source;\n    TargetId targetId;\n    std::string summary;\n    EvidenceId reference() const;\n",
+      "declaration": "struct Evidence {\nEvidenceId id;\n    UtcTime timestamp;\n    Observation observation;\n    EvidenceSource source;\n    TargetId targetId;\n    std::string summary;\n    EvidenceId reference() const;\n};",
+      "fields": [
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "EvidenceId id;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "UtcTime timestamp;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "Observation observation;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "EvidenceSource source;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "TargetId targetId;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "std::string summary;"
+        }
+      ],
+      "methods": [
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "EvidenceId reference() const;"
+        }
+      ],
+      "owner": "Ameen Abd Allader",
+      "group": "Evidence",
+      "status": "P2 proposed, not approved"
+    },
+    {
+      "name": "VerificationRecipe",
+      "kind": "struct",
+      "bases": "",
+      "body": "BookingRequest normalProbe;\n    std::optional<BookingRequest> originalConflictProbe;\n    std::optional<BookingRequest> variantConflictProbe;\n    ProbeCleanupPolicy cleanupPolicy;\n    DataPreservationPolicy preservationPolicy;\n",
+      "declaration": "struct VerificationRecipe {\nBookingRequest normalProbe;\n    std::optional<BookingRequest> originalConflictProbe;\n    std::optional<BookingRequest> variantConflictProbe;\n    ProbeCleanupPolicy cleanupPolicy;\n    DataPreservationPolicy preservationPolicy;\n};",
+      "fields": [
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "BookingRequest normalProbe;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "std::optional<BookingRequest> originalConflictProbe;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "std::optional<BookingRequest> variantConflictProbe;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "ProbeCleanupPolicy cleanupPolicy;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "DataPreservationPolicy preservationPolicy;"
+        }
+      ],
+      "methods": [],
+      "owner": "Yazan Ganem",
+      "group": "Verification values",
+      "status": "P2 proposed, not approved"
+    },
+    {
+      "name": "RepairPlan",
+      "kind": "struct",
+      "bases": "",
+      "body": "PlanId id;\n    IncidentId incidentId;\n    ActionId actionId;\n    TargetId targetId;\n    ExpectedStateVersion expectedStateVersion;\n    Version revision;\n    ActionArguments arguments;\n    std::vector<EvidenceId> evidenceIds;\n    EvidenceId baselineSnapshotRef;\n    VerificationRecipe verification;\n    std::string explanation;\n    UtcTime createdAt;\n    UtcTime expiresAt;\n    std::vector<EvidenceId> evidenceReferences() const;\n",
+      "declaration": "struct RepairPlan {\nPlanId id;\n    IncidentId incidentId;\n    ActionId actionId;\n    TargetId targetId;\n    ExpectedStateVersion expectedStateVersion;\n    Version revision;\n    ActionArguments arguments;\n    std::vector<EvidenceId> evidenceIds;\n    EvidenceId baselineSnapshotRef;\n    VerificationRecipe verification;\n    std::string explanation;\n    UtcTime createdAt;\n    UtcTime expiresAt;\n    std::vector<EvidenceId> evidenceReferences() const;\n};",
+      "fields": [
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "PlanId id;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "IncidentId incidentId;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "ActionId actionId;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "TargetId targetId;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "ExpectedStateVersion expectedStateVersion;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "Version revision;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "ActionArguments arguments;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "std::vector<EvidenceId> evidenceIds;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "EvidenceId baselineSnapshotRef;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "VerificationRecipe verification;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "std::string explanation;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "UtcTime createdAt;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "UtcTime expiresAt;"
+        }
+      ],
+      "methods": [
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "std::vector<EvidenceId> evidenceReferences() const;"
+        }
+      ],
+      "owner": "Shehab Shehab",
+      "group": "Diagnosis and policy",
+      "status": "P2 proposed, not approved"
+    },
+    {
+      "name": "Approval",
+      "kind": "struct",
+      "bases": "",
+      "body": "PlanId planId;\n    ApprovalDecision decision;\n    UtcTime decisionTime;\n    ApprovalId id;\n    IncidentId incidentId;\n    Version planRevision;\n    Version expectedIncidentRevision;\n    std::string operatorLabel;\n    bool matchesPlan(const RepairPlan& plan) const;\n",
+      "declaration": "struct Approval {\nPlanId planId;\n    ApprovalDecision decision;\n    UtcTime decisionTime;\n    ApprovalId id;\n    IncidentId incidentId;\n    Version planRevision;\n    Version expectedIncidentRevision;\n    std::string operatorLabel;\n    bool matchesPlan(const RepairPlan& plan) const;\n};",
+      "fields": [
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "PlanId planId;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "ApprovalDecision decision;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "UtcTime decisionTime;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "ApprovalId id;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "IncidentId incidentId;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "Version planRevision;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "Version expectedIncidentRevision;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "std::string operatorLabel;"
+        }
+      ],
+      "methods": [
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "bool matchesPlan(const RepairPlan& plan) const;"
+        }
+      ],
+      "owner": "Usama Shmasneh",
+      "group": "Approval and audit",
+      "status": "P2 proposed, not approved"
+    },
+    {
+      "name": "Incident",
+      "kind": "struct",
+      "bases": "",
+      "body": "IncidentId id;\n    IncidentStatus status;\n    CauseState causeState;\n    Version revision;\n    Version currentPlanRevision;\n    UtcTime detectedAt;\n    std::optional<UtcTime> finishedAt;\n    std::string summary;\n    std::vector<Evidence> evidence;\n    std::vector<RepairPlan> plans;\n    std::vector<Approval> approvals;\n    Status attachEvidence(const Evidence& value);\n",
+      "declaration": "struct Incident {\nIncidentId id;\n    IncidentStatus status;\n    CauseState causeState;\n    Version revision;\n    Version currentPlanRevision;\n    UtcTime detectedAt;\n    std::optional<UtcTime> finishedAt;\n    std::string summary;\n    std::vector<Evidence> evidence;\n    std::vector<RepairPlan> plans;\n    std::vector<Approval> approvals;\n    Status attachEvidence(const Evidence& value);\n};",
+      "fields": [
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "IncidentId id;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "IncidentStatus status;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "CauseState causeState;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "Version revision;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "Version currentPlanRevision;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "UtcTime detectedAt;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "std::optional<UtcTime> finishedAt;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "std::string summary;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "std::vector<Evidence> evidence;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "std::vector<RepairPlan> plans;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "std::vector<Approval> approvals;"
+        }
+      ],
+      "methods": [
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "Status attachEvidence(const Evidence& value);"
+        }
+      ],
+      "owner": "Usama Shmasneh",
+      "group": "Core",
+      "status": "P2 proposed, not approved"
+    },
+    {
+      "name": "DiagnosticLimits",
+      "kind": "struct",
+      "bases": "",
+      "body": "std::size_t maxObservationReads;\n    std::size_t maxEvidenceItems;\n    std::size_t maxTextBytes;\n    std::chrono::milliseconds overallTimeout;\n",
+      "declaration": "struct DiagnosticLimits {\nstd::size_t maxObservationReads;\n    std::size_t maxEvidenceItems;\n    std::size_t maxTextBytes;\n    std::chrono::milliseconds overallTimeout;\n};",
+      "fields": [
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "std::size_t maxObservationReads;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "std::size_t maxEvidenceItems;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "std::size_t maxTextBytes;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "std::chrono::milliseconds overallTimeout;"
+        }
+      ],
+      "methods": [],
+      "owner": "Shehab Shehab",
+      "group": "AI values",
+      "status": "P2 proposed, not approved"
+    },
+    {
+      "name": "DiagnosisDraft",
+      "kind": "struct",
+      "bases": "",
+      "body": "CauseState causeState;\n    std::string explanation;\n    std::vector<EvidenceId> evidenceRefs;\n    std::optional<ActionId> proposedAction;\n    std::optional<ActionArguments> proposedArguments;\n",
+      "declaration": "struct DiagnosisDraft {\nCauseState causeState;\n    std::string explanation;\n    std::vector<EvidenceId> evidenceRefs;\n    std::optional<ActionId> proposedAction;\n    std::optional<ActionArguments> proposedArguments;\n};",
+      "fields": [
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "CauseState causeState;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "std::string explanation;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "std::vector<EvidenceId> evidenceRefs;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "std::optional<ActionId> proposedAction;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "std::optional<ActionArguments> proposedArguments;"
+        }
+      ],
+      "methods": [],
+      "owner": "Shehab Shehab",
+      "group": "AI values",
+      "status": "P2 proposed, not approved"
+    },
+    {
+      "name": "DiagnosisContext",
+      "kind": "struct",
+      "bases": "",
+      "body": "PlanId proposedPlanId;\n    Version proposedPlanRevision;\n    UtcTime now;\n    UtcTime planExpiresAt;\n    Deadline deadline;\n",
+      "declaration": "struct DiagnosisContext {\nPlanId proposedPlanId;\n    Version proposedPlanRevision;\n    UtcTime now;\n    UtcTime planExpiresAt;\n    Deadline deadline;\n};",
+      "fields": [
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "PlanId proposedPlanId;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "Version proposedPlanRevision;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "UtcTime now;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "UtcTime planExpiresAt;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "Deadline deadline;"
+        }
+      ],
+      "methods": [],
+      "owner": "Shehab Shehab",
+      "group": "Diagnosis values",
+      "status": "P2 proposed, not approved"
+    },
+    {
+      "name": "RuleAudit",
+      "kind": "struct",
+      "bases": "",
+      "body": "    std::string rulesetVersion;\n    std::optional<std::string> matchedRuleId;\n    std::vector<EvidenceId> evidenceRefs;\n    UtcTime evaluatedAt;\n    std::string outcomeSummary;\n",
+      "declaration": "struct RuleAudit {\n    std::string rulesetVersion;\n    std::optional<std::string> matchedRuleId;\n    std::vector<EvidenceId> evidenceRefs;\n    UtcTime evaluatedAt;\n    std::string outcomeSummary;\n};",
+      "fields": [
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "std::string rulesetVersion;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "std::optional<std::string> matchedRuleId;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "std::vector<EvidenceId> evidenceRefs;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "UtcTime evaluatedAt;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "std::string outcomeSummary;"
+        }
+      ],
+      "methods": [],
+      "owner": "Usama; subject to review",
+      "group": "P2 process ownership and rule audit",
+      "status": "P2 proposed, not approved"
+    },
+    {
+      "name": "DiagnosisResult",
+      "kind": "struct",
+      "bases": "",
+      "body": "CauseState causeState;\n    std::string explanation;\n    std::optional<RepairPlan> plan;\n    std::vector<Evidence> collectedEvidence;\n    RuleAudit ruleAudit;\n    std::optional<Error> failure;\n",
+      "declaration": "struct DiagnosisResult {\nCauseState causeState;\n    std::string explanation;\n    std::optional<RepairPlan> plan;\n    std::vector<Evidence> collectedEvidence;\n    RuleAudit ruleAudit;\n    std::optional<Error> failure;\n};",
+      "fields": [
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "CauseState causeState;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "std::string explanation;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "std::optional<RepairPlan> plan;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "std::vector<Evidence> collectedEvidence;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "RuleAudit ruleAudit;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "std::optional<Error> failure;"
+        }
+      ],
+      "methods": [],
+      "owner": "Shehab Shehab",
+      "group": "Diagnosis values",
+      "status": "P2 proposed, not approved"
+    },
+    {
+      "name": "RepairAttempt",
+      "kind": "struct",
+      "bases": "",
+      "body": "AttemptId id;\n    IncidentId incidentId;\n    PlanId planId;\n    Version planRevision;\n    ApprovalId approvalId;\n    AttemptStatus status;\n    UtcTime preparedAt;\n    UtcTime expiresAt;\n    std::optional<UtcTime> dispatchClaimedAt;\n",
+      "declaration": "struct RepairAttempt {\nAttemptId id;\n    IncidentId incidentId;\n    PlanId planId;\n    Version planRevision;\n    ApprovalId approvalId;\n    AttemptStatus status;\n    UtcTime preparedAt;\n    UtcTime expiresAt;\n    std::optional<UtcTime> dispatchClaimedAt;\n};",
+      "fields": [
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "AttemptId id;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "IncidentId incidentId;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "PlanId planId;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "Version planRevision;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "ApprovalId approvalId;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "AttemptStatus status;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "UtcTime preparedAt;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "UtcTime expiresAt;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "std::optional<UtcTime> dispatchClaimedAt;"
+        }
+      ],
+      "methods": [],
+      "owner": "Usama Shmasneh",
+      "group": "Dispatch values",
+      "status": "P2 proposed, not approved"
+    },
+    {
+      "name": "DispatchReceipt",
+      "kind": "struct",
+      "bases": "",
+      "body": "AttemptId attemptId;\n    IncidentId incidentId;\n    Version recordVersion;\n    UtcTime claimedAt;\n",
+      "declaration": "struct DispatchReceipt {\nAttemptId attemptId;\n    IncidentId incidentId;\n    Version recordVersion;\n    UtcTime claimedAt;\n};",
+      "fields": [
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "AttemptId attemptId;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "IncidentId incidentId;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "Version recordVersion;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "UtcTime claimedAt;"
+        }
+      ],
+      "methods": [],
+      "owner": "Usama Shmasneh",
+      "group": "Dispatch values",
+      "status": "P2 proposed, not approved"
+    },
+    {
+      "name": "ExecutionResult",
+      "kind": "struct",
+      "bases": "",
+      "body": "AttemptId attemptId;\n    ExecutionOutcome outcome;\n    std::optional<Error> failure;\n    std::vector<Evidence> evidence;\n    std::optional<BookingRepairReceipt> bookingReceipt;\n    UtcTime finishedAt;\n",
+      "declaration": "struct ExecutionResult {\nAttemptId attemptId;\n    ExecutionOutcome outcome;\n    std::optional<Error> failure;\n    std::vector<Evidence> evidence;\n    std::optional<BookingRepairReceipt> bookingReceipt;\n    UtcTime finishedAt;\n};",
+      "fields": [
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "AttemptId attemptId;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "ExecutionOutcome outcome;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "std::optional<Error> failure;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "std::vector<Evidence> evidence;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "std::optional<BookingRepairReceipt> bookingReceipt;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "UtcTime finishedAt;"
+        }
+      ],
+      "methods": [],
+      "owner": "Yazan Ganem",
+      "group": "Repair values",
+      "status": "P2 proposed, not approved"
+    },
+    {
+      "name": "VerificationResult",
+      "kind": "struct",
+      "bases": "",
+      "body": "CheckId checkId;\n    bool passed;\n    EvidenceId evidenceRef;\n    CheckOutcome outcome;\n    std::string detail;\n    UtcTime checkedAt;\n",
+      "declaration": "struct VerificationResult {\nCheckId checkId;\n    bool passed;\n    EvidenceId evidenceRef;\n    CheckOutcome outcome;\n    std::string detail;\n    UtcTime checkedAt;\n};",
+      "fields": [
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "CheckId checkId;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "bool passed;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "EvidenceId evidenceRef;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "CheckOutcome outcome;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "std::string detail;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "UtcTime checkedAt;"
+        }
+      ],
+      "methods": [],
+      "owner": "Yazan Ganem",
+      "group": "Verification",
+      "status": "P2 proposed, not approved"
+    },
+    {
+      "name": "VerificationContext",
+      "kind": "struct",
+      "bases": "",
+      "body": "IncidentId incidentId;\n    AttemptId attemptId;\n    RepairPlan approvedPlan;\n    BookingSnapshot baseline;\n    Deadline deadline;\n",
+      "declaration": "struct VerificationContext {\nIncidentId incidentId;\n    AttemptId attemptId;\n    RepairPlan approvedPlan;\n    BookingSnapshot baseline;\n    Deadline deadline;\n};",
+      "fields": [
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "IncidentId incidentId;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "AttemptId attemptId;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "RepairPlan approvedPlan;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "BookingSnapshot baseline;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "Deadline deadline;"
+        }
+      ],
+      "methods": [],
+      "owner": "Yazan Ganem",
+      "group": "Verification values",
+      "status": "P2 proposed, not approved"
+    },
+    {
+      "name": "VerificationBatch",
+      "kind": "struct",
+      "bases": "",
+      "body": "IncidentId incidentId;\n    AttemptId attemptId;\n    std::vector<VerificationResult> results;\n    std::vector<Evidence> evidence;\n    std::vector<BookingId> createdProbeIds;\n",
+      "declaration": "struct VerificationBatch {\nIncidentId incidentId;\n    AttemptId attemptId;\n    std::vector<VerificationResult> results;\n    std::vector<Evidence> evidence;\n    std::vector<BookingId> createdProbeIds;\n};",
+      "fields": [
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "IncidentId incidentId;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "AttemptId attemptId;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "std::vector<VerificationResult> results;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "std::vector<Evidence> evidence;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "std::vector<BookingId> createdProbeIds;"
+        }
+      ],
+      "methods": [],
+      "owner": "Yazan Ganem",
+      "group": "Verification values",
+      "status": "P2 proposed, not approved"
+    },
+    {
+      "name": "IncidentRecord",
+      "kind": "struct",
+      "bases": "",
+      "body": "Version recordVersion;\n    Incident incident;\n    std::vector<RepairAttempt> attempts;\n    std::vector<ExecutionResult> executions;\n    std::vector<VerificationResult> verificationResults;\n    std::vector<EventId> acceptedEventIds;\n    std::vector<RuleAudit> ruleEvaluations;\n    std::vector<Error> failures;\n",
+      "declaration": "struct IncidentRecord {\nVersion recordVersion;\n    Incident incident;\n    std::vector<RepairAttempt> attempts;\n    std::vector<ExecutionResult> executions;\n    std::vector<VerificationResult> verificationResults;\n    std::vector<EventId> acceptedEventIds;\n    std::vector<RuleAudit> ruleEvaluations;\n    std::vector<Error> failures;\n};",
+      "fields": [
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "Version recordVersion;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "Incident incident;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "std::vector<RepairAttempt> attempts;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "std::vector<ExecutionResult> executions;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "std::vector<VerificationResult> verificationResults;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "std::vector<EventId> acceptedEventIds;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "std::vector<RuleAudit> ruleEvaluations;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "std::vector<Error> failures;"
+        }
+      ],
+      "methods": [],
+      "owner": "Usama Shmasneh",
+      "group": "Persistence values",
+      "status": "P2 proposed, not approved"
+    },
+    {
+      "name": "SaveReceipt",
+      "kind": "struct",
+      "bases": "",
+      "body": "IncidentId incidentId;\n    Version recordVersion;\n    UtcTime committedAt;\n",
+      "declaration": "struct SaveReceipt {\nIncidentId incidentId;\n    Version recordVersion;\n    UtcTime committedAt;\n};",
+      "fields": [
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "IncidentId incidentId;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "Version recordVersion;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "UtcTime committedAt;"
+        }
+      ],
+      "methods": [],
+      "owner": "Usama Shmasneh",
+      "group": "Persistence values",
+      "status": "P2 proposed, not approved"
+    },
+    {
+      "name": "TimeoutNotice",
+      "kind": "struct",
+      "bases": "",
+      "body": "TimeoutStage stage;\n    std::optional<AttemptId> attemptId;\n",
+      "declaration": "struct TimeoutNotice {\nTimeoutStage stage;\n    std::optional<AttemptId> attemptId;\n};",
+      "fields": [
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "TimeoutStage stage;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "std::optional<AttemptId> attemptId;"
+        }
+      ],
+      "methods": [],
+      "owner": "Usama Shmasneh",
+      "group": "Event values",
+      "status": "P2 proposed, not approved"
+    },
+    {
+      "name": "BeginDiagnosisNotice",
+      "kind": "struct",
+      "bases": "",
+      "body": "UtcTime requestedAt;\n",
+      "declaration": "struct BeginDiagnosisNotice {\nUtcTime requestedAt;\n};",
+      "fields": [
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "UtcTime requestedAt;"
+        }
+      ],
+      "methods": [],
+      "owner": "Usama Shmasneh",
+      "group": "Event values",
+      "status": "P2 proposed, not approved"
+    },
+    {
+      "name": "DetectionNotice",
+      "kind": "struct",
+      "bases": "",
+      "body": "std::vector<Evidence> evidence;\n",
+      "declaration": "struct DetectionNotice {\nstd::vector<Evidence> evidence;\n};",
+      "fields": [
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "std::vector<Evidence> evidence;"
+        }
+      ],
+      "methods": [],
+      "owner": "Ameen Abd Allader",
+      "group": "Event values",
+      "status": "P2 proposed, not approved"
+    },
+    {
+      "name": "ReconciliationNotice",
+      "kind": "struct",
+      "bases": "",
+      "body": "std::vector<Evidence> evidence;\n    std::optional<BookingRepairReceipt> bookingReceipt;\n    std::string reason;\n",
+      "declaration": "struct ReconciliationNotice {\nstd::vector<Evidence> evidence;\n    std::optional<BookingRepairReceipt> bookingReceipt;\n    std::string reason;\n};",
+      "fields": [
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "std::vector<Evidence> evidence;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "std::optional<BookingRepairReceipt> bookingReceipt;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "std::string reason;"
+        }
+      ],
+      "methods": [],
+      "owner": "Usama Shmasneh",
+      "group": "Event values",
+      "status": "P2 proposed, not approved"
+    },
+    {
+      "name": "IncidentEvent",
+      "kind": "struct",
+      "bases": "",
+      "body": "EventId id;\n    IncidentId incidentId;\n    Version expectedIncidentRevision;\n    Version expectedPlanRevision;\n    UtcTime observedAt;\n    EventPayload payload;\n",
+      "declaration": "struct IncidentEvent {\nEventId id;\n    IncidentId incidentId;\n    Version expectedIncidentRevision;\n    Version expectedPlanRevision;\n    UtcTime observedAt;\n    EventPayload payload;\n};",
+      "fields": [
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "EventId id;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "IncidentId incidentId;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "Version expectedIncidentRevision;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "Version expectedPlanRevision;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "UtcTime observedAt;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "EventPayload payload;"
+        }
+      ],
+      "methods": [],
+      "owner": "Usama Shmasneh",
+      "group": "Events",
+      "status": "P2 proposed, not approved"
+    },
+    {
+      "name": "Transition",
+      "kind": "struct",
+      "bases": "",
+      "body": "IncidentStatus from;\n    IncidentStatus to;\n    Version fromRevision;\n    Version toRevision;\n    std::string reason;\n",
+      "declaration": "struct Transition {\nIncidentStatus from;\n    IncidentStatus to;\n    Version fromRevision;\n    Version toRevision;\n    std::string reason;\n};",
+      "fields": [
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "IncidentStatus from;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "IncidentStatus to;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "Version fromRevision;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "Version toRevision;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "std::string reason;"
+        }
+      ],
+      "methods": [],
+      "owner": "Usama Shmasneh",
+      "group": "Events",
+      "status": "P2 proposed, not approved"
+    },
+    {
+      "name": "EventOutcome",
+      "kind": "struct",
+      "bases": "",
+      "body": "EventDisposition disposition;\n    IncidentStatus status;\n    Version incidentRevision;\n    Version recordVersion;\n    std::optional<Error> failure;\n",
+      "declaration": "struct EventOutcome {\nEventDisposition disposition;\n    IncidentStatus status;\n    Version incidentRevision;\n    Version recordVersion;\n    std::optional<Error> failure;\n};",
+      "fields": [
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "EventDisposition disposition;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "IncidentStatus status;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "Version incidentRevision;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "Version recordVersion;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "std::optional<Error> failure;"
+        }
+      ],
+      "methods": [],
+      "owner": "Usama Shmasneh",
+      "group": "Events",
+      "status": "P2 proposed, not approved"
+    },
+    {
+      "name": "OperatorView",
+      "kind": "struct",
+      "bases": "",
+      "body": "IncidentRecord record;\n    bool durable;\n    bool repairsBlocked;\n    std::optional<Error> visibleFailure;\n",
+      "declaration": "struct OperatorView {\nIncidentRecord record;\n    bool durable;\n    bool repairsBlocked;\n    std::optional<Error> visibleFailure;\n};",
+      "fields": [
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "IncidentRecord record;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "bool durable;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "bool repairsBlocked;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "std::optional<Error> visibleFailure;"
+        }
+      ],
+      "methods": [],
+      "owner": "Shehab Shehab",
+      "group": "Operator interface",
+      "status": "P2 proposed, not approved"
+    },
+    {
+      "name": "SqliteConfiguration",
+      "kind": "struct",
+      "bases": "",
+      "body": "std::string databasePath;\n    std::chrono::milliseconds busyTimeout;\n",
+      "declaration": "struct SqliteConfiguration {\nstd::string databasePath;\n    std::chrono::milliseconds busyTimeout;\n};",
+      "fields": [
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "std::string databasePath;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "std::chrono::milliseconds busyTimeout;"
+        }
+      ],
+      "methods": [],
+      "owner": "Usama Shmasneh",
+      "group": "Storage configuration",
+      "status": "P2 proposed, not approved"
+    },
+    {
+      "name": "DemoConfiguration",
+      "kind": "struct",
+      "bases": "",
+      "body": "std::string executablePath;\n    std::vector<std::string> fixedArguments;\n    std::string loopbackBaseUrl;\n    SessionId controllerSessionId;\n    std::chrono::milliseconds operationTimeout;\n",
+      "declaration": "struct DemoConfiguration {\nstd::string executablePath;\n    std::vector<std::string> fixedArguments;\n    std::string loopbackBaseUrl;\n    SessionId controllerSessionId;\n    std::chrono::milliseconds operationTimeout;\n};",
+      "fields": [
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "std::string executablePath;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "std::vector<std::string> fixedArguments;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "std::string loopbackBaseUrl;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "SessionId controllerSessionId;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "std::chrono::milliseconds operationTimeout;"
+        }
+      ],
+      "methods": [],
+      "owner": "Usama Shmasneh",
+      "group": "Target configuration",
+      "status": "P2 proposed, not approved"
+    },
+    {
+      "name": "BookingRepository",
+      "kind": "class",
+      "bases": "",
+      "body": "public:\n    virtual ~BookingRepository();\n    virtual Result<BookingSnapshot> snapshot() const = 0;\n    virtual Result<Booking> createBooking(const BookingRequest& request, UtcTime now) = 0;\n    virtual Result<Booking> cancelBooking(const BookingId& id, Version expectedVersion, BookingStatus status, const std::string& reason, UtcTime now) = 0;\n    virtual Result<BookingRepairReceipt> restoreInvariant(const RestoreInvariantArgs& arguments, const AttemptId& attemptId, UtcTime now) = 0;\n    virtual Result<std::optional<BookingRepairReceipt>> loadRepairReceipt(const AttemptId& attemptId) const = 0;\n",
+      "declaration": "class BookingRepository {\npublic:\n    virtual ~BookingRepository();\n    virtual Result<BookingSnapshot> snapshot() const = 0;\n    virtual Result<Booking> createBooking(const BookingRequest& request, UtcTime now) = 0;\n    virtual Result<Booking> cancelBooking(const BookingId& id, Version expectedVersion, BookingStatus status, const std::string& reason, UtcTime now) = 0;\n    virtual Result<BookingRepairReceipt> restoreInvariant(const RestoreInvariantArgs& arguments, const AttemptId& attemptId, UtcTime now) = 0;\n    virtual Result<std::optional<BookingRepairReceipt>> loadRepairReceipt(const AttemptId& attemptId) const = 0;\n};",
+      "fields": [],
+      "methods": [
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "virtual ~BookingRepository();"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "virtual Result<BookingSnapshot> snapshot() const = 0;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "virtual Result<Booking> createBooking(const BookingRequest& request, UtcTime now) = 0;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "virtual Result<Booking> cancelBooking(const BookingId& id, Version expectedVersion, BookingStatus status, const std::string& reason, UtcTime now) = 0;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "virtual Result<BookingRepairReceipt> restoreInvariant(const RestoreInvariantArgs& arguments, const AttemptId& attemptId, UtcTime now) = 0;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "virtual Result<std::optional<BookingRepairReceipt>> loadRepairReceipt(const AttemptId& attemptId) const = 0;"
+        }
+      ],
+      "owner": "Usama Shmasneh",
+      "group": "Storage contracts",
+      "status": "P2 proposed, not approved"
+    },
+    {
+      "name": "SqliteBookingRepository",
+      "kind": "class",
+      "bases": ": public BookingRepository",
+      "body": "public:\n    explicit SqliteBookingRepository(const SqliteConfiguration& configuration);\n    ~SqliteBookingRepository() override;\n    SqliteBookingRepository(const SqliteBookingRepository&) = delete;\n    SqliteBookingRepository& operator=(const SqliteBookingRepository&) = delete;\n    Result<BookingSnapshot> snapshot() const override;\n    Result<Booking> createBooking(const BookingRequest& request, UtcTime now) override;\n    Result<Booking> cancelBooking(const BookingId& id, Version expectedVersion, BookingStatus status, const std::string& reason, UtcTime now) override;\n    Result<BookingRepairReceipt> restoreInvariant(const RestoreInvariantArgs& arguments, const AttemptId& attemptId, UtcTime now) override;\n    Result<std::optional<BookingRepairReceipt>> loadRepairReceipt(const AttemptId& attemptId) const override;\nprivate:\n    SqliteConfiguration configuration_;\n    sqlite3* database_;\n    mutable std::mutex mutex_;\n",
+      "declaration": "class SqliteBookingRepository : public BookingRepository {\npublic:\n    explicit SqliteBookingRepository(const SqliteConfiguration& configuration);\n    ~SqliteBookingRepository() override;\n    SqliteBookingRepository(const SqliteBookingRepository&) = delete;\n    SqliteBookingRepository& operator=(const SqliteBookingRepository&) = delete;\n    Result<BookingSnapshot> snapshot() const override;\n    Result<Booking> createBooking(const BookingRequest& request, UtcTime now) override;\n    Result<Booking> cancelBooking(const BookingId& id, Version expectedVersion, BookingStatus status, const std::string& reason, UtcTime now) override;\n    Result<BookingRepairReceipt> restoreInvariant(const RestoreInvariantArgs& arguments, const AttemptId& attemptId, UtcTime now) override;\n    Result<std::optional<BookingRepairReceipt>> loadRepairReceipt(const AttemptId& attemptId) const override;\nprivate:\n    SqliteConfiguration configuration_;\n    sqlite3* database_;\n    mutable std::mutex mutex_;\n};",
+      "fields": [
+        {
+          "visibility": "private",
+          "uml_visibility": "-",
+          "declaration": "SqliteConfiguration configuration_;"
+        },
+        {
+          "visibility": "private",
+          "uml_visibility": "-",
+          "declaration": "sqlite3* database_;"
+        },
+        {
+          "visibility": "private",
+          "uml_visibility": "-",
+          "declaration": "mutable std::mutex mutex_;"
+        }
+      ],
+      "methods": [
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "explicit SqliteBookingRepository(const SqliteConfiguration& configuration);"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "~SqliteBookingRepository() override;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "SqliteBookingRepository(const SqliteBookingRepository&) = delete;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "SqliteBookingRepository& operator=(const SqliteBookingRepository&) = delete;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "Result<BookingSnapshot> snapshot() const override;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "Result<Booking> createBooking(const BookingRequest& request, UtcTime now) override;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "Result<Booking> cancelBooking(const BookingId& id, Version expectedVersion, BookingStatus status, const std::string& reason, UtcTime now) override;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "Result<BookingRepairReceipt> restoreInvariant(const RestoreInvariantArgs& arguments, const AttemptId& attemptId, UtcTime now) override;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "Result<std::optional<BookingRepairReceipt>> loadRepairReceipt(const AttemptId& attemptId) const override;"
+        }
+      ],
+      "owner": "Usama Shmasneh",
+      "group": "SQLite adapters",
+      "status": "P2 proposed, not approved"
+    },
+    {
+      "name": "BookingService",
+      "kind": "class",
+      "bases": "",
+      "body": "public:\n    BookingService(BookingRepository& repository, Now now);\n    Result<Booking> createBooking(const BookingRequest& request);\n    Result<Booking> cancelBooking(const BookingId& id, Version expectedVersion);\n    Result<BookingSnapshot> listBookings() const;\n    static Status validate(const BookingRequest& request);\n    static bool overlaps(const TimeRange& first, const TimeRange& second);\nprivate:\n    BookingRepository& repository_;\n    Now now_;\n",
+      "declaration": "class BookingService {\npublic:\n    BookingService(BookingRepository& repository, Now now);\n    Result<Booking> createBooking(const BookingRequest& request);\n    Result<Booking> cancelBooking(const BookingId& id, Version expectedVersion);\n    Result<BookingSnapshot> listBookings() const;\n    static Status validate(const BookingRequest& request);\n    static bool overlaps(const TimeRange& first, const TimeRange& second);\nprivate:\n    BookingRepository& repository_;\n    Now now_;\n};",
+      "fields": [
+        {
+          "visibility": "private",
+          "uml_visibility": "-",
+          "declaration": "BookingRepository& repository_;"
+        },
+        {
+          "visibility": "private",
+          "uml_visibility": "-",
+          "declaration": "Now now_;"
+        }
+      ],
+      "methods": [
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "BookingService(BookingRepository& repository, Now now);"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "Result<Booking> createBooking(const BookingRequest& request);"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "Result<Booking> cancelBooking(const BookingId& id, Version expectedVersion);"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "Result<BookingSnapshot> listBookings() const;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "static Status validate(const BookingRequest& request);"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "static bool overlaps(const TimeRange& first, const TimeRange& second);"
+        }
+      ],
+      "owner": "Samy mansour",
+      "group": "Booking",
+      "status": "P2 proposed, not approved"
+    },
+    {
+      "name": "IncidentRepository",
+      "kind": "class",
+      "bases": "",
+      "body": "public:\n    virtual ~IncidentRepository();\n    virtual Result<SaveReceipt> saveRecord(const IncidentRecord& record, Version expectedRecordVersion) = 0;\n    virtual Result<IncidentRecord> loadRecord(const IncidentId& id) const = 0;\n    virtual Result<std::vector<IncidentRecord>> loadPendingRecords() const = 0;\n    virtual Result<DispatchReceipt> claimDispatch(const IncidentId& incidentId, const AttemptId& attemptId, Version expectedRecordVersion, UtcTime now) = 0;\n",
+      "declaration": "class IncidentRepository {\npublic:\n    virtual ~IncidentRepository();\n    virtual Result<SaveReceipt> saveRecord(const IncidentRecord& record, Version expectedRecordVersion) = 0;\n    virtual Result<IncidentRecord> loadRecord(const IncidentId& id) const = 0;\n    virtual Result<std::vector<IncidentRecord>> loadPendingRecords() const = 0;\n    virtual Result<DispatchReceipt> claimDispatch(const IncidentId& incidentId, const AttemptId& attemptId, Version expectedRecordVersion, UtcTime now) = 0;\n};",
+      "fields": [],
+      "methods": [
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "virtual ~IncidentRepository();"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "virtual Result<SaveReceipt> saveRecord(const IncidentRecord& record, Version expectedRecordVersion) = 0;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "virtual Result<IncidentRecord> loadRecord(const IncidentId& id) const = 0;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "virtual Result<std::vector<IncidentRecord>> loadPendingRecords() const = 0;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "virtual Result<DispatchReceipt> claimDispatch(const IncidentId& incidentId, const AttemptId& attemptId, Version expectedRecordVersion, UtcTime now) = 0;"
+        }
+      ],
+      "owner": "Usama Shmasneh",
+      "group": "Storage contracts",
+      "status": "P2 proposed, not approved"
+    },
+    {
+      "name": "SqliteIncidentRepository",
+      "kind": "class",
+      "bases": ": public IncidentRepository",
+      "body": "public:\n    explicit SqliteIncidentRepository(const SqliteConfiguration& configuration);\n    ~SqliteIncidentRepository() override;\n    SqliteIncidentRepository(const SqliteIncidentRepository&) = delete;\n    SqliteIncidentRepository& operator=(const SqliteIncidentRepository&) = delete;\n    Result<SaveReceipt> saveRecord(const IncidentRecord& record, Version expectedRecordVersion) override;\n    Result<IncidentRecord> loadRecord(const IncidentId& id) const override;\n    Result<std::vector<IncidentRecord>> loadPendingRecords() const override;\n    Result<DispatchReceipt> claimDispatch(const IncidentId& incidentId, const AttemptId& attemptId, Version expectedRecordVersion, UtcTime now) override;\nprivate:\n    SqliteConfiguration configuration_;\n    sqlite3* database_;\n    mutable std::mutex mutex_;\n",
+      "declaration": "class SqliteIncidentRepository : public IncidentRepository {\npublic:\n    explicit SqliteIncidentRepository(const SqliteConfiguration& configuration);\n    ~SqliteIncidentRepository() override;\n    SqliteIncidentRepository(const SqliteIncidentRepository&) = delete;\n    SqliteIncidentRepository& operator=(const SqliteIncidentRepository&) = delete;\n    Result<SaveReceipt> saveRecord(const IncidentRecord& record, Version expectedRecordVersion) override;\n    Result<IncidentRecord> loadRecord(const IncidentId& id) const override;\n    Result<std::vector<IncidentRecord>> loadPendingRecords() const override;\n    Result<DispatchReceipt> claimDispatch(const IncidentId& incidentId, const AttemptId& attemptId, Version expectedRecordVersion, UtcTime now) override;\nprivate:\n    SqliteConfiguration configuration_;\n    sqlite3* database_;\n    mutable std::mutex mutex_;\n};",
+      "fields": [
+        {
+          "visibility": "private",
+          "uml_visibility": "-",
+          "declaration": "SqliteConfiguration configuration_;"
+        },
+        {
+          "visibility": "private",
+          "uml_visibility": "-",
+          "declaration": "sqlite3* database_;"
+        },
+        {
+          "visibility": "private",
+          "uml_visibility": "-",
+          "declaration": "mutable std::mutex mutex_;"
+        }
+      ],
+      "methods": [
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "explicit SqliteIncidentRepository(const SqliteConfiguration& configuration);"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "~SqliteIncidentRepository() override;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "SqliteIncidentRepository(const SqliteIncidentRepository&) = delete;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "SqliteIncidentRepository& operator=(const SqliteIncidentRepository&) = delete;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "Result<SaveReceipt> saveRecord(const IncidentRecord& record, Version expectedRecordVersion) override;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "Result<IncidentRecord> loadRecord(const IncidentId& id) const override;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "Result<std::vector<IncidentRecord>> loadPendingRecords() const override;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "Result<DispatchReceipt> claimDispatch(const IncidentId& incidentId, const AttemptId& attemptId, Version expectedRecordVersion, UtcTime now) override;"
+        }
+      ],
+      "owner": "Usama Shmasneh",
+      "group": "SQLite adapters",
+      "status": "P2 proposed, not approved"
+    },
+    {
+      "name": "DemoTargetAdapter",
+      "kind": "class",
+      "bases": "",
+      "body": "public:\n    virtual ~DemoTargetAdapter();\n    virtual Result<std::vector<Evidence>> readHealthAndEvidence(Deadline deadline) const = 0;\n    virtual ExecutionResult applyRegisteredAction(const RepairPlan& plan, const DispatchReceipt& dispatch, Deadline deadline) = 0;\n    virtual Result<Booking> submitVerificationBooking(const BookingRequest& request, Deadline deadline) = 0;\n    virtual Result<Booking> cancelVerificationBooking(const BookingId& id, Version expectedVersion, Deadline deadline) = 0;\n    virtual Result<ReconciliationNotice> readExecutionEvidence(const AttemptId& attemptId, Deadline deadline) const = 0;\n    virtual Status stopForControlledChallenge(Deadline deadline) = 0;\n",
+      "declaration": "class DemoTargetAdapter {\npublic:\n    virtual ~DemoTargetAdapter();\n    virtual Result<std::vector<Evidence>> readHealthAndEvidence(Deadline deadline) const = 0;\n    virtual ExecutionResult applyRegisteredAction(const RepairPlan& plan, const DispatchReceipt& dispatch, Deadline deadline) = 0;\n    virtual Result<Booking> submitVerificationBooking(const BookingRequest& request, Deadline deadline) = 0;\n    virtual Result<Booking> cancelVerificationBooking(const BookingId& id, Version expectedVersion, Deadline deadline) = 0;\n    virtual Result<ReconciliationNotice> readExecutionEvidence(const AttemptId& attemptId, Deadline deadline) const = 0;\n    virtual Status stopForControlledChallenge(Deadline deadline) = 0;\n};",
+      "fields": [],
+      "methods": [
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "virtual ~DemoTargetAdapter();"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "virtual Result<std::vector<Evidence>> readHealthAndEvidence(Deadline deadline) const = 0;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "virtual ExecutionResult applyRegisteredAction(const RepairPlan& plan, const DispatchReceipt& dispatch, Deadline deadline) = 0;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "virtual Result<Booking> submitVerificationBooking(const BookingRequest& request, Deadline deadline) = 0;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "virtual Result<Booking> cancelVerificationBooking(const BookingId& id, Version expectedVersion, Deadline deadline) = 0;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "virtual Result<ReconciliationNotice> readExecutionEvidence(const AttemptId& attemptId, Deadline deadline) const = 0;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "virtual Status stopForControlledChallenge(Deadline deadline) = 0;"
+        }
+      ],
+      "owner": "Usama Shmasneh",
+      "group": "Target contracts",
+      "status": "P2 proposed, not approved"
+    },
+    {
+      "name": "OwnedDemoProcess",
+      "kind": "class",
+      "bases": "",
+      "body": "public:\n    virtual ~OwnedDemoProcess();\n    virtual const DemoConfiguration& configuration() const = 0;\n    virtual Status start(Deadline deadline) = 0;\n    virtual Result<ProcessStatus> observe(Deadline deadline) const = 0;\n    virtual Status stop(Deadline deadline) = 0;\n",
+      "declaration": "class OwnedDemoProcess {\npublic:\n    virtual ~OwnedDemoProcess();\n    virtual const DemoConfiguration& configuration() const = 0;\n    virtual Status start(Deadline deadline) = 0;\n    virtual Result<ProcessStatus> observe(Deadline deadline) const = 0;\n    virtual Status stop(Deadline deadline) = 0;\n};",
+      "fields": [],
+      "methods": [
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "virtual ~OwnedDemoProcess();"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "virtual const DemoConfiguration& configuration() const = 0;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "virtual Status start(Deadline deadline) = 0;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "virtual Result<ProcessStatus> observe(Deadline deadline) const = 0;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "virtual Status stop(Deadline deadline) = 0;"
+        }
+      ],
+      "owner": "Usama; subject to review",
+      "group": "P2 process ownership and rule audit",
+      "status": "P2 proposed, not approved"
+    },
+    {
+      "name": "WindowsOwnedDemoProcess",
+      "kind": "class",
+      "bases": ": public OwnedDemoProcess",
+      "body": "public:\n    explicit WindowsOwnedDemoProcess(const DemoConfiguration& configuration);\n    ~WindowsOwnedDemoProcess() override;\n    WindowsOwnedDemoProcess(const WindowsOwnedDemoProcess&) = delete;\n    WindowsOwnedDemoProcess& operator=(const WindowsOwnedDemoProcess&) = delete;\n    const DemoConfiguration& configuration() const override;\n    Status start(Deadline deadline) override;\n    Result<ProcessStatus> observe(Deadline deadline) const override;\n    Status stop(Deadline deadline) override;\nprivate:\n    const DemoConfiguration configuration_;\n    void* processHandle_;\n    bool ownershipUncertain_;\n",
+      "declaration": "class WindowsOwnedDemoProcess : public OwnedDemoProcess {\npublic:\n    explicit WindowsOwnedDemoProcess(const DemoConfiguration& configuration);\n    ~WindowsOwnedDemoProcess() override;\n    WindowsOwnedDemoProcess(const WindowsOwnedDemoProcess&) = delete;\n    WindowsOwnedDemoProcess& operator=(const WindowsOwnedDemoProcess&) = delete;\n    const DemoConfiguration& configuration() const override;\n    Status start(Deadline deadline) override;\n    Result<ProcessStatus> observe(Deadline deadline) const override;\n    Status stop(Deadline deadline) override;\nprivate:\n    const DemoConfiguration configuration_;\n    void* processHandle_;\n    bool ownershipUncertain_;\n};",
+      "fields": [
+        {
+          "visibility": "private",
+          "uml_visibility": "-",
+          "declaration": "const DemoConfiguration configuration_;"
+        },
+        {
+          "visibility": "private",
+          "uml_visibility": "-",
+          "declaration": "void* processHandle_;"
+        },
+        {
+          "visibility": "private",
+          "uml_visibility": "-",
+          "declaration": "bool ownershipUncertain_;"
+        }
+      ],
+      "methods": [
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "explicit WindowsOwnedDemoProcess(const DemoConfiguration& configuration);"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "~WindowsOwnedDemoProcess() override;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "WindowsOwnedDemoProcess(const WindowsOwnedDemoProcess&) = delete;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "WindowsOwnedDemoProcess& operator=(const WindowsOwnedDemoProcess&) = delete;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "const DemoConfiguration& configuration() const override;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "Status start(Deadline deadline) override;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "Result<ProcessStatus> observe(Deadline deadline) const override;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "Status stop(Deadline deadline) override;"
+        }
+      ],
+      "owner": "Usama; subject to review",
+      "group": "P2 process ownership and rule audit",
+      "status": "P2 proposed, not approved"
+    },
+    {
+      "name": "MacOwnedDemoProcess",
+      "kind": "class",
+      "bases": ": public OwnedDemoProcess",
+      "body": "public:\n    explicit MacOwnedDemoProcess(const DemoConfiguration& configuration);\n    ~MacOwnedDemoProcess() override;\n    MacOwnedDemoProcess(const MacOwnedDemoProcess&) = delete;\n    MacOwnedDemoProcess& operator=(const MacOwnedDemoProcess&) = delete;\n    const DemoConfiguration& configuration() const override;\n    Status start(Deadline deadline) override;\n    Result<ProcessStatus> observe(Deadline deadline) const override;\n    Status stop(Deadline deadline) override;\nprivate:\n    const DemoConfiguration configuration_;\n    std::int64_t ownedChildPid_;\n    bool childReaped_;\n    bool ownershipUncertain_;\n",
+      "declaration": "class MacOwnedDemoProcess : public OwnedDemoProcess {\npublic:\n    explicit MacOwnedDemoProcess(const DemoConfiguration& configuration);\n    ~MacOwnedDemoProcess() override;\n    MacOwnedDemoProcess(const MacOwnedDemoProcess&) = delete;\n    MacOwnedDemoProcess& operator=(const MacOwnedDemoProcess&) = delete;\n    const DemoConfiguration& configuration() const override;\n    Status start(Deadline deadline) override;\n    Result<ProcessStatus> observe(Deadline deadline) const override;\n    Status stop(Deadline deadline) override;\nprivate:\n    const DemoConfiguration configuration_;\n    std::int64_t ownedChildPid_;\n    bool childReaped_;\n    bool ownershipUncertain_;\n};",
+      "fields": [
+        {
+          "visibility": "private",
+          "uml_visibility": "-",
+          "declaration": "const DemoConfiguration configuration_;"
+        },
+        {
+          "visibility": "private",
+          "uml_visibility": "-",
+          "declaration": "std::int64_t ownedChildPid_;"
+        },
+        {
+          "visibility": "private",
+          "uml_visibility": "-",
+          "declaration": "bool childReaped_;"
+        },
+        {
+          "visibility": "private",
+          "uml_visibility": "-",
+          "declaration": "bool ownershipUncertain_;"
+        }
+      ],
+      "methods": [
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "explicit MacOwnedDemoProcess(const DemoConfiguration& configuration);"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "~MacOwnedDemoProcess() override;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "MacOwnedDemoProcess(const MacOwnedDemoProcess&) = delete;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "MacOwnedDemoProcess& operator=(const MacOwnedDemoProcess&) = delete;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "const DemoConfiguration& configuration() const override;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "Status start(Deadline deadline) override;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "Result<ProcessStatus> observe(Deadline deadline) const override;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "Status stop(Deadline deadline) override;"
+        }
+      ],
+      "owner": "Usama; subject to review",
+      "group": "P2 process ownership and rule audit",
+      "status": "P2 proposed, not approved"
+    },
+    {
+      "name": "FixedDemoTargetAdapter",
+      "kind": "class",
+      "bases": ": public DemoTargetAdapter",
+      "body": "public:\n    FixedDemoTargetAdapter(const DemoConfiguration& configuration, OwnedDemoProcess& process, BookingRepository& bookingRepository, IncidentRepository& incidentRepository, Now now);\n    ~FixedDemoTargetAdapter() override;\n    FixedDemoTargetAdapter(const FixedDemoTargetAdapter&) = delete;\n    FixedDemoTargetAdapter& operator=(const FixedDemoTargetAdapter&) = delete;\n    Status startForSetup(Deadline deadline);\n    Result<std::vector<Evidence>> readHealthAndEvidence(Deadline deadline) const override;\n    ExecutionResult applyRegisteredAction(const RepairPlan& plan, const DispatchReceipt& dispatch, Deadline deadline) override;\n    Result<Booking> submitVerificationBooking(const BookingRequest& request, Deadline deadline) override;\n    Result<Booking> cancelVerificationBooking(const BookingId& id, Version expectedVersion, Deadline deadline) override;\n    Result<ReconciliationNotice> readExecutionEvidence(const AttemptId& attemptId, Deadline deadline) const override;\n    Status stopForControlledChallenge(Deadline deadline) override;\nprivate:\n    const DemoConfiguration configuration_;\n    BookingRepository& bookingRepository_;\n    IncidentRepository& incidentRepository_;\n    Now now_;\n    OwnedDemoProcess& process_;\n    ProcessGeneration generation_;\n    std::vector<AttemptId> consumedDispatches_;\n    mutable std::mutex mutex_;\n",
+      "declaration": "class FixedDemoTargetAdapter : public DemoTargetAdapter {\npublic:\n    FixedDemoTargetAdapter(const DemoConfiguration& configuration, OwnedDemoProcess& process, BookingRepository& bookingRepository, IncidentRepository& incidentRepository, Now now);\n    ~FixedDemoTargetAdapter() override;\n    FixedDemoTargetAdapter(const FixedDemoTargetAdapter&) = delete;\n    FixedDemoTargetAdapter& operator=(const FixedDemoTargetAdapter&) = delete;\n    Status startForSetup(Deadline deadline);\n    Result<std::vector<Evidence>> readHealthAndEvidence(Deadline deadline) const override;\n    ExecutionResult applyRegisteredAction(const RepairPlan& plan, const DispatchReceipt& dispatch, Deadline deadline) override;\n    Result<Booking> submitVerificationBooking(const BookingRequest& request, Deadline deadline) override;\n    Result<Booking> cancelVerificationBooking(const BookingId& id, Version expectedVersion, Deadline deadline) override;\n    Result<ReconciliationNotice> readExecutionEvidence(const AttemptId& attemptId, Deadline deadline) const override;\n    Status stopForControlledChallenge(Deadline deadline) override;\nprivate:\n    const DemoConfiguration configuration_;\n    BookingRepository& bookingRepository_;\n    IncidentRepository& incidentRepository_;\n    Now now_;\n    OwnedDemoProcess& process_;\n    ProcessGeneration generation_;\n    std::vector<AttemptId> consumedDispatches_;\n    mutable std::mutex mutex_;\n};",
+      "fields": [
+        {
+          "visibility": "private",
+          "uml_visibility": "-",
+          "declaration": "const DemoConfiguration configuration_;"
+        },
+        {
+          "visibility": "private",
+          "uml_visibility": "-",
+          "declaration": "BookingRepository& bookingRepository_;"
+        },
+        {
+          "visibility": "private",
+          "uml_visibility": "-",
+          "declaration": "IncidentRepository& incidentRepository_;"
+        },
+        {
+          "visibility": "private",
+          "uml_visibility": "-",
+          "declaration": "Now now_;"
+        },
+        {
+          "visibility": "private",
+          "uml_visibility": "-",
+          "declaration": "OwnedDemoProcess& process_;"
+        },
+        {
+          "visibility": "private",
+          "uml_visibility": "-",
+          "declaration": "ProcessGeneration generation_;"
+        },
+        {
+          "visibility": "private",
+          "uml_visibility": "-",
+          "declaration": "std::vector<AttemptId> consumedDispatches_;"
+        },
+        {
+          "visibility": "private",
+          "uml_visibility": "-",
+          "declaration": "mutable std::mutex mutex_;"
+        }
+      ],
+      "methods": [
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "FixedDemoTargetAdapter(const DemoConfiguration& configuration, OwnedDemoProcess& process, BookingRepository& bookingRepository, IncidentRepository& incidentRepository, Now now);"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "~FixedDemoTargetAdapter() override;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "FixedDemoTargetAdapter(const FixedDemoTargetAdapter&) = delete;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "FixedDemoTargetAdapter& operator=(const FixedDemoTargetAdapter&) = delete;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "Status startForSetup(Deadline deadline);"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "Result<std::vector<Evidence>> readHealthAndEvidence(Deadline deadline) const override;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "ExecutionResult applyRegisteredAction(const RepairPlan& plan, const DispatchReceipt& dispatch, Deadline deadline) override;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "Result<Booking> submitVerificationBooking(const BookingRequest& request, Deadline deadline) override;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "Result<Booking> cancelVerificationBooking(const BookingId& id, Version expectedVersion, Deadline deadline) override;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "Result<ReconciliationNotice> readExecutionEvidence(const AttemptId& attemptId, Deadline deadline) const override;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "Status stopForControlledChallenge(Deadline deadline) override;"
+        }
+      ],
+      "owner": "Usama Shmasneh",
+      "group": "Target adapters",
+      "status": "P2 proposed, not approved"
+    },
+    {
+      "name": "Monitor",
+      "kind": "class",
+      "bases": "",
+      "body": "public:\n    Monitor(const DemoTargetAdapter& target, Now now);\n    Result<DetectionNotice> poll(Deadline deadline) const;\n    InvariantReport checkInvariant(const BookingSnapshot& snapshot) const;\n    ChallengeOutcome classifyChallenge(const std::vector<Evidence>& before, const std::vector<Evidence>& after, const Result<Booking>& actualAttemptResult) const;\nprivate:\n    const DemoTargetAdapter& target_;\n    Now now_;\n",
+      "declaration": "class Monitor {\npublic:\n    Monitor(const DemoTargetAdapter& target, Now now);\n    Result<DetectionNotice> poll(Deadline deadline) const;\n    InvariantReport checkInvariant(const BookingSnapshot& snapshot) const;\n    ChallengeOutcome classifyChallenge(const std::vector<Evidence>& before, const std::vector<Evidence>& after, const Result<Booking>& actualAttemptResult) const;\nprivate:\n    const DemoTargetAdapter& target_;\n    Now now_;\n};",
+      "fields": [
+        {
+          "visibility": "private",
+          "uml_visibility": "-",
+          "declaration": "const DemoTargetAdapter& target_;"
+        },
+        {
+          "visibility": "private",
+          "uml_visibility": "-",
+          "declaration": "Now now_;"
+        }
+      ],
+      "methods": [
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "Monitor(const DemoTargetAdapter& target, Now now);"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "Result<DetectionNotice> poll(Deadline deadline) const;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "InvariantReport checkInvariant(const BookingSnapshot& snapshot) const;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "ChallengeOutcome classifyChallenge(const std::vector<Evidence>& before, const std::vector<Evidence>& after, const Result<Booking>& actualAttemptResult) const;"
+        }
+      ],
+      "owner": "Ameen Abd Allader",
+      "group": "Monitoring",
+      "status": "P2 proposed, not approved"
+    },
+    {
+      "name": "PlanPolicy",
+      "kind": "class",
+      "bases": "",
+      "body": "public:\n    explicit PlanPolicy(TargetId target);\n    Status validate(const RepairPlan& plan, const Incident& incident, UtcTime now) const;\n    Status revalidate(const RepairPlan& plan, const Approval& approval, const Incident& incident, UtcTime now) const;\nprivate:\n    const TargetId target_;\n",
+      "declaration": "class PlanPolicy {\npublic:\n    explicit PlanPolicy(TargetId target);\n    Status validate(const RepairPlan& plan, const Incident& incident, UtcTime now) const;\n    Status revalidate(const RepairPlan& plan, const Approval& approval, const Incident& incident, UtcTime now) const;\nprivate:\n    const TargetId target_;\n};",
+      "fields": [
+        {
+          "visibility": "private",
+          "uml_visibility": "-",
+          "declaration": "const TargetId target_;"
+        }
+      ],
+      "methods": [
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "explicit PlanPolicy(TargetId target);"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "Status validate(const RepairPlan& plan, const Incident& incident, UtcTime now) const;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "Status revalidate(const RepairPlan& plan, const Approval& approval, const Incident& incident, UtcTime now) const;"
+        }
+      ],
+      "owner": "Shehab Shehab",
+      "group": "Diagnosis and policy",
+      "status": "P2 proposed, not approved"
+    },
+    {
+      "name": "DiagnosticAgent",
+      "kind": "class",
+      "bases": "",
+      "body": "public:\n    DiagnosticAgent(const DemoTargetAdapter& target, const Monitor& monitor, const PlanPolicy& policy, DiagnosticLimits limits);\n    Result<DiagnosisResult> propose(const Incident& incident, const DiagnosisContext& context);\nprivate:\n    const DemoTargetAdapter& target_;\n    const Monitor& monitor_;\n    const PlanPolicy& policy_;\n    const DiagnosticLimits limits_;\n    DiagnosisDraft evaluateRules(const std::vector<Evidence>& evidence) const;\n    std::string rulesetVersion() const;\n",
+      "declaration": "class DiagnosticAgent {\npublic:\n    DiagnosticAgent(const DemoTargetAdapter& target, const Monitor& monitor, const PlanPolicy& policy, DiagnosticLimits limits);\n    Result<DiagnosisResult> propose(const Incident& incident, const DiagnosisContext& context);\nprivate:\n    const DemoTargetAdapter& target_;\n    const Monitor& monitor_;\n    const PlanPolicy& policy_;\n    const DiagnosticLimits limits_;\n    DiagnosisDraft evaluateRules(const std::vector<Evidence>& evidence) const;\n    std::string rulesetVersion() const;\n};",
+      "fields": [
+        {
+          "visibility": "private",
+          "uml_visibility": "-",
+          "declaration": "const DemoTargetAdapter& target_;"
+        },
+        {
+          "visibility": "private",
+          "uml_visibility": "-",
+          "declaration": "const Monitor& monitor_;"
+        },
+        {
+          "visibility": "private",
+          "uml_visibility": "-",
+          "declaration": "const PlanPolicy& policy_;"
+        },
+        {
+          "visibility": "private",
+          "uml_visibility": "-",
+          "declaration": "const DiagnosticLimits limits_;"
+        }
+      ],
+      "methods": [
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "DiagnosticAgent(const DemoTargetAdapter& target, const Monitor& monitor, const PlanPolicy& policy, DiagnosticLimits limits);"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "Result<DiagnosisResult> propose(const Incident& incident, const DiagnosisContext& context);"
+        },
+        {
+          "visibility": "private",
+          "uml_visibility": "-",
+          "declaration": "DiagnosisDraft evaluateRules(const std::vector<Evidence>& evidence) const;"
+        },
+        {
+          "visibility": "private",
+          "uml_visibility": "-",
+          "declaration": "std::string rulesetVersion() const;"
+        }
+      ],
+      "owner": "Shehab Shehab",
+      "group": "Diagnosis and policy",
+      "status": "P2 proposed, not approved"
+    },
+    {
+      "name": "RepairCommand",
+      "kind": "class",
+      "bases": "",
+      "body": "public:\n    virtual ~RepairCommand();\n    virtual Status checkPreconditions(const RepairPlan& plan, Deadline deadline) const = 0;\n    virtual ExecutionResult execute(const RepairPlan& plan, const DispatchReceipt& dispatch, Deadline deadline) = 0;\n",
+      "declaration": "class RepairCommand {\npublic:\n    virtual ~RepairCommand();\n    virtual Status checkPreconditions(const RepairPlan& plan, Deadline deadline) const = 0;\n    virtual ExecutionResult execute(const RepairPlan& plan, const DispatchReceipt& dispatch, Deadline deadline) = 0;\n};",
+      "fields": [],
+      "methods": [
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "virtual ~RepairCommand();"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "virtual Status checkPreconditions(const RepairPlan& plan, Deadline deadline) const = 0;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "virtual ExecutionResult execute(const RepairPlan& plan, const DispatchReceipt& dispatch, Deadline deadline) = 0;"
+        }
+      ],
+      "owner": "Yazan Ganem",
+      "group": "Repair",
+      "status": "P2 proposed, not approved"
+    },
+    {
+      "name": "RestartDemoServiceCommand",
+      "kind": "class",
+      "bases": ": public RepairCommand",
+      "body": "public:\n    explicit RestartDemoServiceCommand(DemoTargetAdapter& target);\n    Status checkPreconditions(const RepairPlan& plan, Deadline deadline) const override;\n    ExecutionResult execute(const RepairPlan& plan, const DispatchReceipt& dispatch, Deadline deadline) override;\nprivate:\n    DemoTargetAdapter& target_;\n",
+      "declaration": "class RestartDemoServiceCommand : public RepairCommand {\npublic:\n    explicit RestartDemoServiceCommand(DemoTargetAdapter& target);\n    Status checkPreconditions(const RepairPlan& plan, Deadline deadline) const override;\n    ExecutionResult execute(const RepairPlan& plan, const DispatchReceipt& dispatch, Deadline deadline) override;\nprivate:\n    DemoTargetAdapter& target_;\n};",
+      "fields": [
+        {
+          "visibility": "private",
+          "uml_visibility": "-",
+          "declaration": "DemoTargetAdapter& target_;"
+        }
+      ],
+      "methods": [
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "explicit RestartDemoServiceCommand(DemoTargetAdapter& target);"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "Status checkPreconditions(const RepairPlan& plan, Deadline deadline) const override;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "ExecutionResult execute(const RepairPlan& plan, const DispatchReceipt& dispatch, Deadline deadline) override;"
+        }
+      ],
+      "owner": "Yazan Ganem",
+      "group": "Repair",
+      "status": "P2 proposed, not approved"
+    },
+    {
+      "name": "RestoreBookingInvariantCommand",
+      "kind": "class",
+      "bases": ": public RepairCommand",
+      "body": "public:\n    explicit RestoreBookingInvariantCommand(DemoTargetAdapter& target);\n    Status checkPreconditions(const RepairPlan& plan, Deadline deadline) const override;\n    ExecutionResult execute(const RepairPlan& plan, const DispatchReceipt& dispatch, Deadline deadline) override;\nprivate:\n    DemoTargetAdapter& target_;\n",
+      "declaration": "class RestoreBookingInvariantCommand : public RepairCommand {\npublic:\n    explicit RestoreBookingInvariantCommand(DemoTargetAdapter& target);\n    Status checkPreconditions(const RepairPlan& plan, Deadline deadline) const override;\n    ExecutionResult execute(const RepairPlan& plan, const DispatchReceipt& dispatch, Deadline deadline) override;\nprivate:\n    DemoTargetAdapter& target_;\n};",
+      "fields": [
+        {
+          "visibility": "private",
+          "uml_visibility": "-",
+          "declaration": "DemoTargetAdapter& target_;"
+        }
+      ],
+      "methods": [
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "explicit RestoreBookingInvariantCommand(DemoTargetAdapter& target);"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "Status checkPreconditions(const RepairPlan& plan, Deadline deadline) const override;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "ExecutionResult execute(const RepairPlan& plan, const DispatchReceipt& dispatch, Deadline deadline) override;"
+        }
+      ],
+      "owner": "Yazan Ganem",
+      "group": "Repair",
+      "status": "P2 proposed, not approved"
+    },
+    {
+      "name": "RepairExecutor",
+      "kind": "class",
+      "bases": "",
+      "body": "public:\n    RepairExecutor(const PlanPolicy& policy, IncidentRepository& repository, RestartDemoServiceCommand& restart, RestoreBookingInvariantCommand& restore, Now now);\n    Result<ExecutionResult> executeOnce(const RepairPlan& plan, const Approval& approval, const AttemptId& attemptId, Deadline deadline);\nprivate:\n    const PlanPolicy& policy_;\n    IncidentRepository& repository_;\n    RestartDemoServiceCommand& restart_;\n    RestoreBookingInvariantCommand& restore_;\n    Now now_;\n    std::mutex dispatchMutex_;\n",
+      "declaration": "class RepairExecutor {\npublic:\n    RepairExecutor(const PlanPolicy& policy, IncidentRepository& repository, RestartDemoServiceCommand& restart, RestoreBookingInvariantCommand& restore, Now now);\n    Result<ExecutionResult> executeOnce(const RepairPlan& plan, const Approval& approval, const AttemptId& attemptId, Deadline deadline);\nprivate:\n    const PlanPolicy& policy_;\n    IncidentRepository& repository_;\n    RestartDemoServiceCommand& restart_;\n    RestoreBookingInvariantCommand& restore_;\n    Now now_;\n    std::mutex dispatchMutex_;\n};",
+      "fields": [
+        {
+          "visibility": "private",
+          "uml_visibility": "-",
+          "declaration": "const PlanPolicy& policy_;"
+        },
+        {
+          "visibility": "private",
+          "uml_visibility": "-",
+          "declaration": "IncidentRepository& repository_;"
+        },
+        {
+          "visibility": "private",
+          "uml_visibility": "-",
+          "declaration": "RestartDemoServiceCommand& restart_;"
+        },
+        {
+          "visibility": "private",
+          "uml_visibility": "-",
+          "declaration": "RestoreBookingInvariantCommand& restore_;"
+        },
+        {
+          "visibility": "private",
+          "uml_visibility": "-",
+          "declaration": "Now now_;"
+        },
+        {
+          "visibility": "private",
+          "uml_visibility": "-",
+          "declaration": "std::mutex dispatchMutex_;"
+        }
+      ],
+      "methods": [
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "RepairExecutor(const PlanPolicy& policy, IncidentRepository& repository, RestartDemoServiceCommand& restart, RestoreBookingInvariantCommand& restore, Now now);"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "Result<ExecutionResult> executeOnce(const RepairPlan& plan, const Approval& approval, const AttemptId& attemptId, Deadline deadline);"
+        }
+      ],
+      "owner": "Yazan Ganem",
+      "group": "Repair",
+      "status": "P2 proposed, not approved"
+    },
+    {
+      "name": "RecoveryVerifier",
+      "kind": "class",
+      "bases": "",
+      "body": "public:\n    RecoveryVerifier(DemoTargetAdapter& target, const Monitor& monitor, Now now);\n    Result<VerificationBatch> verifyHealth(const VerificationContext& context) const;\n    Result<VerificationBatch> verifyNormalBooking(const VerificationContext& context);\n    Result<VerificationBatch> verifyDataAndInvariant(const VerificationContext& context);\nprivate:\n    DemoTargetAdapter& target_;\n    const Monitor& monitor_;\n    Now now_;\n",
+      "declaration": "class RecoveryVerifier {\npublic:\n    RecoveryVerifier(DemoTargetAdapter& target, const Monitor& monitor, Now now);\n    Result<VerificationBatch> verifyHealth(const VerificationContext& context) const;\n    Result<VerificationBatch> verifyNormalBooking(const VerificationContext& context);\n    Result<VerificationBatch> verifyDataAndInvariant(const VerificationContext& context);\nprivate:\n    DemoTargetAdapter& target_;\n    const Monitor& monitor_;\n    Now now_;\n};",
+      "fields": [
+        {
+          "visibility": "private",
+          "uml_visibility": "-",
+          "declaration": "DemoTargetAdapter& target_;"
+        },
+        {
+          "visibility": "private",
+          "uml_visibility": "-",
+          "declaration": "const Monitor& monitor_;"
+        },
+        {
+          "visibility": "private",
+          "uml_visibility": "-",
+          "declaration": "Now now_;"
+        }
+      ],
+      "methods": [
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "RecoveryVerifier(DemoTargetAdapter& target, const Monitor& monitor, Now now);"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "Result<VerificationBatch> verifyHealth(const VerificationContext& context) const;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "Result<VerificationBatch> verifyNormalBooking(const VerificationContext& context);"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "Result<VerificationBatch> verifyDataAndInvariant(const VerificationContext& context);"
+        }
+      ],
+      "owner": "Yazan Ganem",
+      "group": "Verification",
+      "status": "P2 proposed, not approved"
+    },
+    {
+      "name": "IncidentStateMachine",
+      "kind": "class",
+      "bases": "",
+      "body": "public:\n    explicit IncidentStateMachine(const Incident& durableIncident);\n    bool canTransition(IncidentStatus destination) const;\n    Result<Transition> applyEvent(const Incident& incident, const IncidentEvent& event) const;\nprivate:\n    IncidentStatus state_;\n    Version revision_;\n",
+      "declaration": "class IncidentStateMachine {\npublic:\n    explicit IncidentStateMachine(const Incident& durableIncident);\n    bool canTransition(IncidentStatus destination) const;\n    Result<Transition> applyEvent(const Incident& incident, const IncidentEvent& event) const;\nprivate:\n    IncidentStatus state_;\n    Version revision_;\n};",
+      "fields": [
+        {
+          "visibility": "private",
+          "uml_visibility": "-",
+          "declaration": "IncidentStatus state_;"
+        },
+        {
+          "visibility": "private",
+          "uml_visibility": "-",
+          "declaration": "Version revision_;"
+        }
+      ],
+      "methods": [
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "explicit IncidentStateMachine(const Incident& durableIncident);"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "bool canTransition(IncidentStatus destination) const;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "Result<Transition> applyEvent(const Incident& incident, const IncidentEvent& event) const;"
+        }
+      ],
+      "owner": "Usama Shmasneh",
+      "group": "Core",
+      "status": "P2 proposed, not approved"
+    },
+    {
+      "name": "IncidentOrchestrator",
+      "kind": "class",
+      "bases": "",
+      "body": "public:\n    IncidentOrchestrator(IncidentRepository& repository, DiagnosticAgent& diagnosticAgent, const PlanPolicy& policy, RepairExecutor& executor, RecoveryVerifier& verifier, const DemoTargetAdapter& target, Now now, std::size_t queueCapacity);\n    Status enqueueEvent(IncidentEvent event);\n    Result<EventOutcome> handleEvent(const IncidentEvent& event);\n    Result<EventOutcome> submitApproval(const IncidentId& incidentId, const EventId& eventId, const Approval& approval);\n    Result<std::vector<OperatorView>> reconcileAfterRestart(Deadline deadline);\n    Result<OperatorView> currentView() const;\n    Result<std::size_t> processPendingEvents(std::size_t limit);\nprivate:\n    IncidentRepository& repository_;\n    DiagnosticAgent& diagnosticAgent_;\n    const PlanPolicy& policy_;\n    RepairExecutor& executor_;\n    RecoveryVerifier& verifier_;\n    const DemoTargetAdapter& target_;\n    Now now_;\n    std::optional<IncidentRecord> currentRecord_;\n    std::optional<IncidentStateMachine> stateMachine_;\n    std::deque<IncidentEvent> eventQueue_;\n    const std::size_t queueCapacity_;\n    std::optional<AttemptId> attemptId_;\n    bool repairsBlocked_;\n    std::optional<Error> volatileFailure_;\n    mutable std::mutex queueMutex_;\n    std::thread::id ownerThread_;\n",
+      "declaration": "class IncidentOrchestrator {\npublic:\n    IncidentOrchestrator(IncidentRepository& repository, DiagnosticAgent& diagnosticAgent, const PlanPolicy& policy, RepairExecutor& executor, RecoveryVerifier& verifier, const DemoTargetAdapter& target, Now now, std::size_t queueCapacity);\n    Status enqueueEvent(IncidentEvent event);\n    Result<EventOutcome> handleEvent(const IncidentEvent& event);\n    Result<EventOutcome> submitApproval(const IncidentId& incidentId, const EventId& eventId, const Approval& approval);\n    Result<std::vector<OperatorView>> reconcileAfterRestart(Deadline deadline);\n    Result<OperatorView> currentView() const;\n    Result<std::size_t> processPendingEvents(std::size_t limit);\nprivate:\n    IncidentRepository& repository_;\n    DiagnosticAgent& diagnosticAgent_;\n    const PlanPolicy& policy_;\n    RepairExecutor& executor_;\n    RecoveryVerifier& verifier_;\n    const DemoTargetAdapter& target_;\n    Now now_;\n    std::optional<IncidentRecord> currentRecord_;\n    std::optional<IncidentStateMachine> stateMachine_;\n    std::deque<IncidentEvent> eventQueue_;\n    const std::size_t queueCapacity_;\n    std::optional<AttemptId> attemptId_;\n    bool repairsBlocked_;\n    std::optional<Error> volatileFailure_;\n    mutable std::mutex queueMutex_;\n    std::thread::id ownerThread_;\n};",
+      "fields": [
+        {
+          "visibility": "private",
+          "uml_visibility": "-",
+          "declaration": "IncidentRepository& repository_;"
+        },
+        {
+          "visibility": "private",
+          "uml_visibility": "-",
+          "declaration": "DiagnosticAgent& diagnosticAgent_;"
+        },
+        {
+          "visibility": "private",
+          "uml_visibility": "-",
+          "declaration": "const PlanPolicy& policy_;"
+        },
+        {
+          "visibility": "private",
+          "uml_visibility": "-",
+          "declaration": "RepairExecutor& executor_;"
+        },
+        {
+          "visibility": "private",
+          "uml_visibility": "-",
+          "declaration": "RecoveryVerifier& verifier_;"
+        },
+        {
+          "visibility": "private",
+          "uml_visibility": "-",
+          "declaration": "const DemoTargetAdapter& target_;"
+        },
+        {
+          "visibility": "private",
+          "uml_visibility": "-",
+          "declaration": "Now now_;"
+        },
+        {
+          "visibility": "private",
+          "uml_visibility": "-",
+          "declaration": "std::optional<IncidentRecord> currentRecord_;"
+        },
+        {
+          "visibility": "private",
+          "uml_visibility": "-",
+          "declaration": "std::optional<IncidentStateMachine> stateMachine_;"
+        },
+        {
+          "visibility": "private",
+          "uml_visibility": "-",
+          "declaration": "std::deque<IncidentEvent> eventQueue_;"
+        },
+        {
+          "visibility": "private",
+          "uml_visibility": "-",
+          "declaration": "const std::size_t queueCapacity_;"
+        },
+        {
+          "visibility": "private",
+          "uml_visibility": "-",
+          "declaration": "std::optional<AttemptId> attemptId_;"
+        },
+        {
+          "visibility": "private",
+          "uml_visibility": "-",
+          "declaration": "bool repairsBlocked_;"
+        },
+        {
+          "visibility": "private",
+          "uml_visibility": "-",
+          "declaration": "std::optional<Error> volatileFailure_;"
+        },
+        {
+          "visibility": "private",
+          "uml_visibility": "-",
+          "declaration": "mutable std::mutex queueMutex_;"
+        },
+        {
+          "visibility": "private",
+          "uml_visibility": "-",
+          "declaration": "std::thread::id ownerThread_;"
+        }
+      ],
+      "methods": [
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "IncidentOrchestrator(IncidentRepository& repository, DiagnosticAgent& diagnosticAgent, const PlanPolicy& policy, RepairExecutor& executor, RecoveryVerifier& verifier, const DemoTargetAdapter& target, Now now, std::size_t queueCapacity);"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "Status enqueueEvent(IncidentEvent event);"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "Result<EventOutcome> handleEvent(const IncidentEvent& event);"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "Result<EventOutcome> submitApproval(const IncidentId& incidentId, const EventId& eventId, const Approval& approval);"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "Result<std::vector<OperatorView>> reconcileAfterRestart(Deadline deadline);"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "Result<OperatorView> currentView() const;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "Result<std::size_t> processPendingEvents(std::size_t limit);"
+        }
+      ],
+      "owner": "Usama Shmasneh",
+      "group": "Core",
+      "status": "P2 proposed, not approved"
+    },
+    {
+      "name": "OperatorCli",
+      "kind": "class",
+      "bases": "",
+      "body": "public:\n    OperatorCli(IncidentOrchestrator& core, std::istream& input, std::ostream& output);\n    Status showCurrent() const;\n    Result<EventOutcome> submitDecision(const IncidentId& incidentId, const EventId& eventId, const Approval& approval);\n    Status runOneCommand();\nprivate:\n    IncidentOrchestrator& core_;\n    std::istream& input_;\n    std::ostream& output_;\n",
+      "declaration": "class OperatorCli {\npublic:\n    OperatorCli(IncidentOrchestrator& core, std::istream& input, std::ostream& output);\n    Status showCurrent() const;\n    Result<EventOutcome> submitDecision(const IncidentId& incidentId, const EventId& eventId, const Approval& approval);\n    Status runOneCommand();\nprivate:\n    IncidentOrchestrator& core_;\n    std::istream& input_;\n    std::ostream& output_;\n};",
+      "fields": [
+        {
+          "visibility": "private",
+          "uml_visibility": "-",
+          "declaration": "IncidentOrchestrator& core_;"
+        },
+        {
+          "visibility": "private",
+          "uml_visibility": "-",
+          "declaration": "std::istream& input_;"
+        },
+        {
+          "visibility": "private",
+          "uml_visibility": "-",
+          "declaration": "std::ostream& output_;"
+        }
+      ],
+      "methods": [
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "OperatorCli(IncidentOrchestrator& core, std::istream& input, std::ostream& output);"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "Status showCurrent() const;"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "Result<EventOutcome> submitDecision(const IncidentId& incidentId, const EventId& eventId, const Approval& approval);"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "Status runOneCommand();"
+        }
+      ],
+      "owner": "Shehab Shehab",
+      "group": "Operator interface",
+      "status": "P2 proposed, not approved"
+    },
+    {
+      "name": "SetupError",
+      "kind": "class",
+      "bases": ": public std::runtime_error",
+      "body": "public:\n    explicit SetupError(Error failure);\n    const Error& failure() const noexcept;\nprivate:\n    Error failure_;\n",
+      "declaration": "class SetupError : public std::runtime_error {\npublic:\n    explicit SetupError(Error failure);\n    const Error& failure() const noexcept;\nprivate:\n    Error failure_;\n};",
+      "fields": [
+        {
+          "visibility": "private",
+          "uml_visibility": "-",
+          "declaration": "Error failure_;"
+        }
+      ],
+      "methods": [
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "explicit SetupError(Error failure);"
+        },
+        {
+          "visibility": "public",
+          "uml_visibility": "+",
+          "declaration": "const Error& failure() const noexcept;"
+        }
+      ],
+      "owner": "Usama Shmasneh",
+      "group": "Shared values",
+      "status": "P2 proposed, not approved"
+    }
+  ],
+  "enums_and_aliases": [
+    "using Version = std::uint64_t;",
+    "using UtcTime = std::chrono::time_point<std::chrono::system_clock, std::chrono::milliseconds>;",
+    "using Deadline = std::chrono::steady_clock::time_point;",
+    "using Now = std::function<UtcTime()>;",
+    "using BookingId = std::string;",
+    "using RoomId = std::string;",
+    "using EvidenceId = std::string;",
+    "using IncidentId = std::string;",
+    "using PlanId = std::string;",
+    "using ApprovalId = std::string;",
+    "using AttemptId = std::string;",
+    "using EventId = std::string;",
+    "using SessionId = std::string;",
+    "enum class ErrorCode { InvalidArgument, NotFound, StaleVersion, IllegalTransition, DuplicateEvent, Conflict, OverlapRejected, Busy, WrongTarget, UnsupportedAction, UnsupportedEvidence, ApprovalRequired, ApprovalMismatch, Expired, PreconditionFailed, LimitExceeded, TargetUnavailable, StorageUnavailable, OutcomeUncertain, CorruptRecord, InternalError };",
+    "enum class TargetId { DemoBookingService };",
+    "enum class ProbeCleanupPolicy { CancelCreatedProbesRetainRows };",
+    "enum class DataPreservationPolicy { ExactBaselineExceptApprovedDeltas };",
+    "enum class ActionId { RestartDemoService, RestoreBookingInvariant };",
+    "enum class BookingStatus { Active, CancelledByParticipant, CancelledConflict, CancelledVerificationProbe };",
+    "enum class ProcessStatus { Running, Stopped, Unknown };",
+    "enum class HealthStatus { Healthy, Stopped, Unhealthy, Unknown };",
+    "enum class EvidenceSource { Monitor, DiagnosticTool, Verifier, Reconciliation };",
+    "enum class IncidentStatus { Detected, Diagnosing, AwaitingApproval, Repairing, Verifying, Recovered, Unresolved, Declined, Failed, NeedsReview };",
+    "enum class CauseState { Unresolved, ServiceStopped, BookingOverlap };",
+    "enum class ApprovalDecision { Approve, Reject, Cancel };",
+    "enum class AttemptStatus { Prepared, Dispatching, Succeeded, Failed, Uncertain };",
+    "enum class ExecutionOutcome { Succeeded, KnownFailure, Uncertain };",
+    "enum class CheckId { ServiceHealth, NormalBooking, DataPreservation, BookingInvariant, GuardActive, OriginalConflictRejected, VariantConflictRejected, ProbeCleanup };",
+    "enum class CheckOutcome { Passed, Failed, Inconclusive, NotRun };",
+    "enum class TimeoutStage { Diagnosis, Approval, Execution, Verification };",
+    "enum class EventDisposition { Applied, Duplicate, Stale, Rejected, PersistenceBlocked };",
+    "enum class ChallengeOutcome { VerifiedEffect, GuardRejected, ObjectiveNotMet, Unresolved };",
+    "template<class T> using Result = std::variant<T, Error>;",
+    "using Status = Result<std::monostate>;",
+    "using Observation = std::variant<HealthObservation, BookingSnapshot, InvariantReport, FailureObservation>;",
+    "using ExpectedStateVersion = std::variant<ProcessGeneration, Version>;",
+    "using ActionArguments = std::variant<RestartArgs, RestoreInvariantArgs>;",
+    "using EventPayload = std::variant<DetectionNotice, BeginDiagnosisNotice, DiagnosisResult, Approval, ExecutionResult, VerificationBatch, TimeoutNotice, ReconciliationNotice>;"
+  ]
+}

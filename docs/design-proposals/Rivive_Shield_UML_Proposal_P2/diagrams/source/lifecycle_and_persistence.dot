@@ -1,0 +1,12 @@
+digraph G { rankdir=LR; graph [bgcolor="white",pad=.2,nodesep=.4,ranksep=.65]; node [shape=box,style="rounded,filled",fillcolor="#eff6ff",fontname="DejaVu Sans",fontsize=12]; edge [fontname="DejaVu Sans",fontsize=9];
+IncidentOrchestrator [label="IncidentOrchestrator\nBASELINE NAME / REFINED"];
+IncidentStateMachine [label="IncidentStateMachine\nBASELINE NAME / REFINED"];
+Incident [label="Incident\nBASELINE NAME / REFINED"];
+IncidentRepository [label="IncidentRepository\nBASELINE NAME / REFINED"];
+SqliteIncidentRepository [label="SqliteIncidentRepository\nNEW PROPOSED"];
+OperatorCli [label="OperatorCli\nNEW PROPOSED"];
+IncidentOrchestrator->IncidentStateMachine [label="owns transitions", dir=both,arrowtail=diamond,arrowhead=none];
+IncidentOrchestrator->IncidentRepository [label="checkpoints / recovers", ];
+SqliteIncidentRepository->IncidentRepository [label="implements", style=dashed,arrowhead=empty];
+OperatorCli->IncidentOrchestrator [label="requests and view only", ];
+}

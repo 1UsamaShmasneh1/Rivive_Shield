@@ -10,7 +10,7 @@
 
 Rivive Shield is a proposed learning and resilience-testing system for one isolated study-room booking application. It connects fault detection, evidence-based diagnosis using predefined rules, an explicitly approved repair and independent verification. Its intended users are the demonstration operator and course participants working with fictitious data.
 
-The MVP contains three user stories: participate in a controlled challenge; investigate and recover a supported incident, the central story; and verify protection and inspect the saved incident record. The two proposed scenarios are a stopped booking service and acceptance of overlapping active bookings for the same room. The first-submission report describes the original design; its runtime-AI requirements require reconciliation with the revised prototype scope below.
+The MVP contains three user stories: participate in a controlled challenge; investigate and recover a supported incident, the central story; and verify protection and inspect the saved incident record. The two proposed scenarios are a stopped booking service and acceptance of overlapping active bookings for the same room. The first-submission report records the original design. Its runtime-AI references are historical and do not override the user-approved P2 baseline linked below.
 
 The initial prototype uses predefined diagnostic rules and repair solutions. It does not use an external AI provider or a locally running AI model. Rules match collected evidence against supported conditions and propose an allowlisted repair with its evidence references and preconditions. The hidden challenge selector must not be used as the diagnosis. Unknown or insufficient evidence leaves the incident unresolved.
 
@@ -23,9 +23,21 @@ Predetermined repair rules do not predetermine the outcome. The application must
 | Shared GitHub repository | https://github.com/1UsamaShmasneh1/Rivive_Shield |
 | Trello backlog board | https://trello.com/b/GeLevegk/riviveshield |
 
-The [project backlog](docs/backlog-seed.md) supplies the initial task titles, priorities, planned owners, dependencies and acceptance evidence for the live board. It does not replace the required board. The backlog file and live Trello cards must be reconciled with the revised prototype scope; older references to mandatory runtime AI must not be treated as current prototype requirements.
+The [current backlog index](docs/backlog-seed.md) links the 30 RS cards and records their planned owners, reviewers and dependencies. Use the live board for current progress and acceptance evidence. The original B01–B26 planning backlog is preserved as a [historical snapshot](docs/history/backlog-seed-2026-11-04.md), not a second active work plan.
 
-## Submission documents
+## Current design baseline: P2
+
+Usama adopted P2 as the project baseline. Adoption does not establish completed Samy/module-owner review, a runnable build or passing runtime tests. RS-06 and RS-07 retain their review and implementation gates.
+
+Start with [P2 status and design navigation](docs/design-proposals/README.md). The complete P2 source package is preserved byte-for-byte in its own directory, including its original preparation labels and checksums. Read the accompanying adoption status before interpreting the package's earlier “PROPOSED” wording.
+
+- [Exact C++ declarations](docs/design-proposals/Rivive_Shield_UML_Proposal_P2/contracts/rivive_shield_proposed.hpp)
+- [Full member/signature catalog](docs/design-proposals/Rivive_Shield_UML_Proposal_P2/contracts/signature_catalog.md)
+- [Arabic design review memorandum](docs/design-proposals/Rivive_Shield_UML_Proposal_P2/docs/review_ar.md)
+- [Design change log](docs/design-proposals/Rivive_Shield_UML_Proposal_P2/docs/change_log.md)
+- [Actual verification scope](docs/design-proposals/Rivive_Shield_UML_Proposal_P2/checks/verification.txt)
+
+## Historical first-submission documents
 
 | Document | File |
 | --- | --- |
@@ -43,15 +55,15 @@ The [project backlog](docs/backlog-seed.md) supplies the initial task titles, pr
 
 Report section 1 defines the proposal and MVP; section 2 contains the stories, acceptance criteria, use case and screen sketch; section 3 contains architecture, the Command pattern, UML and team responsibilities. Editable diagram sources are in `docs/diagrams/source/`. Keep the folder structure intact so relative links continue to work.
 
-### Design and contract reconciliation required
+### Historical documents and change control
 
-The linked first-submission documents record the earlier design. The report, backlog, UML diagrams and detailed C++ contract baseline are not yet established as fully consistent with the revised rule-based prototype.
+The proposal, first-submission report, screen sketch and original diagrams above are retained together as the submitted historical design. Their AI-related statements and older platform assumptions do not describe the current prototype. Their relative links and original bytes are preserved. Do not overwrite those diagrams with P2 images while leaving the old report unchanged.
 
-In particular, the current detailed contracts still include a `DiagnosticAgent` dependency on `AiProvider&`, an `AiAudit` member in `DiagnosisResult`, and `maxProviderTurns` in `DiagnosticLimits`. These are unresolved design dependencies. This README update does not remove, rename or approve replacement of any class, field, method, constructor parameter or interface.
+P2 replaces the earlier AI contract path with predefined rules in `DiagnosticAgent` and a `RuleAudit` record. Rules are maintained in code, so a rule change requires review and rebuilding. Consult the exact P2 declarations rather than implementing from an overview alone.
 
-Before implementing the affected diagnostic components, review the necessary contract changes through RS-06 and RS-07, obtain approval, and update the corresponding UML, contract baseline and card attachments together. Team members must follow the approved baseline and must not add or alter principal or helper fields and methods outside that review process. A rule-based implementation must not be presented as actual runtime AI merely because an older interface retains an AI-related name.
+Team members must not add or change classes, fields, methods, helpers, overloads, visibility or relationships, including private members, outside a reviewed UML/source change. Update the contract, affected diagrams and Trello attachments together before implementing an approved structural change. User adoption is separate from peer review and tested behavior.
 
-Preserve the incident core, separate booking and control processes, evidence collection, plan validation, human approval, restricted repair execution, independent verification and durable incident recording. Operating-platform and process-management choices, HTTP/browser contracts and concrete execution limits remain separate decisions requiring review.
+Preserve the incident core, separate booking and control processes, immutable evidence, bounded plan validation, explicit approval, allowlisted repair execution, independent verification and durable incident recording. Unknown evidence and uncertain execution must not be reported as success or blindly retried.
 
 ## Team responsibilities
 
@@ -60,7 +72,7 @@ Preserve the incident core, separate booking and control processes, evidence col
 | Usama Shmasneh | C++ incident orchestrator and state machine; leadership; SQLite/SQL; Oracle; GitHub Actions; integration adapters and minimal web/API interface | Samy mansour |
 | Samy mansour | C++ booking domain, controlled overlap scenario and booking-rule guard | Ameen Abd Allader |
 | Ameen Abd Allader | C++ monitoring, evidence collection and independent invariant detection | Shehab Shehab |
-| Shehab Shehab | C++ rule-based diagnostic module, bounded tool contracts subject to the required contract review, plan validation and local operator CLI | Yazan Ganem |
+| Shehab Shehab | C++ rule-based diagnostic module, P2 rule/evidence contracts subject to peer review, plan validation and local operator CLI | Yazan Ganem |
 | Yazan Ganem | C++ approved repair commands, independent recovery verification and test runner | Usama Shmasneh |
 
 Usama's incident core coordinates state transitions, asynchronous events, plan/approval binding, bounded dispatch, verification and interrupted execution. This responsibility is additional to his leadership and specialist work. Other members retain their own module implementation, tests, documentation and defect fixes. Yazan also checks the core-to-repair handoff.
@@ -69,11 +81,15 @@ The team shares a C++ background. Database implementation, SQL, cloud administra
 
 ## Implementation status and planned stack
 
-This submission specifies a proposed system. A verified working build, deployment and test results are not included. Build prerequisites, configuration and launch instructions will be documented with the implementation.
+This repository contains design documents and a declaration-only P2 baseline. The existing `.slnx` is an empty solution, not a runnable application. A working end-to-end build, deployment and runtime test evidence are not included. Build prerequisites, configuration and launch instructions will be documented with the implementation.
 
 The intended stack is C++, SQLite and a minimal browser interface. Durable SQLite storage is required. Oracle Cloud hosting and a GitHub Actions build, test and deployment workflow are required before the final presentation. Their detailed infrastructure, access, capacity, cost constraints and deployment configuration still require review and verification; this requirement is not evidence that deployment has been implemented.
 
-Development begins with a local end-to-end workflow before cloud deployment or interface polish. SQLite schema, migrations and durability settings; HTTP/browser contracts; the process platform and process-management approach; and concrete timeouts and other limits remain open until reviewed and recorded in their respective Trello cards. No operating system, paid service or numerical limit is selected by this README update.
+Development targets native Windows and macOS. First run the full system locally on the team's computers. Later move only the booking backend and its test web application to Oracle; the Rivive Shield controller, diagnosis, operator approval and repair coordination remain on local computers. Usama's computer is the planned demonstration controller. Oracle's operating system and the remote repair/management channel remain open decisions; no remote agent or transport is selected by this update.
+
+SQLite remains mandatory. Booking and incident data use separate stores; database files stay local to their storage host and are not shared as SQLite files across a network. Later incident-store placement and multi-controller coordination need explicit review. Schema/migrations, durability settings, concrete limits, HTTP/browser details and deployment configuration remain subject to their card-level decisions.
+
+P2 includes proposed native Windows/macOS owned-process contracts and separates process status from application health. Its Linux/GCC syntax check and structural consistency check do not prove native portability, linking, safe process ownership, SQLite behavior, runtime recovery, Oracle deployment or CI. Native MSVC and Apple Clang checks remain pending.
 
 ## Demonstration arrangements
 
