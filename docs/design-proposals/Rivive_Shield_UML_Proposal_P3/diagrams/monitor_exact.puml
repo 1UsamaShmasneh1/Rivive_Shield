@@ -1,0 +1,93 @@
+@startuml
+title P3 DRAFT - monitor - NOT APPROVED
+hide empty members
+skinparam classAttributeIconSize 0
+class PacketCapture {
+  + virtual ~PacketCapture() = default
+  + virtual Status open(const CaptureConfiguration& configuration) = 0
+  + virtual Result<std::size_t> readBatch(std::size_t maxPackets, const PacketSink& sink, Deadline deadline) = 0
+  + virtual Result<CaptureStatistics> statistics() const = 0
+  + virtual void close() = 0
+}
+class PcapLoopbackCapture {
+  + PcapLoopbackCapture()
+  + ~PcapLoopbackCapture() override
+  + Status open(const CaptureConfiguration& configuration) override
+  + Result<std::size_t> readBatch(std::size_t maxPackets, const PacketSink& sink, Deadline deadline) override
+  + Result<CaptureStatistics> statistics() const override
+  + void close() override
+  + PcapLoopbackCapture(const PcapLoopbackCapture&) = delete
+  + PcapLoopbackCapture& operator=(const PcapLoopbackCapture&) = delete
+  - pcap* handle_
+  - std::optional<CaptureConfiguration> configuration_
+  - CaptureStatistics statistics_
+}
+PacketCapture <|-- PcapLoopbackCapture
+class TcpStreamDecoder {
+  + TcpStreamDecoder(CaptureConfiguration configuration, StreamSink sink)
+  + ~TcpStreamDecoder()
+  + Status accept(const PacketView& packet)
+  + void expire(SteadyTime now)
+  + void reset()
+  + TcpStreamDecoder(const TcpStreamDecoder&) = delete
+  + TcpStreamDecoder& operator=(const TcpStreamDecoder&) = delete
+  - CaptureConfiguration configuration_
+  - StreamSink sink_
+  - pcpp::TcpReassembly* reassembly_
+  - std::vector<FlowKey> activeFlows_
+  - std::size_t acceptedBytes_
+  - void deliver(const StreamChunk& chunk)
+}
+class HttpFlowState {
+  + FlowKey flow
+  + llhttp__internal_s* requestParser
+  + llhttp__internal_s* responseParser
+  + std::optional<SteadyTime> requestObservedStart
+  + std::uint64_t completedRequests
+  + std::uint64_t completedResponses
+  + HttpMethod pendingMethod
+  + bool requestComplete
+  + bool synchronized
+  + bool unsupported
+  + bool gap
+  + bool parseError
+  + SteadyTime lastActivity
+  + HttpSessionTracker* owner
+}
+class HttpSessionTracker {
+  + HttpSessionTracker(CaptureConfiguration configuration, HttpSink sink, Now now)
+  + ~HttpSessionTracker()
+  + Status accept(const StreamChunk& chunk)
+  + void expire(SteadyTime now)
+  + void invalidateAll(const Error& reason)
+  + void reset()
+  + HttpSessionTracker(const HttpSessionTracker&) = delete
+  + HttpSessionTracker& operator=(const HttpSessionTracker&) = delete
+  - CaptureConfiguration configuration_
+  - HttpSink sink_
+  - Now now_
+  - std::list<HttpFlowState> flows_
+  - Status beginRequest(HttpFlowState& flow)
+  - Status completeRequest(HttpFlowState& flow)
+  - Status completeResponse(HttpFlowState& flow)
+  - void markUncertain(HttpFlowState& flow, HttpOutcome outcome)
+  - llhttp_settings_s* parserSettings_
+}
+class Monitor {
+  + Monitor(PacketCapture& capture, TcpStreamDecoder& tcp, HttpSessionTracker& http, OwnedDemoProcess& process, const ConnectionObserver& connections, EvidenceSink sink, Now now)
+  + Status start(const CaptureConfiguration& configuration)
+  + Status tick(Deadline deadline)
+  + void stop()
+  + void receiveHttp(const HttpObservation& observation)
+  + Monitor(const Monitor&) = delete
+  + Monitor& operator=(const Monitor&) = delete
+  - PacketCapture& capture_
+  - TcpStreamDecoder& tcp_
+  - HttpSessionTracker& http_
+  - OwnedDemoProcess& process_
+  - const ConnectionObserver& connections_
+  - EvidenceSink sink_
+  - Now now_
+  - std::optional<ProcessObservation> lastProcess_
+}
+@enduml

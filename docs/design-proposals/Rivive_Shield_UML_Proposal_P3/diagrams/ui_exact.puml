@@ -1,0 +1,90 @@
+@startuml
+title P3 DRAFT - ui - NOT APPROVED
+hide empty members
+skinparam classAttributeIconSize 0
+class OperatorView {
+  + std::optional<IncidentRecord> current
+  + std::vector<HttpObservation> recentActivity
+  + std::optional<ProcessObservation> process
+  + bool durable
+  + bool repairsBlocked
+  + std::optional<Error> visibleError
+  + std::vector<IncidentRecord> historyPage
+  + std::size_t historyOffset
+  + bool historyPending
+  + std::optional<Error> historyError
+  + bool settingsPending
+  + bool settingsSaved
+  + std::optional<Error> settingsError
+}
+class SettingsRepository {
+  + virtual ~SettingsRepository() = default
+  + virtual Result<TargetConfiguration> load() const = 0
+  + virtual Status save(const TargetConfiguration& configuration) = 0
+}
+class LocalSettingsRepository {
+  + explicit LocalSettingsRepository(std::string path)
+  + Result<TargetConfiguration> load() const override
+  + Status save(const TargetConfiguration& configuration) override
+  + LocalSettingsRepository(const LocalSettingsRepository&) = delete
+  + LocalSettingsRepository& operator=(const LocalSettingsRepository&) = delete
+  - std::string path_
+}
+SettingsRepository <|-- LocalSettingsRepository
+class DesktopView {
+  + virtual ~DesktopView() = default
+  + virtual void render(const OperatorView& view) = 0
+  + virtual void showError(const Error& error) = 0
+  + virtual void postToUi(std::function<void()> work) = 0
+}
+class WxDesktopView {
+  + WxDesktopView()
+  + ~WxDesktopView() override
+  + Status create()
+  + void show()
+  + void render(const OperatorView& view) override
+  + void showError(const Error& error) override
+  + void postToUi(std::function<void()> work) override
+  + WxDesktopView(const WxDesktopView&) = delete
+  + WxDesktopView& operator=(const WxDesktopView&) = delete
+  - wxFrame* frame_
+  - wxPanel* applicationPanel_
+  - wxPanel* activityPanel_
+  - wxPanel* incidentPanel_
+  - wxPanel* historyPanel_
+}
+DesktopView <|-- WxDesktopView
+class DesktopPresenter {
+  + DesktopPresenter(DesktopView& view, IncidentOrchestrator& core, ControllerRuntime& runtime)
+  + Status saveSettings(const TargetConfiguration& configuration)
+  + Status submitDecision(const IncidentEvent& approvalEvent)
+  + void refresh()
+  + Status requestHistory(std::size_t offset, std::size_t limit)
+  + DesktopPresenter(const DesktopPresenter&) = delete
+  + DesktopPresenter& operator=(const DesktopPresenter&) = delete
+  - DesktopView& view_
+  - IncidentOrchestrator& core_
+  - ControllerRuntime& runtime_
+}
+class ControllerRuntime {
+  + ControllerRuntime(Monitor& monitor, IncidentOrchestrator& core, OwnedDemoProcess& process, DesktopView& view, SettingsRepository& settings)
+  + ~ControllerRuntime()
+  + Status startMonitoring(const CaptureConfiguration& configuration)
+  + Status stopMonitoring(Deadline deadline)
+  + Status requestSettingsSave(const TargetConfiguration& configuration)
+  + Status requestInitialStart()
+  + ControllerRuntime(const ControllerRuntime&) = delete
+  + ControllerRuntime& operator=(const ControllerRuntime&) = delete
+  - Monitor& monitor_
+  - IncidentOrchestrator& core_
+  - OwnedDemoProcess& process_
+  - DesktopView& view_
+  - std::thread worker_
+  - std::atomic<bool> stopRequested_
+  - SettingsRepository& settings_
+  - std::deque<TargetConfiguration> settingsRequests_
+  - std::mutex settingsMutex_
+  - Status processSettingsRequest()
+  - std::atomic<bool> initialStartRequested_
+}
+@enduml

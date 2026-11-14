@@ -1,0 +1,273 @@
+{
+  "status": "technical proposed exhaustive default-deny policy, not user-approved transitions",
+  "states": [
+    "Detected",
+    "Diagnosing",
+    "AwaitingApproval",
+    "Executing",
+    "Verifying",
+    "Recovered",
+    "NeedsReview",
+    "Declined",
+    "Unresolved"
+  ],
+  "closed": [
+    "Recovered",
+    "Declined",
+    "Unresolved"
+  ],
+  "default": "reject_without_side_effect",
+  "transitions": [
+    {
+      "source": "Detected",
+      "event": "BeginDiagnosis",
+      "target": "Diagnosing",
+      "guards": [
+        "noDispatchInFlight"
+      ]
+    },
+    {
+      "source": "Diagnosing",
+      "event": "PlanReady",
+      "target": "AwaitingApproval",
+      "guards": [
+        "allowedAction",
+        "planPersisted",
+        "targetBindingValid"
+      ]
+    },
+    {
+      "source": "Diagnosing",
+      "event": "NoPlan",
+      "target": "Unresolved",
+      "guards": [
+        "noUncertainEffect",
+        "noDispatchInFlight"
+      ]
+    },
+    {
+      "source": "AwaitingApproval",
+      "event": "Reject",
+      "target": "Declined",
+      "guards": [
+        "exactPlanMatch",
+        "noUncertainEffect",
+        "noDispatchInFlight"
+      ]
+    },
+    {
+      "source": "AwaitingApproval",
+      "event": "Approve",
+      "target": "Executing",
+      "guards": [
+        "exactPlanMatch",
+        "approvalCurrent",
+        "targetBindingValid",
+        "durableClaimWon",
+        "noOtherAction"
+      ]
+    },
+    {
+      "source": "AwaitingApproval",
+      "event": "PlanInvalidated",
+      "target": "Diagnosing",
+      "guards": [
+        "noDispatchInFlight"
+      ]
+    },
+    {
+      "source": "Executing",
+      "event": "StopConfirmed",
+      "target": "NeedsReview",
+      "guards": [
+        "executionMatchesClaim",
+        "targetStopped"
+      ]
+    },
+    {
+      "source": "Executing",
+      "event": "StartConfirmed",
+      "target": "Verifying",
+      "guards": [
+        "executionMatchesClaim",
+        "newOwnedGeneration"
+      ]
+    },
+    {
+      "source": "Executing",
+      "event": "ActionFailed",
+      "target": "NeedsReview",
+      "guards": [
+        "executionMatchesClaim"
+      ]
+    },
+    {
+      "source": "Executing",
+      "event": "ActionUncertain",
+      "target": "NeedsReview",
+      "guards": [
+        "executionMatchesClaim"
+      ]
+    },
+    {
+      "source": "Verifying",
+      "event": "VerificationPassed",
+      "target": "Recovered",
+      "guards": [
+        "processPass",
+        "priorDatabasePass",
+        "functionalPass",
+        "noUncertainEffect",
+        "noDispatchInFlight",
+        "durableCommit"
+      ]
+    },
+    {
+      "source": "Verifying",
+      "event": "VerificationIncomplete",
+      "target": "NeedsReview",
+      "guards": [
+        "verificationBelongsToAttempt"
+      ]
+    },
+    {
+      "source": "NeedsReview",
+      "event": "StartPlanReady",
+      "target": "AwaitingApproval",
+      "guards": [
+        "noUncertainEffect",
+        "noDispatchInFlight",
+        "targetStopped",
+        "databasePass",
+        "newPlanPersisted"
+      ]
+    },
+    {
+      "source": "Detected",
+      "event": "ManualStopProposal",
+      "target": "Diagnosing",
+      "guards": [
+        "noUncertainEffect",
+        "noDispatchInFlight",
+        "ownedTarget",
+        "invalidateOldPlan"
+      ]
+    },
+    {
+      "source": "Diagnosing",
+      "event": "ManualStopProposal",
+      "target": "Diagnosing",
+      "guards": [
+        "noUncertainEffect",
+        "noDispatchInFlight",
+        "ownedTarget",
+        "invalidateOldPlan"
+      ]
+    },
+    {
+      "source": "AwaitingApproval",
+      "event": "ManualStopProposal",
+      "target": "Diagnosing",
+      "guards": [
+        "noUncertainEffect",
+        "noDispatchInFlight",
+        "ownedTarget",
+        "invalidateOldPlan"
+      ]
+    },
+    {
+      "source": "NeedsReview",
+      "event": "ManualStopProposal",
+      "target": "Diagnosing",
+      "guards": [
+        "noUncertainEffect",
+        "noDispatchInFlight",
+        "ownedTarget",
+        "invalidateOldPlan"
+      ]
+    },
+    {
+      "source": "Verifying",
+      "event": "ManualStopProposal",
+      "target": "Diagnosing",
+      "guards": [
+        "noUncertainEffect",
+        "noDispatchInFlight",
+        "ownedTarget",
+        "invalidateOldPlan"
+      ]
+    },
+    {
+      "source": "Detected",
+      "event": "AppendObservation",
+      "target": "Detected",
+      "guards": [
+        "boundedEvidence",
+        "noImplicitAuthorization"
+      ]
+    },
+    {
+      "source": "Diagnosing",
+      "event": "AppendObservation",
+      "target": "Diagnosing",
+      "guards": [
+        "boundedEvidence",
+        "noImplicitAuthorization"
+      ]
+    },
+    {
+      "source": "AwaitingApproval",
+      "event": "AppendObservation",
+      "target": "AwaitingApproval",
+      "guards": [
+        "boundedEvidence",
+        "noImplicitAuthorization"
+      ]
+    },
+    {
+      "source": "Executing",
+      "event": "AppendObservation",
+      "target": "Executing",
+      "guards": [
+        "boundedEvidence",
+        "noImplicitAuthorization"
+      ]
+    },
+    {
+      "source": "Verifying",
+      "event": "AppendObservation",
+      "target": "Verifying",
+      "guards": [
+        "boundedEvidence",
+        "noImplicitAuthorization"
+      ]
+    },
+    {
+      "source": "NeedsReview",
+      "event": "AppendObservation",
+      "target": "NeedsReview",
+      "guards": [
+        "boundedEvidence",
+        "noImplicitAuthorization"
+      ]
+    }
+  ],
+  "event_mapping": {
+    "BeginDiagnosis": "ControlEvent BeginDiagnosis",
+    "AppendObservation": "Evidence",
+    "PlanReady": "DiagnosisResult with valid plan",
+    "NoPlan": "DiagnosisResult without plan",
+    "Approve": "Approval Approve",
+    "Reject": "Approval Reject",
+    "StopConfirmed": "ExecutionResult confirmed ForceStop",
+    "StartConfirmed": "ExecutionResult confirmed Start",
+    "ActionFailed": "ExecutionResult definite failure",
+    "ActionUncertain": "ExecutionResult uncertainty",
+    "VerificationPassed": "VerificationBatch all required checks",
+    "VerificationIncomplete": "VerificationBatch insufficient",
+    "PlanInvalidated": "ControlEvent PlanInvalidated",
+    "StartPlanReady": "DiagnosisResult followup start plan",
+    "ManualStopProposal": "ControlEvent ManualStopProposal; proposed ForceStop plan; not approval"
+  },
+  "needs_review_policy": "No general dismiss/close event exists in this milestone contract. Remains active until guarded start-plan path; external adjudication is future reviewed scope."
+}

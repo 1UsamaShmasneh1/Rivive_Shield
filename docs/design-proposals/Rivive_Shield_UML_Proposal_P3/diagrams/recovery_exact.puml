@@ -1,0 +1,49 @@
+@startuml
+title P3 DRAFT - recovery - NOT APPROVED
+hide empty members
+skinparam classAttributeIconSize 0
+class DatabaseVerifier {
+  + DatabaseVerifier() = default
+  + Result<DatabaseCheck> check(const std::string& databasePath, const ProcessObservation& stoppedProcess, Deadline deadline) const
+  + DatabaseVerifier(const DatabaseVerifier&) = delete
+  + DatabaseVerifier& operator=(const DatabaseVerifier&) = delete
+}
+class PlanPolicy {
+  + explicit PlanPolicy(TargetConfiguration configuration)
+  + Status validate(const RepairPlan& plan, const Incident& incident, UtcTime now) const
+  + Status revalidate(const RepairPlan& plan, const Approval& approval, const Incident& incident, const ProcessObservation& current, UtcTime now) const
+  + PlanPolicy(const PlanPolicy&) = delete
+  + PlanPolicy& operator=(const PlanPolicy&) = delete
+  - TargetConfiguration configuration_
+}
+class DiagnosticAgent {
+  + DiagnosticAgent(const PlanPolicy& policy, Now now)
+  + Result<DiagnosisResult> propose(const Incident& incident, const PlanId& newPlanId, Version newPlanRevision, UtcTime expiresAt) const
+  + DiagnosticAgent(const DiagnosticAgent&) = delete
+  + DiagnosticAgent& operator=(const DiagnosticAgent&) = delete
+  - const PlanPolicy& policy_
+  - Now now_
+  - DiagnosisResult evaluateCompiledRules(const Incident& incident, const PlanId& planId, Version revision, UtcTime expiresAt) const
+}
+class RepairExecutor {
+  + RepairExecutor(OwnedDemoProcess& target, IncidentRepository& repository, const PlanPolicy& policy, Now now)
+  + Result<ExecutionResult> executeOnce(const PlanId& planId, const ApprovalId& approvalId, const AttemptId& attemptId, const IncidentId& incidentId, Deadline deadline)
+  + RepairExecutor(const RepairExecutor&) = delete
+  + RepairExecutor& operator=(const RepairExecutor&) = delete
+  - OwnedDemoProcess& target_
+  - IncidentRepository& repository_
+  - const PlanPolicy& policy_
+  - Now now_
+  - std::mutex executionMutex_
+}
+class RecoveryVerifier {
+  + RecoveryVerifier(OwnedDemoProcess& target, const DatabaseVerifier& database, TargetConfiguration configuration, Now now)
+  + Result<VerificationBatch> verify(const RepairPlan& approvedPlan, const RepairAttempt& attempt, const ExecutionResult& execution, const DatabaseCheck& priorStoppedCheck, const std::vector<Evidence>& laterEvidence, Deadline deadline) const
+  + RecoveryVerifier(const RecoveryVerifier&) = delete
+  + RecoveryVerifier& operator=(const RecoveryVerifier&) = delete
+  - OwnedDemoProcess& target_
+  - const DatabaseVerifier& database_
+  - TargetConfiguration configuration_
+  - Now now_
+}
+@enduml

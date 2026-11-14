@@ -1,0 +1,68 @@
+@startuml
+title P3 DRAFT - process - NOT APPROVED
+hide empty members
+skinparam classAttributeIconSize 0
+class OwnedDemoProcess {
+  + virtual ~OwnedDemoProcess() = default
+  + virtual Result<ProcessIdentity> start(Deadline deadline) = 0
+  + virtual Result<ProcessObservation> observe() = 0
+  + virtual Status requestGracefulStop(const ProcessIdentity& expected, Deadline deadline) = 0
+  + virtual Status forceStop(const ProcessIdentity& expected, Deadline deadline) = 0
+}
+class WindowsOwnedDemoProcess {
+  + WindowsOwnedDemoProcess(TargetConfiguration configuration, SessionId session)
+  + ~WindowsOwnedDemoProcess() override
+  + Result<ProcessIdentity> start(Deadline deadline) override
+  + Result<ProcessObservation> observe() override
+  + Status requestGracefulStop(const ProcessIdentity& expected, Deadline deadline) override
+  + Status forceStop(const ProcessIdentity& expected, Deadline deadline) override
+  + WindowsOwnedDemoProcess(const WindowsOwnedDemoProcess&) = delete
+  + WindowsOwnedDemoProcess& operator=(const WindowsOwnedDemoProcess&) = delete
+  - TargetConfiguration configuration_
+  - SessionId session_
+  - Version generation_
+  - std::optional<ProcessIdentity> identity_
+  - bool ownershipUncertain_
+  - bool stopRequested_
+  - void* processHandle_
+  - void* threadHandle_
+}
+OwnedDemoProcess <|-- WindowsOwnedDemoProcess
+class MacOwnedDemoProcess {
+  + MacOwnedDemoProcess(TargetConfiguration configuration, SessionId session)
+  + ~MacOwnedDemoProcess() override
+  + Result<ProcessIdentity> start(Deadline deadline) override
+  + Result<ProcessObservation> observe() override
+  + Status requestGracefulStop(const ProcessIdentity& expected, Deadline deadline) override
+  + Status forceStop(const ProcessIdentity& expected, Deadline deadline) override
+  + MacOwnedDemoProcess(const MacOwnedDemoProcess&) = delete
+  + MacOwnedDemoProcess& operator=(const MacOwnedDemoProcess&) = delete
+  - TargetConfiguration configuration_
+  - SessionId session_
+  - Version generation_
+  - std::optional<ProcessIdentity> identity_
+  - bool ownershipUncertain_
+  - bool stopRequested_
+  - std::int64_t ownedChildPid_
+  - bool childReaped_
+}
+OwnedDemoProcess <|-- MacOwnedDemoProcess
+class ConnectionObserver {
+  + virtual ~ConnectionObserver() = default
+  + virtual Result<ConnectionSnapshot> snapshot(const FlowKey& flow, const ProcessIdentity& expected) const = 0
+}
+class WindowsConnectionObserver {
+  + WindowsConnectionObserver() = default
+  + Result<ConnectionSnapshot> snapshot(const FlowKey& flow, const ProcessIdentity& expected) const override
+  + WindowsConnectionObserver(const WindowsConnectionObserver&) = delete
+  + WindowsConnectionObserver& operator=(const WindowsConnectionObserver&) = delete
+}
+ConnectionObserver <|-- WindowsConnectionObserver
+class MacConnectionObserver {
+  + MacConnectionObserver() = default
+  + Result<ConnectionSnapshot> snapshot(const FlowKey& flow, const ProcessIdentity& expected) const override
+  + MacConnectionObserver(const MacConnectionObserver&) = delete
+  + MacConnectionObserver& operator=(const MacConnectionObserver&) = delete
+}
+ConnectionObserver <|-- MacConnectionObserver
+@enduml

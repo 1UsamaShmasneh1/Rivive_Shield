@@ -1,0 +1,85 @@
+@startuml
+title P3 DRAFT - booking - NOT APPROVED
+hide empty members
+skinparam classAttributeIconSize 0
+class TimeRange {
+  + UtcTime start
+  + UtcTime end
+}
+class Room {
+  + RoomId id
+  + std::string name
+}
+class BookingRequest {
+  + BookingId id
+  + RoomId roomId
+  + TimeRange interval
+  + std::string syntheticLabel
+}
+class Booking {
+  + BookingId id
+  + RoomId roomId
+  + TimeRange interval
+  + std::string syntheticLabel
+  + UtcTime createdAt
+  + Version version
+}
+class BookingCreateResult {
+  + Booking booking
+  + bool created
+}
+class BookingSnapshot {
+  + Version revision
+  + std::vector<Booking> bookings
+}
+class HttpServerConfiguration {
+  + std::string bindAddress
+  + std::uint16_t port
+  + std::string staticAssetRoot
+  + std::size_t maxRequestBytes
+  + std::chrono::milliseconds requestTimeout
+}
+class BookingRepository {
+  + virtual ~BookingRepository() = default
+  + virtual Result<std::vector<Room>> listRooms() const = 0
+  + virtual Result<BookingSnapshot> snapshot() const = 0
+  + virtual Result<BookingCreateResult> createIfAvailable(const BookingRequest& request, UtcTime now) = 0
+}
+class SqliteBookingRepository {
+  + explicit SqliteBookingRepository(SqliteConfiguration configuration)
+  + ~SqliteBookingRepository() override
+  + Result<std::vector<Room>> listRooms() const override
+  + Result<BookingSnapshot> snapshot() const override
+  + Result<BookingCreateResult> createIfAvailable(const BookingRequest& request, UtcTime now) override
+  + SqliteBookingRepository(const SqliteBookingRepository&) = delete
+  + SqliteBookingRepository& operator=(const SqliteBookingRepository&) = delete
+  - SqliteConfiguration configuration_
+  - sqlite3* database_
+  - mutable std::mutex mutex_
+}
+BookingRepository <|-- SqliteBookingRepository
+class BookingService {
+  + BookingService(BookingRepository& repository, Now now)
+  + Result<std::vector<Room>> listRooms() const
+  + Result<BookingSnapshot> listBookings() const
+  + Result<BookingCreateResult> createBooking(const BookingRequest& request)
+  + static Status validate(const BookingRequest& request)
+  + static bool overlaps(const TimeRange& first, const TimeRange& second)
+  + BookingService(const BookingService&) = delete
+  + BookingService& operator=(const BookingService&) = delete
+  - BookingRepository& repository_
+  - Now now_
+}
+class BookingHttpServer {
+  + BookingHttpServer(BookingService& service, HttpServerConfiguration configuration)
+  + ~BookingHttpServer()
+  + Status run()
+  + void requestStop()
+  + BookingHttpServer(const BookingHttpServer&) = delete
+  + BookingHttpServer& operator=(const BookingHttpServer&) = delete
+  - BookingService& service_
+  - HttpServerConfiguration configuration_
+  - httplib::Server* server_
+  - Status registerRoutes()
+}
+@enduml

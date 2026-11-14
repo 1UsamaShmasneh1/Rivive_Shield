@@ -1,0 +1,170 @@
+@startuml
+title P3 DRAFT - incident - NOT APPROVED
+hide empty members
+skinparam classAttributeIconSize 0
+class RuleAudit {
+  + std::string rulesetVersion
+  + std::optional<std::string> matchedRuleId
+  + std::vector<EvidenceId> evidenceRefs
+  + UtcTime evaluatedAt
+}
+class RepairPlan {
+  + PlanId id
+  + IncidentId incidentId
+  + Version revision
+  + ActionId action
+  + ProcessIdentity expectedProcess
+  + std::vector<EvidenceId> evidenceRefs
+  + UtcTime createdAt
+  + UtcTime expiresAt
+  + std::string explanation
+}
+class Approval {
+  + ApprovalId id
+  + PlanId planId
+  + Version planRevision
+  + IncidentId incidentId
+  + Version incidentRevision
+  + ApprovalDecision decision
+  + UtcTime decidedAt
+  + std::string operatorLabel
+  + bool matches(const RepairPlan& plan) const
+}
+class Incident {
+  + IncidentId id
+  + Version revision
+  + IncidentStatus status
+  + IncidentKind kind
+  + UtcTime detectedAt
+  + std::vector<Evidence> evidence
+  + std::vector<RepairPlan> plans
+  + std::vector<Approval> approvals
+  + std::vector<RuleAudit> ruleAudits
+}
+class DiagnosisResult {
+  + IncidentKind kind
+  + std::optional<RepairPlan> proposedPlan
+  + RuleAudit audit
+  + std::string explanation
+}
+class RepairAttempt {
+  + AttemptId id
+  + IncidentId incidentId
+  + PlanId planId
+  + Version planRevision
+  + ApprovalId approvalId
+  + AttemptStatus status
+  + UtcTime preparedAt
+  + std::optional<UtcTime> dispatchClaimedAt
+}
+class DispatchReceipt {
+  + AttemptId attemptId
+  + IncidentId incidentId
+  + Version recordVersion
+  + UtcTime claimedAt
+}
+class ExecutionResult {
+  + AttemptId attemptId
+  + ExecutionOutcome outcome
+  + std::optional<ProcessObservation> resultingProcess
+  + std::optional<Error> failure
+  + UtcTime finishedAt
+}
+class VerificationBatch {
+  + AttemptId attemptId
+  + CheckOutcome processCheck
+  + CheckOutcome databaseCheck
+  + CheckOutcome functionalCheck
+  + std::vector<Evidence> evidence
+}
+class IncidentRecord {
+  + Version recordVersion
+  + Incident incident
+  + std::vector<RepairAttempt> attempts
+  + std::vector<ExecutionResult> executions
+  + std::vector<VerificationBatch> verifications
+  + std::vector<EventId> acceptedEventIds
+}
+class SaveReceipt {
+  + IncidentId incidentId
+  + Version recordVersion
+  + UtcTime committedAt
+}
+class ControlEvent {
+  + ControlEventKind kind
+  + std::optional<RepairPlan> proposedPlan
+  + std::string reasonCode
+}
+class IncidentEvent {
+  + EventId id
+  + IncidentId incidentId
+  + Version expectedRevision
+  + UtcTime observedAt
+  + std::variant<Evidence, DiagnosisResult, Approval, ExecutionResult, VerificationBatch, ControlEvent, Error> payload
+}
+class Transition {
+  + IncidentStatus from
+  + IncidentStatus to
+  + Version nextRevision
+  + std::string reason
+}
+class IncidentRepository {
+  + virtual ~IncidentRepository() = default
+  + virtual Result<SaveReceipt> save(const IncidentRecord& record, Version expectedRecordVersion) = 0
+  + virtual Result<IncidentRecord> load(const IncidentId& id) const = 0
+  + virtual Result<std::vector<IncidentRecord>> loadPending() const = 0
+  + virtual Result<DispatchReceipt> claimDispatch(const IncidentId& id, const AttemptId& attempt, Version expectedRecordVersion, UtcTime now) = 0
+  + virtual Result<std::vector<IncidentRecord>> history(std::size_t offset, std::size_t limit) const = 0
+}
+class SqliteIncidentRepository {
+  + explicit SqliteIncidentRepository(SqliteConfiguration configuration)
+  + ~SqliteIncidentRepository() override
+  + Result<SaveReceipt> save(const IncidentRecord& record, Version expectedRecordVersion) override
+  + Result<IncidentRecord> load(const IncidentId& id) const override
+  + Result<std::vector<IncidentRecord>> loadPending() const override
+  + Result<DispatchReceipt> claimDispatch(const IncidentId& id, const AttemptId& attempt, Version expectedRecordVersion, UtcTime now) override
+  + Result<std::vector<IncidentRecord>> history(std::size_t offset, std::size_t limit) const override
+  + SqliteIncidentRepository(const SqliteIncidentRepository&) = delete
+  + SqliteIncidentRepository& operator=(const SqliteIncidentRepository&) = delete
+  - SqliteConfiguration configuration_
+  - sqlite3* database_
+  - mutable std::mutex mutex_
+}
+IncidentRepository <|-- SqliteIncidentRepository
+class IncidentStateMachine {
+  + IncidentStateMachine() = default
+  + Result<Transition> apply(const IncidentRecord& current, const IncidentEvent& event) const
+  + IncidentStateMachine(const IncidentStateMachine&) = delete
+  + IncidentStateMachine& operator=(const IncidentStateMachine&) = delete
+}
+class IncidentOrchestrator {
+  + IncidentOrchestrator(IncidentRepository& repository, DiagnosticAgent& diagnosis, RepairExecutor& executor, RecoveryVerifier& verifier, const IncidentStateMachine& stateMachine, Now now, std::size_t queueCapacity)
+  + Status enqueue(IncidentEvent event)
+  + Result<std::size_t> processPending(std::size_t maximum, Deadline deadline)
+  + Result<OperatorView> view() const
+  + Status reconcileAfterRestart()
+  + Status requestHistory(std::size_t offset, std::size_t limit)
+  + void publishSettingsResult(bool pending, bool saved, std::optional<Error> error)
+  + Result<bool> mayStartForSetup() const
+  + Status proposeManualStop(const IncidentId& incidentId, const ProcessIdentity& expected, const PlanId& planId, UtcTime expiresAt)
+  + IncidentOrchestrator(const IncidentOrchestrator&) = delete
+  + IncidentOrchestrator& operator=(const IncidentOrchestrator&) = delete
+  - IncidentRepository& repository_
+  - DiagnosticAgent& diagnosis_
+  - RepairExecutor& executor_
+  - RecoveryVerifier& verifier_
+  - const IncidentStateMachine& stateMachine_
+  - Now now_
+  - std::size_t queueCapacity_
+  - std::deque<IncidentEvent> events_
+  - std::optional<IncidentRecord> current_
+  - bool repairsBlocked_
+  - std::optional<Error> volatileFailure_
+  - mutable std::mutex queueMutex_
+  - std::thread::id ownerThread_
+  - std::deque<std::pair<std::size_t, std::size_t>> historyRequests_
+  - Status processHistoryRequest()
+  - OperatorView publishedView_
+  - mutable std::mutex viewMutex_
+}
+@enduml

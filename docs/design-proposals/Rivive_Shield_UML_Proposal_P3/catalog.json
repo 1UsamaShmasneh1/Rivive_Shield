@@ -1,0 +1,1243 @@
+[
+  {
+    "name": "Error",
+    "kind": "struct",
+    "group": "values",
+    "fields": [
+      "ErrorCode code;",
+      "std::string sanitizedMessage;"
+    ],
+    "methods": [],
+    "private": [],
+    "base": "",
+    "note": ""
+  },
+  {
+    "name": "TimeRange",
+    "kind": "struct",
+    "group": "booking",
+    "fields": [
+      "UtcTime start;",
+      "UtcTime end;"
+    ],
+    "methods": [],
+    "private": [],
+    "base": "",
+    "note": "APPROVED: store UTC; client displays in its local timezone; start < end. Half-open interval permits adjacent bookings. Exact wire format remains proposed."
+  },
+  {
+    "name": "Room",
+    "kind": "struct",
+    "group": "booking",
+    "fields": [
+      "RoomId id;",
+      "std::string name;"
+    ],
+    "methods": [],
+    "private": [],
+    "base": "",
+    "note": ""
+  },
+  {
+    "name": "BookingRequest",
+    "kind": "struct",
+    "group": "booking",
+    "fields": [
+      "BookingId id;",
+      "RoomId roomId;",
+      "TimeRange interval;",
+      "std::string syntheticLabel;"
+    ],
+    "methods": [],
+    "private": [],
+    "base": "",
+    "note": "APPROVED scope: ID is an idempotency key; identical retry returns the prior result without duplicate booking. APPROVED scope: different payload with same ID is rejected; exact wire status remains open."
+  },
+  {
+    "name": "Booking",
+    "kind": "struct",
+    "group": "booking",
+    "fields": [
+      "BookingId id;",
+      "RoomId roomId;",
+      "TimeRange interval;",
+      "std::string syntheticLabel;",
+      "UtcTime createdAt;",
+      "Version version;"
+    ],
+    "methods": [],
+    "private": [],
+    "base": "",
+    "note": ""
+  },
+  {
+    "name": "BookingCreateResult",
+    "kind": "struct",
+    "group": "booking",
+    "fields": [
+      "Booking booking;",
+      "bool created;"
+    ],
+    "methods": [],
+    "private": [],
+    "base": "",
+    "note": "Technical result: created=true only for newly committed booking; false for identical prior request. Enables proposed 201/200 distinction without re-query/race. Wire status mapping remains proposed."
+  },
+  {
+    "name": "BookingSnapshot",
+    "kind": "struct",
+    "group": "booking",
+    "fields": [
+      "Version revision;",
+      "std::vector<Booking> bookings;"
+    ],
+    "methods": [],
+    "private": [],
+    "base": "",
+    "note": ""
+  },
+  {
+    "name": "SqliteConfiguration",
+    "kind": "struct",
+    "group": "values",
+    "fields": [
+      "std::string databasePath;",
+      "std::chrono::milliseconds busyTimeout;",
+      "SqliteOpenMode openMode;"
+    ],
+    "methods": [],
+    "private": [],
+    "base": "",
+    "note": "Booking and incident paths must be distinct. No credentials. Journal/durability settings are fixed by reviewed schema policy, not an arbitrary SQL string."
+  },
+  {
+    "name": "HttpServerConfiguration",
+    "kind": "struct",
+    "group": "booking",
+    "fields": [
+      "std::string bindAddress;",
+      "std::uint16_t port;",
+      "std::string staticAssetRoot;",
+      "std::size_t maxRequestBytes;",
+      "std::chrono::milliseconds requestTimeout;"
+    ],
+    "methods": [],
+    "private": [],
+    "base": "",
+    "note": "Local prototype binds 127.0.0.1; no security claim for later Oracle deployment."
+  },
+  {
+    "name": "BookingRepository",
+    "kind": "class",
+    "group": "booking",
+    "fields": [],
+    "methods": [
+      "virtual ~BookingRepository() = default;",
+      "virtual Result<std::vector<Room>> listRooms() const = 0;",
+      "virtual Result<BookingSnapshot> snapshot() const = 0;",
+      "virtual Result<BookingCreateResult> createIfAvailable(const BookingRequest& request, UtcTime now) = 0;"
+    ],
+    "private": [],
+    "base": "",
+    "note": "APPROVED: one write transaction checks overlaps, deduplicates and persists request ID/result with unique ID; explicit rollback on failure. Same ID with different data is rejected. Concurrent/crash tests required. Journal/synchronous policy remains open. No disable-guard/cancel/repair API in first milestone."
+  },
+  {
+    "name": "SqliteBookingRepository",
+    "kind": "class",
+    "group": "booking",
+    "fields": [],
+    "methods": [
+      "explicit SqliteBookingRepository(SqliteConfiguration configuration);",
+      "~SqliteBookingRepository() override;",
+      "Result<std::vector<Room>> listRooms() const override;",
+      "Result<BookingSnapshot> snapshot() const override;",
+      "Result<BookingCreateResult> createIfAvailable(const BookingRequest& request, UtcTime now) override;",
+      "SqliteBookingRepository(const SqliteBookingRepository&) = delete;",
+      "SqliteBookingRepository& operator=(const SqliteBookingRepository&) = delete;"
+    ],
+    "private": [
+      "SqliteConfiguration configuration_;",
+      "sqlite3* database_;",
+      "mutable std::mutex mutex_;"
+    ],
+    "base": "BookingRepository",
+    "note": "Open existing/initialize new only in explicit setup mode documented by composition; schema migration failure aborts. Repository reports errors; no exception hidden as success."
+  },
+  {
+    "name": "BookingService",
+    "kind": "class",
+    "group": "booking",
+    "fields": [],
+    "methods": [
+      "BookingService(BookingRepository& repository, Now now);",
+      "Result<std::vector<Room>> listRooms() const;",
+      "Result<BookingSnapshot> listBookings() const;",
+      "Result<BookingCreateResult> createBooking(const BookingRequest& request);",
+      "static Status validate(const BookingRequest& request);",
+      "static bool overlaps(const TimeRange& first, const TimeRange& second);",
+      "BookingService(const BookingService&) = delete;",
+      "BookingService& operator=(const BookingService&) = delete;"
+    ],
+    "private": [
+      "BookingRepository& repository_;",
+      "Now now_;"
+    ],
+    "base": "",
+    "note": ""
+  },
+  {
+    "name": "BookingHttpServer",
+    "kind": "class",
+    "group": "booking",
+    "fields": [],
+    "methods": [
+      "BookingHttpServer(BookingService& service, HttpServerConfiguration configuration);",
+      "~BookingHttpServer();",
+      "Status run();",
+      "void requestStop();",
+      "BookingHttpServer(const BookingHttpServer&) = delete;",
+      "BookingHttpServer& operator=(const BookingHttpServer&) = delete;"
+    ],
+    "private": [
+      "BookingService& service_;",
+      "HttpServerConfiguration configuration_;",
+      "httplib::Server* server_;",
+      "Status registerRoutes();"
+    ],
+    "base": "",
+    "note": "Owns external httplib server; run blocks only backend main thread. APPROVED booking scope: list rooms, list bookings and create booking. APPROVED routes: GET /api/rooms, GET /api/bookings, POST /api/bookings. JSON schema, UTC wire representation and HTTP status mapping remain proposed. No dependency on Rivive Shield."
+  },
+  {
+    "name": "TargetConfiguration",
+    "kind": "struct",
+    "group": "values",
+    "fields": [
+      "std::string targetLabel;",
+      "std::string executablePath;",
+      "std::vector<std::string> fixedArguments;",
+      "std::string workingDirectory;",
+      "std::string bookingDatabasePath;",
+      "std::uint16_t loopbackPort;"
+    ],
+    "methods": [],
+    "private": [],
+    "base": "",
+    "note": "One operator-reviewed local target, fixed executable/arguments; no shell, no caller PID, no remote execution. Paths validated at setup."
+  },
+  {
+    "name": "ProcessIdentity",
+    "kind": "struct",
+    "group": "values",
+    "fields": [
+      "SessionId controllerSessionId;",
+      "Version generation;",
+      "std::uint64_t processId;",
+      "std::string creationToken;"
+    ],
+    "methods": [],
+    "private": [],
+    "base": "",
+    "note": "PID is descriptive, not a mutation authority. Windows authority is retained HANDLE; Mac authority is exclusive unreaped child relationship."
+  },
+  {
+    "name": "ProcessObservation",
+    "kind": "struct",
+    "group": "values",
+    "fields": [
+      "ProcessIdentity identity;",
+      "ProcessState state;",
+      "UtcTime observedAt;",
+      "std::optional<std::uint32_t> exitCode;",
+      "bool controllerRequestedStop;"
+    ],
+    "methods": [],
+    "private": [],
+    "base": "",
+    "note": "Exit code alone never classifies user intent or crash cause."
+  },
+  {
+    "name": "CaptureConfiguration",
+    "kind": "struct",
+    "group": "values",
+    "fields": [
+      "std::string interfaceName;",
+      "std::uint16_t loopbackPort;",
+      "std::size_t maxPacketBytes;",
+      "std::size_t maxBufferedBytes;",
+      "std::size_t maxFlows;",
+      "std::size_t maxPairsPerFlow;",
+      "std::chrono::milliseconds flowIdleTimeout;",
+      "std::chrono::milliseconds operationObservationLimit;"
+    ],
+    "methods": [],
+    "private": [],
+    "base": "",
+    "note": "All values positive and reviewed; no invented numeric production defaults. Only loopback IPv4 and port; failure/limit marks uncertainty."
+  },
+  {
+    "name": "FlowKey",
+    "kind": "struct",
+    "group": "values",
+    "fields": [
+      "std::string clientAddress;",
+      "std::uint16_t clientPort;",
+      "std::string serverAddress;",
+      "std::uint16_t serverPort;"
+    ],
+    "methods": [
+      "bool operator==(const FlowKey& other) const;"
+    ],
+    "private": [],
+    "base": "",
+    "note": ""
+  },
+  {
+    "name": "ConnectionSnapshot",
+    "kind": "struct",
+    "group": "values",
+    "fields": [
+      "FlowKey flow;",
+      "UtcTime queryStartedAt;",
+      "UtcTime queryFinishedAt;",
+      "std::optional<ProcessIdentity> expectedTarget;",
+      "Attribution attribution;"
+    ],
+    "methods": [],
+    "private": [],
+    "base": "",
+    "note": "SnapshotCandidate means match NOW, not packet-time ownership. None/Unknown never authorize repair."
+  },
+  {
+    "name": "HttpObservation",
+    "kind": "struct",
+    "group": "values",
+    "fields": [
+      "FlowKey flow;",
+      "std::uint64_t requestOrdinal;",
+      "HttpMethod method;",
+      "HttpOutcome outcome;",
+      "std::optional<unsigned> statusCode;",
+      "std::optional<std::chrono::microseconds> observedInterval;",
+      "UtcTime observedAt;",
+      "bool captureUncertain;",
+      "std::optional<ConnectionSnapshot> ownerSnapshot;"
+    ],
+    "methods": [],
+    "private": [],
+    "base": "",
+    "note": "No URI/body/header values. Incomplete/unsupported is not success; HTTP status and complete transport are independent."
+  },
+  {
+    "name": "DatabaseCheck",
+    "kind": "struct",
+    "group": "values",
+    "fields": [
+      "CheckOutcome integrity;",
+      "CheckOutcome foreignKeys;",
+      "bool writersConfirmedStopped;",
+      "UtcTime checkedAt;",
+      "std::string sanitizedDetail;",
+      "ProcessIdentity checkedGeneration;",
+      "std::string configuredDatabaseKey;"
+    ],
+    "methods": [],
+    "private": [],
+    "base": "",
+    "note": "Read-only open without CREATE; preserve sidecars. Busy/missing/invalid/unknown never PASS. Not business invariants or forensic immutability."
+  },
+  {
+    "name": "Evidence",
+    "kind": "struct",
+    "group": "values",
+    "fields": [
+      "EvidenceId id;",
+      "UtcTime observedAt;",
+      "EvidenceKind kind;",
+      "std::variant<ProcessObservation, HttpObservation, DatabaseCheck, Error> observation;"
+    ],
+    "methods": [],
+    "private": [],
+    "base": "",
+    "note": "Immutable accepted metadata; no raw packet or request payload in stored evidence."
+  },
+  {
+    "name": "CaptureStatistics",
+    "kind": "struct",
+    "group": "values",
+    "fields": [
+      "std::uint64_t packetsRead;",
+      "std::uint64_t packetsDropped;",
+      "bool statisticsAvailable;",
+      "bool uncertain;"
+    ],
+    "methods": [],
+    "private": [],
+    "base": "",
+    "note": ""
+  },
+  {
+    "name": "PacketView",
+    "kind": "struct",
+    "group": "values",
+    "fields": [
+      "const std::uint8_t* bytes;",
+      "std::size_t size;",
+      "int linkType;",
+      "UtcTime captureTimestamp;"
+    ],
+    "methods": [],
+    "private": [],
+    "base": "",
+    "note": "Borrowed memory valid only during callback; decoder must not retain pointer."
+  },
+  {
+    "name": "StreamChunk",
+    "kind": "struct",
+    "group": "values",
+    "fields": [
+      "FlowKey flow;",
+      "Direction direction;",
+      "const std::uint8_t* bytes;",
+      "std::size_t size;",
+      "bool bytesMissing;",
+      "bool beganAtSyn;",
+      "bool connectionClosed;"
+    ],
+    "methods": [],
+    "private": [],
+    "base": "",
+    "note": "Temporary bytes owned by reassembler; missing marker is never fed to HTTP parser. connectionClosed does not infer application cause."
+  },
+  {
+    "name": "OwnedDemoProcess",
+    "kind": "class",
+    "group": "process",
+    "fields": [],
+    "methods": [
+      "virtual ~OwnedDemoProcess() = default;",
+      "virtual Result<ProcessIdentity> start(Deadline deadline) = 0;",
+      "virtual Result<ProcessObservation> observe() = 0;",
+      "virtual Status requestGracefulStop(const ProcessIdentity& expected, Deadline deadline) = 0;",
+      "virtual Status forceStop(const ProcessIdentity& expected, Deadline deadline) = 0;"
+    ],
+    "private": [],
+    "base": "",
+    "note": "Only controller-created fixed target; graceful stop is platform capability, Unsupported is valid. Do not terminate/reopen arbitrary PID."
+  },
+  {
+    "name": "WindowsOwnedDemoProcess",
+    "kind": "class",
+    "group": "process",
+    "fields": [],
+    "methods": [
+      "WindowsOwnedDemoProcess(TargetConfiguration configuration, SessionId session);",
+      "~WindowsOwnedDemoProcess() override;",
+      "Result<ProcessIdentity> start(Deadline deadline) override;",
+      "Result<ProcessObservation> observe() override;",
+      "Status requestGracefulStop(const ProcessIdentity& expected, Deadline deadline) override;",
+      "Status forceStop(const ProcessIdentity& expected, Deadline deadline) override;",
+      "WindowsOwnedDemoProcess(const WindowsOwnedDemoProcess&) = delete;",
+      "WindowsOwnedDemoProcess& operator=(const WindowsOwnedDemoProcess&) = delete;"
+    ],
+    "private": [
+      "TargetConfiguration configuration_;",
+      "SessionId session_;",
+      "Version generation_;",
+      "std::optional<ProcessIdentity> identity_;",
+      "bool ownershipUncertain_;",
+      "bool stopRequested_;",
+      "void* processHandle_;",
+      "void* threadHandle_;"
+    ],
+    "base": "OwnedDemoProcess",
+    "note": "Serialized owner thread. Destructor releases handles/resources but never silently forces termination. Mac implementation/permissions pending actual test."
+  },
+  {
+    "name": "MacOwnedDemoProcess",
+    "kind": "class",
+    "group": "process",
+    "fields": [],
+    "methods": [
+      "MacOwnedDemoProcess(TargetConfiguration configuration, SessionId session);",
+      "~MacOwnedDemoProcess() override;",
+      "Result<ProcessIdentity> start(Deadline deadline) override;",
+      "Result<ProcessObservation> observe() override;",
+      "Status requestGracefulStop(const ProcessIdentity& expected, Deadline deadline) override;",
+      "Status forceStop(const ProcessIdentity& expected, Deadline deadline) override;",
+      "MacOwnedDemoProcess(const MacOwnedDemoProcess&) = delete;",
+      "MacOwnedDemoProcess& operator=(const MacOwnedDemoProcess&) = delete;"
+    ],
+    "private": [
+      "TargetConfiguration configuration_;",
+      "SessionId session_;",
+      "Version generation_;",
+      "std::optional<ProcessIdentity> identity_;",
+      "bool ownershipUncertain_;",
+      "bool stopRequested_;",
+      "std::int64_t ownedChildPid_;",
+      "bool childReaped_;"
+    ],
+    "base": "OwnedDemoProcess",
+    "note": "Serialized owner thread. Destructor releases handles/resources but never silently forces termination. Mac implementation/permissions pending actual test."
+  },
+  {
+    "name": "ConnectionObserver",
+    "kind": "class",
+    "group": "process",
+    "fields": [],
+    "methods": [
+      "virtual ~ConnectionObserver() = default;",
+      "virtual Result<ConnectionSnapshot> snapshot(const FlowKey& flow, const ProcessIdentity& expected) const = 0;"
+    ],
+    "private": [],
+    "base": "",
+    "note": ""
+  },
+  {
+    "name": "WindowsConnectionObserver",
+    "kind": "class",
+    "group": "process",
+    "fields": [],
+    "methods": [
+      "WindowsConnectionObserver() = default;",
+      "Result<ConnectionSnapshot> snapshot(const FlowKey& flow, const ProcessIdentity& expected) const override;",
+      "WindowsConnectionObserver(const WindowsConnectionObserver&) = delete;",
+      "WindowsConnectionObserver& operator=(const WindowsConnectionObserver&) = delete;"
+    ],
+    "private": [],
+    "base": "ConnectionObserver",
+    "note": "Mac may return Unsupported/Unknown until implementation verified. Windows snapshot cannot prove packet-time attribution."
+  },
+  {
+    "name": "MacConnectionObserver",
+    "kind": "class",
+    "group": "process",
+    "fields": [],
+    "methods": [
+      "MacConnectionObserver() = default;",
+      "Result<ConnectionSnapshot> snapshot(const FlowKey& flow, const ProcessIdentity& expected) const override;",
+      "MacConnectionObserver(const MacConnectionObserver&) = delete;",
+      "MacConnectionObserver& operator=(const MacConnectionObserver&) = delete;"
+    ],
+    "private": [],
+    "base": "ConnectionObserver",
+    "note": "Mac may return Unsupported/Unknown until implementation verified. Windows snapshot cannot prove packet-time attribution."
+  },
+  {
+    "name": "PacketCapture",
+    "kind": "class",
+    "group": "monitor",
+    "fields": [],
+    "methods": [
+      "virtual ~PacketCapture() = default;",
+      "virtual Status open(const CaptureConfiguration& configuration) = 0;",
+      "virtual Result<std::size_t> readBatch(std::size_t maxPackets, const PacketSink& sink, Deadline deadline) = 0;",
+      "virtual Result<CaptureStatistics> statistics() const = 0;",
+      "virtual void close() = 0;"
+    ],
+    "private": [],
+    "base": "",
+    "note": ""
+  },
+  {
+    "name": "PcapLoopbackCapture",
+    "kind": "class",
+    "group": "monitor",
+    "fields": [],
+    "methods": [
+      "PcapLoopbackCapture();",
+      "~PcapLoopbackCapture() override;",
+      "Status open(const CaptureConfiguration& configuration) override;",
+      "Result<std::size_t> readBatch(std::size_t maxPackets, const PacketSink& sink, Deadline deadline) override;",
+      "Result<CaptureStatistics> statistics() const override;",
+      "void close() override;",
+      "PcapLoopbackCapture(const PcapLoopbackCapture&) = delete;",
+      "PcapLoopbackCapture& operator=(const PcapLoopbackCapture&) = delete;"
+    ],
+    "private": [
+      "pcap* handle_;",
+      "std::optional<CaptureConfiguration> configuration_;",
+      "CaptureStatistics statistics_;"
+    ],
+    "base": "PacketCapture",
+    "note": "External pcap state; Npcap Windows / libpcap Mac. No silent permissions elevation. Filter and link type verified before read."
+  },
+  {
+    "name": "TcpStreamDecoder",
+    "kind": "class",
+    "group": "monitor",
+    "fields": [],
+    "methods": [
+      "TcpStreamDecoder(CaptureConfiguration configuration, StreamSink sink);",
+      "~TcpStreamDecoder();",
+      "Status accept(const PacketView& packet);",
+      "void expire(SteadyTime now);",
+      "void reset();",
+      "TcpStreamDecoder(const TcpStreamDecoder&) = delete;",
+      "TcpStreamDecoder& operator=(const TcpStreamDecoder&) = delete;"
+    ],
+    "private": [
+      "CaptureConfiguration configuration_;",
+      "StreamSink sink_;",
+      "pcpp::TcpReassembly* reassembly_;",
+      "std::vector<FlowKey> activeFlows_;",
+      "std::size_t acceptedBytes_;",
+      "void deliver(const StreamChunk& chunk);"
+    ],
+    "base": "",
+    "note": "Wrap PCPP callback; bytesMissing/overflow/midstream forces uncertain flow. close/reset release buffers; never network sockets. Conservative accepted-byte budget is enforced before reassembly; rotation/reset never turns incomplete data into complete evidence."
+  },
+  {
+    "name": "HttpFlowState",
+    "kind": "struct",
+    "group": "monitor",
+    "fields": [
+      "FlowKey flow;",
+      "llhttp__internal_s* requestParser;",
+      "llhttp__internal_s* responseParser;",
+      "std::optional<SteadyTime> requestObservedStart;",
+      "std::uint64_t completedRequests;",
+      "std::uint64_t completedResponses;",
+      "HttpMethod pendingMethod;",
+      "bool requestComplete;",
+      "bool synchronized;",
+      "bool unsupported;",
+      "bool gap;",
+      "bool parseError;",
+      "SteadyTime lastActivity;",
+      "HttpSessionTracker* owner;"
+    ],
+    "methods": [],
+    "private": [],
+    "base": "",
+    "note": "Parser pointers are external llhttp state. No application body accumulation. One pending request per flow; later keep-alive is serial."
+  },
+  {
+    "name": "HttpSessionTracker",
+    "kind": "class",
+    "group": "monitor",
+    "fields": [],
+    "methods": [
+      "HttpSessionTracker(CaptureConfiguration configuration, HttpSink sink, Now now);",
+      "~HttpSessionTracker();",
+      "Status accept(const StreamChunk& chunk);",
+      "void expire(SteadyTime now);",
+      "void invalidateAll(const Error& reason);",
+      "void reset();",
+      "HttpSessionTracker(const HttpSessionTracker&) = delete;",
+      "HttpSessionTracker& operator=(const HttpSessionTracker&) = delete;"
+    ],
+    "private": [
+      "CaptureConfiguration configuration_;",
+      "HttpSink sink_;",
+      "Now now_;",
+      "std::list<HttpFlowState> flows_;",
+      "Status beginRequest(HttpFlowState& flow);",
+      "Status completeRequest(HttpFlowState& flow);",
+      "Status completeResponse(HttpFlowState& flow);",
+      "void markUncertain(HttpFlowState& flow, HttpOutcome outcome);",
+      "llhttp_settings_s* parserSettings_;"
+    ],
+    "base": "",
+    "note": "GET/POST HTTP1.1 serial only; unsupported 1xx/upgrade/pipeline marked unknown, not silently skipped. Timing is observation duration, not internal execution. Parser callbacks must map to listed helpers. Stable list node addresses back llhttp.data; never move nodes. Free both parsers before erasing a node; callbacks are synchronous on owner thread and cannot survive erase/reset."
+  },
+  {
+    "name": "Monitor",
+    "kind": "class",
+    "group": "monitor",
+    "fields": [],
+    "methods": [
+      "Monitor(PacketCapture& capture, TcpStreamDecoder& tcp, HttpSessionTracker& http, OwnedDemoProcess& process, const ConnectionObserver& connections, EvidenceSink sink, Now now);",
+      "Status start(const CaptureConfiguration& configuration);",
+      "Status tick(Deadline deadline);",
+      "void stop();",
+      "void receiveHttp(const HttpObservation& observation);",
+      "Monitor(const Monitor&) = delete;",
+      "Monitor& operator=(const Monitor&) = delete;"
+    ],
+    "private": [
+      "PacketCapture& capture_;",
+      "TcpStreamDecoder& tcp_;",
+      "HttpSessionTracker& http_;",
+      "OwnedDemoProcess& process_;",
+      "const ConnectionObserver& connections_;",
+      "EvidenceSink sink_;",
+      "Now now_;",
+      "std::optional<ProcessObservation> lastProcess_;"
+    ],
+    "base": "",
+    "note": "Passive observation; no automatic HTTP health/booking requests. Absence of traffic is not health. OS process checks are separate from network polling."
+  },
+  {
+    "name": "RuleAudit",
+    "kind": "struct",
+    "group": "incident",
+    "fields": [
+      "std::string rulesetVersion;",
+      "std::optional<std::string> matchedRuleId;",
+      "std::vector<EvidenceId> evidenceRefs;",
+      "UtcTime evaluatedAt;"
+    ],
+    "methods": [],
+    "private": [],
+    "base": "",
+    "note": ""
+  },
+  {
+    "name": "RepairPlan",
+    "kind": "struct",
+    "group": "incident",
+    "fields": [
+      "PlanId id;",
+      "IncidentId incidentId;",
+      "Version revision;",
+      "ActionId action;",
+      "ProcessIdentity expectedProcess;",
+      "std::vector<EvidenceId> evidenceRefs;",
+      "UtcTime createdAt;",
+      "UtcTime expiresAt;",
+      "std::string explanation;"
+    ],
+    "methods": [],
+    "private": [],
+    "base": "",
+    "note": "Immutable exact action/target revision. Proposed actions only StartStoppedOwnedTarget or ForceStopOwnedTarget. Force stop is a separate displayed/approved plan; never inferred approval."
+  },
+  {
+    "name": "Approval",
+    "kind": "struct",
+    "group": "incident",
+    "fields": [
+      "ApprovalId id;",
+      "PlanId planId;",
+      "Version planRevision;",
+      "IncidentId incidentId;",
+      "Version incidentRevision;",
+      "ApprovalDecision decision;",
+      "UtcTime decidedAt;",
+      "std::string operatorLabel;"
+    ],
+    "methods": [
+      "bool matches(const RepairPlan& plan) const;"
+    ],
+    "private": [],
+    "base": "",
+    "note": ""
+  },
+  {
+    "name": "Incident",
+    "kind": "struct",
+    "group": "incident",
+    "fields": [
+      "IncidentId id;",
+      "Version revision;",
+      "IncidentStatus status;",
+      "IncidentKind kind;",
+      "UtcTime detectedAt;",
+      "std::vector<Evidence> evidence;",
+      "std::vector<RepairPlan> plans;",
+      "std::vector<Approval> approvals;",
+      "std::vector<RuleAudit> ruleAudits;"
+    ],
+    "methods": [],
+    "private": [],
+    "base": "",
+    "note": ""
+  },
+  {
+    "name": "DiagnosisResult",
+    "kind": "struct",
+    "group": "incident",
+    "fields": [
+      "IncidentKind kind;",
+      "std::optional<RepairPlan> proposedPlan;",
+      "RuleAudit audit;",
+      "std::string explanation;"
+    ],
+    "methods": [],
+    "private": [],
+    "base": "",
+    "note": "HTTP-only symptoms/unknown ownership may produce no plan. No inference of cause from status alone."
+  },
+  {
+    "name": "RepairAttempt",
+    "kind": "struct",
+    "group": "incident",
+    "fields": [
+      "AttemptId id;",
+      "IncidentId incidentId;",
+      "PlanId planId;",
+      "Version planRevision;",
+      "ApprovalId approvalId;",
+      "AttemptStatus status;",
+      "UtcTime preparedAt;",
+      "std::optional<UtcTime> dispatchClaimedAt;"
+    ],
+    "methods": [],
+    "private": [],
+    "base": "",
+    "note": ""
+  },
+  {
+    "name": "DispatchReceipt",
+    "kind": "struct",
+    "group": "incident",
+    "fields": [
+      "AttemptId attemptId;",
+      "IncidentId incidentId;",
+      "Version recordVersion;",
+      "UtcTime claimedAt;"
+    ],
+    "methods": [],
+    "private": [],
+    "base": "",
+    "note": ""
+  },
+  {
+    "name": "ExecutionResult",
+    "kind": "struct",
+    "group": "incident",
+    "fields": [
+      "AttemptId attemptId;",
+      "ExecutionOutcome outcome;",
+      "std::optional<ProcessObservation> resultingProcess;",
+      "std::optional<Error> failure;",
+      "UtcTime finishedAt;"
+    ],
+    "methods": [],
+    "private": [],
+    "base": "",
+    "note": "Maybe-invoked failure is Uncertain; no automatic retry."
+  },
+  {
+    "name": "VerificationBatch",
+    "kind": "struct",
+    "group": "incident",
+    "fields": [
+      "AttemptId attemptId;",
+      "CheckOutcome processCheck;",
+      "CheckOutcome databaseCheck;",
+      "CheckOutcome functionalCheck;",
+      "std::vector<Evidence> evidence;"
+    ],
+    "methods": [],
+    "private": [],
+    "base": "",
+    "note": "Functional confirmation comes from a separately labeled operator-driven synthetic test; no automatic modifying booking probe. NotRun blocks Recovered."
+  },
+  {
+    "name": "IncidentRecord",
+    "kind": "struct",
+    "group": "incident",
+    "fields": [
+      "Version recordVersion;",
+      "Incident incident;",
+      "std::vector<RepairAttempt> attempts;",
+      "std::vector<ExecutionResult> executions;",
+      "std::vector<VerificationBatch> verifications;",
+      "std::vector<EventId> acceptedEventIds;"
+    ],
+    "methods": [],
+    "private": [],
+    "base": "",
+    "note": ""
+  },
+  {
+    "name": "SaveReceipt",
+    "kind": "struct",
+    "group": "incident",
+    "fields": [
+      "IncidentId incidentId;",
+      "Version recordVersion;",
+      "UtcTime committedAt;"
+    ],
+    "methods": [],
+    "private": [],
+    "base": "",
+    "note": ""
+  },
+  {
+    "name": "ControlEvent",
+    "kind": "struct",
+    "group": "incident",
+    "fields": [
+      "ControlEventKind kind;",
+      "std::optional<RepairPlan> proposedPlan;",
+      "std::string reasonCode;"
+    ],
+    "methods": [],
+    "private": [],
+    "base": "",
+    "note": "Technical typed control event, never a magic Error. BeginDiagnosis/PlanInvalidated carry no plan; ManualStopProposal carries a proposed ForceStop plan bound to selected owned target. It is not approval or dispatch authority."
+  },
+  {
+    "name": "IncidentEvent",
+    "kind": "struct",
+    "group": "incident",
+    "fields": [
+      "EventId id;",
+      "IncidentId incidentId;",
+      "Version expectedRevision;",
+      "UtcTime observedAt;",
+      "std::variant<Evidence, DiagnosisResult, Approval, ExecutionResult, VerificationBatch, ControlEvent, Error> payload;"
+    ],
+    "methods": [],
+    "private": [],
+    "base": "",
+    "note": ""
+  },
+  {
+    "name": "Transition",
+    "kind": "struct",
+    "group": "incident",
+    "fields": [
+      "IncidentStatus from;",
+      "IncidentStatus to;",
+      "Version nextRevision;",
+      "std::string reason;"
+    ],
+    "methods": [],
+    "private": [],
+    "base": "",
+    "note": ""
+  },
+  {
+    "name": "OperatorView",
+    "kind": "struct",
+    "group": "ui",
+    "fields": [
+      "std::optional<IncidentRecord> current;",
+      "std::vector<HttpObservation> recentActivity;",
+      "std::optional<ProcessObservation> process;",
+      "bool durable;",
+      "bool repairsBlocked;",
+      "std::optional<Error> visibleError;",
+      "std::vector<IncidentRecord> historyPage;",
+      "std::size_t historyOffset;",
+      "bool historyPending;",
+      "std::optional<Error> historyError;",
+      "bool settingsPending;",
+      "bool settingsSaved;",
+      "std::optional<Error> settingsError;"
+    ],
+    "methods": [],
+    "private": [],
+    "base": "",
+    "note": "Bounded metadata only; durable=false conspicuous; never show unsaved recovery."
+  },
+  {
+    "name": "IncidentRepository",
+    "kind": "class",
+    "group": "incident",
+    "fields": [],
+    "methods": [
+      "virtual ~IncidentRepository() = default;",
+      "virtual Result<SaveReceipt> save(const IncidentRecord& record, Version expectedRecordVersion) = 0;",
+      "virtual Result<IncidentRecord> load(const IncidentId& id) const = 0;",
+      "virtual Result<std::vector<IncidentRecord>> loadPending() const = 0;",
+      "virtual Result<DispatchReceipt> claimDispatch(const IncidentId& id, const AttemptId& attempt, Version expectedRecordVersion, UtcTime now) = 0;",
+      "virtual Result<std::vector<IncidentRecord>> history(std::size_t offset, std::size_t limit) const = 0;"
+    ],
+    "private": [],
+    "base": "",
+    "note": ""
+  },
+  {
+    "name": "SqliteIncidentRepository",
+    "kind": "class",
+    "group": "incident",
+    "fields": [],
+    "methods": [
+      "explicit SqliteIncidentRepository(SqliteConfiguration configuration);",
+      "~SqliteIncidentRepository() override;",
+      "Result<SaveReceipt> save(const IncidentRecord& record, Version expectedRecordVersion) override;",
+      "Result<IncidentRecord> load(const IncidentId& id) const override;",
+      "Result<std::vector<IncidentRecord>> loadPending() const override;",
+      "Result<DispatchReceipt> claimDispatch(const IncidentId& id, const AttemptId& attempt, Version expectedRecordVersion, UtcTime now) override;",
+      "Result<std::vector<IncidentRecord>> history(std::size_t offset, std::size_t limit) const override;",
+      "SqliteIncidentRepository(const SqliteIncidentRepository&) = delete;",
+      "SqliteIncidentRepository& operator=(const SqliteIncidentRepository&) = delete;"
+    ],
+    "private": [
+      "SqliteConfiguration configuration_;",
+      "sqlite3* database_;",
+      "mutable std::mutex mutex_;"
+    ],
+    "base": "IncidentRepository",
+    "note": ""
+  },
+  {
+    "name": "DatabaseVerifier",
+    "kind": "class",
+    "group": "recovery",
+    "fields": [],
+    "methods": [
+      "DatabaseVerifier() = default;",
+      "Result<DatabaseCheck> check(const std::string& databasePath, const ProcessObservation& stoppedProcess, Deadline deadline) const;",
+      "DatabaseVerifier(const DatabaseVerifier&) = delete;",
+      "DatabaseVerifier& operator=(const DatabaseVerifier&) = delete;"
+    ],
+    "private": [],
+    "base": "",
+    "note": "Verify expected local configured DB and writers stopped; no CREATE; no repair SQL; no sidecar deletion. Other possible writers => Inconclusive."
+  },
+  {
+    "name": "PlanPolicy",
+    "kind": "class",
+    "group": "recovery",
+    "fields": [],
+    "methods": [
+      "explicit PlanPolicy(TargetConfiguration configuration);",
+      "Status validate(const RepairPlan& plan, const Incident& incident, UtcTime now) const;",
+      "Status revalidate(const RepairPlan& plan, const Approval& approval, const Incident& incident, const ProcessObservation& current, UtcTime now) const;",
+      "PlanPolicy(const PlanPolicy&) = delete;",
+      "PlanPolicy& operator=(const PlanPolicy&) = delete;"
+    ],
+    "private": [
+      "TargetConfiguration configuration_;"
+    ],
+    "base": "",
+    "note": ""
+  },
+  {
+    "name": "DiagnosticAgent",
+    "kind": "class",
+    "group": "recovery",
+    "fields": [],
+    "methods": [
+      "DiagnosticAgent(const PlanPolicy& policy, Now now);",
+      "Result<DiagnosisResult> propose(const Incident& incident, const PlanId& newPlanId, Version newPlanRevision, UtcTime expiresAt) const;",
+      "DiagnosticAgent(const DiagnosticAgent&) = delete;",
+      "DiagnosticAgent& operator=(const DiagnosticAgent&) = delete;"
+    ],
+    "private": [
+      "const PlanPolicy& policy_;",
+      "Now now_;",
+      "DiagnosisResult evaluateCompiledRules(const Incident& incident, const PlanId& planId, Version revision, UtcTime expiresAt) const;"
+    ],
+    "base": "",
+    "note": "Compiled-in versioned rules only. Unknown cause/ownership cannot become destructive authorization."
+  },
+  {
+    "name": "RepairExecutor",
+    "kind": "class",
+    "group": "recovery",
+    "fields": [],
+    "methods": [
+      "RepairExecutor(OwnedDemoProcess& target, IncidentRepository& repository, const PlanPolicy& policy, Now now);",
+      "Result<ExecutionResult> executeOnce(const PlanId& planId, const ApprovalId& approvalId, const AttemptId& attemptId, const IncidentId& incidentId, Deadline deadline);",
+      "RepairExecutor(const RepairExecutor&) = delete;",
+      "RepairExecutor& operator=(const RepairExecutor&) = delete;"
+    ],
+    "private": [
+      "OwnedDemoProcess& target_;",
+      "IncidentRepository& repository_;",
+      "const PlanPolicy& policy_;",
+      "Now now_;",
+      "std::mutex executionMutex_;"
+    ],
+    "base": "",
+    "note": "Reload authoritative exact record; validate; durable CAS claim; invoke allowlisted action once. No automatic replay after uncertain result or restart."
+  },
+  {
+    "name": "RecoveryVerifier",
+    "kind": "class",
+    "group": "recovery",
+    "fields": [],
+    "methods": [
+      "RecoveryVerifier(OwnedDemoProcess& target, const DatabaseVerifier& database, TargetConfiguration configuration, Now now);",
+      "Result<VerificationBatch> verify(const RepairPlan& approvedPlan, const RepairAttempt& attempt, const ExecutionResult& execution, const DatabaseCheck& priorStoppedCheck, const std::vector<Evidence>& laterEvidence, Deadline deadline) const;",
+      "RecoveryVerifier(const RecoveryVerifier&) = delete;",
+      "RecoveryVerifier& operator=(const RecoveryVerifier&) = delete;"
+    ],
+    "private": [
+      "OwnedDemoProcess& target_;",
+      "const DatabaseVerifier& database_;",
+      "TargetConfiguration configuration_;",
+      "Now now_;"
+    ],
+    "base": "",
+    "note": "Stop is not recovery. For start, valid prior stopped DB check + new process + independent later functional evidence required; no requests replayed."
+  },
+  {
+    "name": "IncidentStateMachine",
+    "kind": "class",
+    "group": "incident",
+    "fields": [],
+    "methods": [
+      "IncidentStateMachine() = default;",
+      "Result<Transition> apply(const IncidentRecord& current, const IncidentEvent& event) const;",
+      "IncidentStateMachine(const IncidentStateMachine&) = delete;",
+      "IncidentStateMachine& operator=(const IncidentStateMachine&) = delete;"
+    ],
+    "private": [],
+    "base": "",
+    "note": "APPROVED state names: Detected, Diagnosing, AwaitingApproval, Executing, Verifying, Recovered, NeedsReview, Declined, Unresolved. No closing an incident with unresolved side effects. Exact transition rules remain under review. Pure function; no persistence, process or network side effects."
+  },
+  {
+    "name": "IncidentOrchestrator",
+    "kind": "class",
+    "group": "incident",
+    "fields": [],
+    "methods": [
+      "IncidentOrchestrator(IncidentRepository& repository, DiagnosticAgent& diagnosis, RepairExecutor& executor, RecoveryVerifier& verifier, const IncidentStateMachine& stateMachine, Now now, std::size_t queueCapacity);",
+      "Status enqueue(IncidentEvent event);",
+      "Result<std::size_t> processPending(std::size_t maximum, Deadline deadline);",
+      "Result<OperatorView> view() const;",
+      "Status reconcileAfterRestart();",
+      "Status requestHistory(std::size_t offset, std::size_t limit);",
+      "void publishSettingsResult(bool pending, bool saved, std::optional<Error> error);",
+      "Result<bool> mayStartForSetup() const;",
+      "Status proposeManualStop(const IncidentId& incidentId, const ProcessIdentity& expected, const PlanId& planId, UtcTime expiresAt);",
+      "IncidentOrchestrator(const IncidentOrchestrator&) = delete;",
+      "IncidentOrchestrator& operator=(const IncidentOrchestrator&) = delete;"
+    ],
+    "private": [
+      "IncidentRepository& repository_;",
+      "DiagnosticAgent& diagnosis_;",
+      "RepairExecutor& executor_;",
+      "RecoveryVerifier& verifier_;",
+      "const IncidentStateMachine& stateMachine_;",
+      "Now now_;",
+      "std::size_t queueCapacity_;",
+      "std::deque<IncidentEvent> events_;",
+      "std::optional<IncidentRecord> current_;",
+      "bool repairsBlocked_;",
+      "std::optional<Error> volatileFailure_;",
+      "mutable std::mutex queueMutex_;",
+      "std::thread::id ownerThread_;",
+      "std::deque<std::pair<std::size_t, std::size_t>> historyRequests_;",
+      "Status processHistoryRequest();",
+      "OperatorView publishedView_;",
+      "mutable std::mutex viewMutex_;"
+    ],
+    "base": "",
+    "note": "APPROVED scope: one active incident per configured target, aggregate observations, no concurrent actions, and no old approval reused for a new incident. Single background owner; callbacks enqueue only. No lock across I/O. Store failure blocks actions. Old dispatch remains NeedsReview after controller restart. requestHistory validates bounded page size and enqueues under queueMutex_. processPending loads history on owner thread and publishes immutable page under viewMutex_; GUI never calls repository. publishSettingsResult is owner-thread only. view() reads only publishedView_ under viewMutex_, never storage/current_ from UI. Publish a value-copy after commit or visible failure. Manual stop proposal is not approval. It requires a subsequent exact plan decision; diagnostics cannot create force-stop authority from HTTP-only evidence."
+  },
+  {
+    "name": "SettingsRepository",
+    "kind": "class",
+    "group": "ui",
+    "fields": [],
+    "methods": [
+      "virtual ~SettingsRepository() = default;",
+      "virtual Result<TargetConfiguration> load() const = 0;",
+      "virtual Status save(const TargetConfiguration& configuration) = 0;"
+    ],
+    "private": [],
+    "base": "",
+    "note": ""
+  },
+  {
+    "name": "LocalSettingsRepository",
+    "kind": "class",
+    "group": "ui",
+    "fields": [],
+    "methods": [
+      "explicit LocalSettingsRepository(std::string path);",
+      "Result<TargetConfiguration> load() const override;",
+      "Status save(const TargetConfiguration& configuration) override;",
+      "LocalSettingsRepository(const LocalSettingsRepository&) = delete;",
+      "LocalSettingsRepository& operator=(const LocalSettingsRepository&) = delete;"
+    ],
+    "private": [
+      "std::string path_;"
+    ],
+    "base": "SettingsRepository",
+    "note": "Local bounded config, atomic replacement; no credentials; no arbitrary commands."
+  },
+  {
+    "name": "DesktopView",
+    "kind": "class",
+    "group": "ui",
+    "fields": [],
+    "methods": [
+      "virtual ~DesktopView() = default;",
+      "virtual void render(const OperatorView& view) = 0;",
+      "virtual void showError(const Error& error) = 0;",
+      "virtual void postToUi(std::function<void()> work) = 0;"
+    ],
+    "private": [],
+    "base": "",
+    "note": "UI thread boundary, wxWidgets external scheduler; no state transitions in view."
+  },
+  {
+    "name": "WxDesktopView",
+    "kind": "class",
+    "group": "ui",
+    "fields": [],
+    "methods": [
+      "WxDesktopView();",
+      "~WxDesktopView() override;",
+      "Status create();",
+      "void show();",
+      "void render(const OperatorView& view) override;",
+      "void showError(const Error& error) override;",
+      "void postToUi(std::function<void()> work) override;",
+      "WxDesktopView(const WxDesktopView&) = delete;",
+      "WxDesktopView& operator=(const WxDesktopView&) = delete;"
+    ],
+    "private": [
+      "wxFrame* frame_;",
+      "wxPanel* applicationPanel_;",
+      "wxPanel* activityPanel_;",
+      "wxPanel* incidentPanel_;",
+      "wxPanel* historyPanel_;"
+    ],
+    "base": "DesktopView",
+    "note": "External wx object tree owns widgets. Constructor/destructor and event bindings UI-thread only; widget IDs/layout are not business contracts. Callback binding requires exact reviewed composition."
+  },
+  {
+    "name": "DesktopPresenter",
+    "kind": "class",
+    "group": "ui",
+    "fields": [],
+    "methods": [
+      "DesktopPresenter(DesktopView& view, IncidentOrchestrator& core, ControllerRuntime& runtime);",
+      "Status saveSettings(const TargetConfiguration& configuration);",
+      "Status submitDecision(const IncidentEvent& approvalEvent);",
+      "void refresh();",
+      "Status requestHistory(std::size_t offset, std::size_t limit);",
+      "DesktopPresenter(const DesktopPresenter&) = delete;",
+      "DesktopPresenter& operator=(const DesktopPresenter&) = delete;"
+    ],
+    "private": [
+      "DesktopView& view_;",
+      "IncidentOrchestrator& core_;",
+      "ControllerRuntime& runtime_;"
+    ],
+    "base": "",
+    "note": "No waiting on I/O in GUI event handlers; settings change forbidden while target/incident active. Settings apply next explicit setup session. saveSettings delegates only to runtime.requestSettingsSave; returned Status means queued, not persisted. requestHistory delegates to core queue."
+  },
+  {
+    "name": "ControllerRuntime",
+    "kind": "class",
+    "group": "ui",
+    "fields": [],
+    "methods": [
+      "ControllerRuntime(Monitor& monitor, IncidentOrchestrator& core, OwnedDemoProcess& process, DesktopView& view, SettingsRepository& settings);",
+      "~ControllerRuntime();",
+      "Status startMonitoring(const CaptureConfiguration& configuration);",
+      "Status stopMonitoring(Deadline deadline);",
+      "Status requestSettingsSave(const TargetConfiguration& configuration);",
+      "Status requestInitialStart();",
+      "ControllerRuntime(const ControllerRuntime&) = delete;",
+      "ControllerRuntime& operator=(const ControllerRuntime&) = delete;"
+    ],
+    "private": [
+      "Monitor& monitor_;",
+      "IncidentOrchestrator& core_;",
+      "OwnedDemoProcess& process_;",
+      "DesktopView& view_;",
+      "std::thread worker_;",
+      "std::atomic<bool> stopRequested_;",
+      "SettingsRepository& settings_;",
+      "std::deque<TargetConfiguration> settingsRequests_;",
+      "std::mutex settingsMutex_;",
+      "Status processSettingsRequest();",
+      "std::atomic<bool> initialStartRequested_;"
+    ],
+    "base": "",
+    "note": "Settings saves are queued with bounded capacity, processed only by owner thread after stopped/no-active-incident gate, then published through core.publishSettingsResult. No settings I/O in GUI. One background control thread; bounded tick; join before releasing dependencies. requestInitialStart queues only. Owner thread checks core.mayStartForSetup(), no pending durable incidents and current NotStarted/Exited before fixed process start. No start bypass during incident. Window close does not silently kill booking."
+  }
+]

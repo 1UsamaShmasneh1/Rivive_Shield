@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "P3 proposed BookingRequest wire format (technical assumption)",
+  "type": "object", "additionalProperties": false,
+  "required": ["requestId", "roomId", "startsAt", "endsAt", "label"],
+  "properties": {
+    "requestId": {"type":"string", "minLength":1, "maxLength":128},
+    "roomId": {"type":"string", "minLength":1, "maxLength":128},
+    "startsAt": {"type":"string", "format":"date-time", "pattern":"Z$"},
+    "endsAt": {"type":"string", "format":"date-time", "pattern":"Z$"},
+    "label": {"type":"string", "maxLength":128}
+  }
+}

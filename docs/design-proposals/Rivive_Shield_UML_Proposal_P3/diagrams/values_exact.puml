@@ -1,0 +1,106 @@
+@startuml
+title P3 DRAFT - values - NOT APPROVED
+hide empty members
+skinparam classAttributeIconSize 0
+class Error {
+  + ErrorCode code
+  + std::string sanitizedMessage
+}
+class SqliteConfiguration {
+  + std::string databasePath
+  + std::chrono::milliseconds busyTimeout
+  + SqliteOpenMode openMode
+}
+class TargetConfiguration {
+  + std::string targetLabel
+  + std::string executablePath
+  + std::vector<std::string> fixedArguments
+  + std::string workingDirectory
+  + std::string bookingDatabasePath
+  + std::uint16_t loopbackPort
+}
+class ProcessIdentity {
+  + SessionId controllerSessionId
+  + Version generation
+  + std::uint64_t processId
+  + std::string creationToken
+}
+class ProcessObservation {
+  + ProcessIdentity identity
+  + ProcessState state
+  + UtcTime observedAt
+  + std::optional<std::uint32_t> exitCode
+  + bool controllerRequestedStop
+}
+class CaptureConfiguration {
+  + std::string interfaceName
+  + std::uint16_t loopbackPort
+  + std::size_t maxPacketBytes
+  + std::size_t maxBufferedBytes
+  + std::size_t maxFlows
+  + std::size_t maxPairsPerFlow
+  + std::chrono::milliseconds flowIdleTimeout
+  + std::chrono::milliseconds operationObservationLimit
+}
+class FlowKey {
+  + std::string clientAddress
+  + std::uint16_t clientPort
+  + std::string serverAddress
+  + std::uint16_t serverPort
+  + bool operator==(const FlowKey& other) const
+}
+class ConnectionSnapshot {
+  + FlowKey flow
+  + UtcTime queryStartedAt
+  + UtcTime queryFinishedAt
+  + std::optional<ProcessIdentity> expectedTarget
+  + Attribution attribution
+}
+class HttpObservation {
+  + FlowKey flow
+  + std::uint64_t requestOrdinal
+  + HttpMethod method
+  + HttpOutcome outcome
+  + std::optional<unsigned> statusCode
+  + std::optional<std::chrono::microseconds> observedInterval
+  + UtcTime observedAt
+  + bool captureUncertain
+  + std::optional<ConnectionSnapshot> ownerSnapshot
+}
+class DatabaseCheck {
+  + CheckOutcome integrity
+  + CheckOutcome foreignKeys
+  + bool writersConfirmedStopped
+  + UtcTime checkedAt
+  + std::string sanitizedDetail
+  + ProcessIdentity checkedGeneration
+  + std::string configuredDatabaseKey
+}
+class Evidence {
+  + EvidenceId id
+  + UtcTime observedAt
+  + EvidenceKind kind
+  + std::variant<ProcessObservation, HttpObservation, DatabaseCheck, Error> observation
+}
+class CaptureStatistics {
+  + std::uint64_t packetsRead
+  + std::uint64_t packetsDropped
+  + bool statisticsAvailable
+  + bool uncertain
+}
+class PacketView {
+  + const std::uint8_t* bytes
+  + std::size_t size
+  + int linkType
+  + UtcTime captureTimestamp
+}
+class StreamChunk {
+  + FlowKey flow
+  + Direction direction
+  + const std::uint8_t* bytes
+  + std::size_t size
+  + bool bytesMissing
+  + bool beganAtSyn
+  + bool connectionClosed
+}
+@enduml
