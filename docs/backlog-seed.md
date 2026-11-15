@@ -4,7 +4,7 @@
 
 [Trello](https://trello.com/b/GeLevegk/riviveshield) is authoritative for live card status, checklists and evidence. This index records the applied Trello titles, owners, reviewers and dependencies. Card changes and attachments have been independently verified; implementation and runtime acceptance are separate. Card numbers identify tasks; follow reviewed dependencies rather than numerical order.
 
-Read [design navigation](design-proposals/README.md) and [P3 proposal status](design-proposals/P3_STATUS.md). The P3 status companion records the current adoption; historical P2 documents remain unchanged. Do not mark macOS checks complete based on an assumption about Ameen's results.
+Read [design navigation](design-proposals/README.md) and [P3 proposal status](design-proposals/P3_STATUS.md). The P3 status companion records the current adoption; historical P2 documents remain unchanged. Ameen's reported bounded macOS feasibility results have now been reviewed; see the [2026-11-15 evidence summary](testing/MAC_FEASIBILITY_2026-11-15.md). They do not complete full-project macOS acceptance.
 
 ## Proposed work reconciliation
 
@@ -12,7 +12,7 @@ The following are work-content reconciliation targets, not new implementation or
 
 | Cards | Reconciliation needed |
 | --- | --- |
-| RS-01–RS-04 | Keep existing planning/tooling evidence; distinguish verified Windows checks from pending macOS checks. Preserve prior repository work. |
+| RS-01–RS-04 | Keep existing planning/tooling evidence; distinguish reported Windows and macOS feasibility checks from remaining integrated-platform acceptance checks. Preserve prior repository work. |
 | RS-05 | Specify bounded independent-app failure/recovery scenarios and negative cases; do not treat the old overlap-repair scenario as the entire new scope. |
 | RS-06–RS-07 | Independently review adopted P3-R2 exact UML/contracts and architecture before structural implementation. |
 | RS-08–RS-09 | Separate the independent C++ booking backend, React frontend and isolated fault experiments. Keep HTTP/browser access local from the start. |

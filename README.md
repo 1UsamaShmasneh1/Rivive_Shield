@@ -10,7 +10,7 @@
 
 Rivive Shield is a proposed learning and resilience-testing system for one isolated study-room booking application. It connects fault detection, evidence-based diagnosis using predefined rules, an explicitly approved repair and independent verification. Its intended users are the demonstration operator and course participants working with fictitious data.
 
-The current planning direction is a desktop controller that observes an independently functioning study-room booking application, investigates supported failures using predefined rules, requests operator approval for a bounded recovery action, and verifies the result. The booking application must work normally without special diagnostic callbacks or dependencies on Rivive Shield. Start with local development on the team's Windows and macOS computers; macOS verification remains pending.
+The current planning direction is a desktop controller that observes an independently functioning study-room booking application, investigates supported failures using predefined rules, requests operator approval for a bounded recovery action, and verifies the result. The booking application must work normally without special diagnostic callbacks or dependencies on Rivive Shield. Start with local development on the team's Windows and macOS computers; bounded macOS feasibility results are now available, while integrated macOS acceptance remains pending.
 
 The first-submission report and P2 package record earlier designs, including the controlled overlapping-booking repair scenario. They must not be read as exact contracts for the new passive-monitoring/desktop direction. Ordinary booking validation must still prevent overlapping active reservations, but permission to rewrite booking records is not implied by the new recovery scope. The detailed scenario set and acceptance criteria must be synchronized in RS-05, RS-06, RS-07 and their dependent cards before implementation.
 
@@ -134,7 +134,7 @@ Each owner implements, tests, documents and fixes integration defects for their 
 
 ## Implementation status and verification
 
-At the reviewed repository commit `f93302721c4b5700920418184aed1dbacbba6f62`, the repository contains design documents and the declaration-only P2 package. The existing solution is not evidence of a runnable end-to-end application. The later experiments were performed separately from the project; their outputs do not establish that the application, deployment or CI is implemented.
+The earlier reviewed commit `f93302721c4b5700920418184aed1dbacbba6f62` contained design documents and the declaration-only P2 package. Commit `8c9ffbd34bec69712dea5f57b241f0f674a22d2d` subsequently published the adopted P3-R2 design package and updated documentation; that publication is not implemented application code. The existing solution is not evidence of a runnable end-to-end application. The later experiments were performed separately from the project; their outputs do not establish that the application, deployment or CI is implemented.
 
 ### Windows feasibility evidence
 
@@ -142,7 +142,7 @@ The following outcomes were reported through the operator's command output and m
 
 | Area | Observed scope | Important limit |
 | --- | --- | --- |
-| GUI | wxWidgets example built and its window was reported working | Not the Rivive Shield interface; macOS GUI pending |
+| GUI | wxWidgets example built and its window was reported working | Not the Rivive Shield interface; separate macOS GUI smoke results are recorded below |
 | SQLite | Synthetic normal/WAL process-termination tests and missing/invalid/valid database checks passed | Not a power-loss test or proof of booking business rules |
 | HTTP parser and TCP reassembly | Offline fragmented, reordered/retransmitted, missing-data and serial-session cases passed; integrated session suite 9/9 | Synthetic offline results are not live loss/reordering tests |
 | Local passive HTTP | Complete response, two-part response, incomplete response, HTTP 500, no response and POST followed by GET on one connection behaved as expected | Restricted localhost HTTP/1.1; no packet-to-process attribution proof |
@@ -151,11 +151,17 @@ The following outcomes were reported through the operator's command output and m
 
 For the final local session experiment, the client and server completed POST then GET on one connection; the passive monitor reported `pairs=2`, `capture_uncertain=0`, and exit code 0. In negative incomplete/no-response tests, `INCONCLUSIVE` and exit code 3 were expected, not claims of recovery. These are bounded feasibility results, not a security or full-compatibility certification.
 
-### macOS status: pending, not assumed passed
+### macOS feasibility evidence: reported results reviewed 2026-11-15
 
-A new automated experiment bundle was prepared for Ameen. It distinguishes PASS, FAIL, SKIP and INCONCLUSIVE, and does not install software, use sudo or change security settings. Missing tools or capture permissions result in SKIP. Its Linux preparation checks do not establish native macOS results. No `RESULTS.tsv` from Ameen has yet established his device's outcome; GUI confirmation and packet-to-process attribution remain separate gaps.
+Ameen's supplied reports now establish bounded native macOS experiment results, not full application acceptance. See the [evidence summary and remaining limits](docs/testing/MAC_FEASIBILITY_2026-11-15.md). These were reviewed reports from Ameen's device, not an independent rerun by the documentation author.
 
-Planning and independent implementation work may continue while macOS testing is pending. Do not mark a macOS acceptance item complete or claim cross-platform compatibility until the actual results have been reviewed. Any incompatibility requires a tracked design or tooling adjustment, not an invented passing result.
+- Native arm64 compiler/SDK checks, owned-child lifecycle tests, six SQLite cases, HTTP parsing and TCP/HTTP offline tests passed in their stated scopes.
+- wxWidgets 3.2.12 built; Ameen confirmed opening, resizing, button interaction and closing the smoke-test window. This is not the integrated desktop interface.
+- The final capture-only report records 13 PASS entries: one offline suite, six synthetic socket fixtures and six bounded passive-observation cases on IPv4 localhost. The six scenarios are complete response, split response, incomplete response, HTTP 500, no response and serial requests on one connection. PASS for a negative case means its expected handling was checked, not that a missing or incomplete response was successful.
+- Earlier passive-capture SKIP results were caused by BPF access permission and then a declined consent prompt. The later successful bounded rerun supersedes those SKIPs only for these experiments; capture is not established as available without permission.
+- Direct compiler invocations required the explicit SDK option `-isysroot "$(xcrun --show-sdk-path)"`. This is experiment build guidance, not a newly adopted project build system.
+
+The final report retains `INCONCLUSIVE` for project readiness. Packet-to-process attribution, full application integration, production recovery, HTTPS/HTTP2, power-loss durability and booking business-rule acceptance remain unverified by these experiments. Keep implementation and native-platform acceptance gates open; no card becomes Done solely from this evidence update.
 
 ### Remaining acceptance gates
 
@@ -165,7 +171,7 @@ Planning and independent implementation work may continue while macOS testing is
 - Design and test per-request timeout classification; the curl timeouts in feasibility tests are not a controller feature.
 - Resolve process-attribution uncertainty and validate platform-specific ownership safeguards before approval/execution can target an application.
 - Verify approved recovery, SQLite checks after forced termination, preservation of valid bookings and durable incident recording end to end.
-- Review native macOS results and document supported versions, tools and limitations.
+- Retain the reviewed macOS feasibility results and limitations; verify the actual integrated application and document its supported OS/tool versions before native-platform acceptance.
 - Verify Oracle hosting and GitHub Actions build/test/deployment before the final presentation. These remain required, not implemented or waived.
 
 Oracle's operating system, remote management/repair channel, deployment configuration, capacity and cost boundaries remain explicit review items. The local controller cannot inspect a remote machine's process table or SQLite files using the local-only mechanisms demonstrated here. No remote agent, transport or remote access permission is implied by this README.
@@ -189,4 +195,3 @@ The first report is submitted as PDF with the Markdown sources, required images,
 ## Sources
 
 Course requirements: `1-rolling_assignment_course_project_en_v19.docx`, pages 2–6 and 8; `SDM_Initiation_proposal_v21.pdf`, pages 14–17 and 27–28; and `SDM_Teamwork_part2_en_v10.pdf`, pages 5–9. The earlier Rivive Shield proposal dated 28 October 2026 supplies the project concept. Official alternative-tool sources are linked in report section 1.2.
-

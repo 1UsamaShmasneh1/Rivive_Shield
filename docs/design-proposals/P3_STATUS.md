@@ -7,7 +7,7 @@ The owner adopted the complete P3-R2 snapshot as the basis for work. This compan
 Adopted archive SHA256: `1d82db428ace0e72a697c24cca22f32147ccfffd320789fde41eeb0870f7faea`.
 Package: `Rivive_Shield_UML_Proposal_P3/`; see [revision](Rivive_Shield_UML_Proposal_P3/REVISION.md) and [checksums](Rivive_Shield_UML_Proposal_P3/SHA256SUMS).
 
-Owner adoption, independent peer review, implementation and tested acceptance are separate. macOS results remain pending. Open settings and technical assumptions recorded in the adopted snapshot are not silently resolved by this status.
+Owner adoption, independent peer review, implementation and tested acceptance are separate. Bounded macOS feasibility results have been reported and reviewed; full-project macOS acceptance remains pending. Open settings and technical assumptions recorded in the adopted snapshot are not silently resolved by this status.
 
 ## Adopted direction
 
@@ -38,12 +38,12 @@ Review rotation: Samy reviews Usama; Ameen reviews Samy; Shehab reviews Ameen; Y
 
 ## Evidence status
 
-Windows experiments provide bounded feasibility evidence, not an implemented end-to-end system. Native macOS testing on Ameen's device is pending. Do not assume PASS, mark its acceptance checks complete, or claim full cross-platform compatibility without actual results. Missing tools or permissions may yield SKIP rather than PASS.
+Windows experiments and Ameen's reported native macOS experiments provide bounded feasibility evidence, not an implemented end-to-end system. The [2026-11-15 evidence summary](../testing/MAC_FEASIBILITY_2026-11-15.md) records the compiler/SDK, GUI, SQLite, lifecycle, parser/reassembly and final passive-capture outcomes and their limits. The final capture-only report has 13 PASS entries and explicitly retains INCONCLUSIVE project readiness. Earlier permission-related SKIPs are superseded only for the later bounded capture rerun, not for arbitrary capture or full-project compatibility. No implementation or acceptance checklist is automatically completed by this documentation update.
 
 ## Remaining review and implementation gates
 
 1. Complete and review scenario scope and acceptance criteria.
-2. Review the prepared exact C++ contracts, matching UML and structural change explanation relative to P2; resolve identified issues before adoption.
+2. Review the prepared exact C++ contracts, matching UML and structural change explanation relative to P2; resolve identified issues before structural implementation.
 3. Review architecture, process identity, observation uncertainty, approval/execution boundaries and independent verification.
 4. Apply the approved owners/reviewers and review the revised dependencies.
 5. Synchronize README, Trello cards, Arabic explanations and links without altering historical P2 artifacts.

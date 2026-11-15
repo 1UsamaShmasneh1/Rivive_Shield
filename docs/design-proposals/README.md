@@ -6,7 +6,7 @@ The owner adopted P3-R2 as the working design baseline on 2026-11-13. [P3 adopti
 
 Start with the [P3-R2 guide](Rivive_Shield_UML_Proposal_P3/README_AR.md), [67-type exact declarations](Rivive_Shield_UML_Proposal_P3/contracts/p3_draft.hpp), [exact catalog](Rivive_Shield_UML_Proposal_P3/docs/EXACT_CATALOG.md), and [validation limits](Rivive_Shield_UML_Proposal_P3/checks/VALIDATION.md). Read the [approved assignments](Rivive_Shield_UML_Proposal_P3/APPROVED_ASSIGNMENTS_AR.md) and [backlog index](../backlog-seed.md).
 
-Adoption is not completed independent review or implementation. macOS verification, MSVC validation of this package, actual linking, runtime recovery, GUI integration and Oracle operation remain subject to their stated acceptance gates. Explicitly open settings must be resolved through review, not guessed.
+Adoption is not completed independent review or implementation. Bounded native macOS feasibility reports were reviewed on 2026-11-15; see the [evidence summary](../testing/MAC_FEASIBILITY_2026-11-15.md). Full-project macOS verification, MSVC validation of this package, actual linking, runtime recovery, GUI integration and Oracle operation remain subject to their stated acceptance gates. Explicitly open settings must be resolved through review, not guessed.
 
 No silent additions or changes to classes, fields, methods or private helpers are permitted. Review and synchronize exact source, diagrams and card attachments for structural changes.
 
