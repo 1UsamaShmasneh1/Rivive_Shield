@@ -2,7 +2,7 @@
 
 **Course:** Software Development Methods  
 **Team leader:** Usama Shmasneh  
-**Team members:** Samy mansour, Ameen Abd Allader, Shehab Shehab, Yazan Ganem  
+**Team members:** Samy mansour, Ameen Abd Allader, Shehab Shehab, Yazan Ganem, Rawaa Hagrs  
 **Submission:** Proposal, requirements and system design, 4 November 2026  
 **Lecturer decision:** Project approved, as reported by Usama Shmasneh. Usama also reports lecturer approval of the initial prototype using predefined diagnostic rules and repair solutions without an external or locally running AI model. The original approval date and any additional conditions have not been provided.
 
@@ -25,7 +25,7 @@ Predetermined repair rules do not predetermine the outcome. The application must
 | Shared GitHub repository | https://github.com/1UsamaShmasneh1/Rivive_Shield |
 | Trello backlog board | https://trello.com/b/GeLevegk/riviveshield |
 
-The [backlog transition index](docs/backlog-seed.md) links the existing RS cards and records the approved redistribution, including [RS-31 React](https://trello.com/c/fk0HHQkw). Trello card content, assignments and attachments have been applied and independently verified; that does not establish implementation completion. Use the live board for current progress and acceptance evidence. The original B01–B26 planning backlog is preserved as a [historical snapshot](docs/history/backlog-seed-2026-11-04.md), not a second active work plan.
+The [backlog transition index](docs/backlog-seed.md) links the existing RS cards and records the approved redistribution, including [RS-31 React](https://trello.com/c/fk0HHQkw). The earlier Trello synchronization was independently verified. The owner-approved 17 November 2026 assignment update is recorded below and has been verified against the live Trello cards. Documentation changes do not establish implementation completion. Use the live board for current progress and acceptance evidence. The original B01–B26 planning backlog is preserved as a [historical snapshot](docs/history/backlog-seed-2026-11-04.md), not a second active work plan.
 
 ## Design status: P3-R2 adopted working baseline
 
@@ -48,7 +48,7 @@ For the retained earlier design, see [P2 status and design navigation](docs/desi
 Read the [P3 entry guide](docs/design-proposals/Rivive_Shield_UML_Proposal_P3/README_AR.md) and [readiness limits](docs/design-proposals/Rivive_Shield_UML_Proposal_P3/IMPLEMENTATION_READINESS_AR.md) first.
 
 - [Frozen revision](docs/design-proposals/Rivive_Shield_UML_Proposal_P3/REVISION.md)
-- [Approved assignments](docs/design-proposals/Rivive_Shield_UML_Proposal_P3/APPROVED_ASSIGNMENTS_AR.md)
+- [Historical approved assignments, 13 November 2026](docs/design-proposals/Rivive_Shield_UML_Proposal_P3/APPROVED_ASSIGNMENTS_AR.md)
 - [Proposed C++17 declarations](docs/design-proposals/Rivive_Shield_UML_Proposal_P3/contracts/p3_draft.hpp)
 - [Exact catalog of 67 struct/class declarations](docs/design-proposals/Rivive_Shield_UML_Proposal_P3/docs/EXACT_CATALOG.md)
 - [Enums and aliases](docs/design-proposals/Rivive_Shield_UML_Proposal_P3/docs/ENUMS_AND_ALIASES.md)
@@ -116,21 +116,24 @@ The approved incident states are `Detected`, `Diagnosing`, `AwaitingApproval`, `
 
 Keep one active incident per target and bind each approval to its incident, exact plan/version and target. Duplicate events must not execute an action twice; reuse of an event identity with different content is a conflict. Limits must be based on measurements and reviewed settings. Missing evidence or a limit exceedance produces an unknown/inconclusive result and an alert, not automatic termination. A new observation is not approval.
 
-## Approved team responsibilities; applied to Trello
+## Approved team responsibilities
 
-The owner has approved the revised distribution. The distribution and P3-R2 working baseline are approved. Trello synchronization has been applied and independently verified; no card is complete merely because its documentation was updated.
+On 17 November 2026, Usama approved adding Rawaa Hagrs to the current team and redistributing only work not yet started: Rawaa owns RS-14, RS-21 and RS-27, and reviews Samy's RS-09. Completed and in-progress work and RS-05's existing review assignment remain unchanged. The P3-R2 working design baseline and all task dependencies remain unchanged; no card is complete merely because its documentation was updated.
+
+The frozen P3-R2 assignment document records the 13 November distribution and remains unchanged. For current work allocation, this section and the [live assignment index](docs/backlog-seed.md) supersede that historical allocation only, not the design contracts.
 
 - **Usama:** React ([RS-31](https://trello.com/c/fk0HHQkw)), complex C++ observation (RS-11), incident states/core (RS-17/18), architecture, coordination, integration and Oracle/CI. The most complex C++ work remains his responsibility.
-- **Samy:** reproducible scenarios, C++ booking backend, controlled tests and booking-rule acceptance (RS-05/08/09/21).
-- **Ameen:** SQLite (RS-24), evidence persistence (RS-10), wxWidgets desktop UI (RS-14), and documentation coordination (RS-27).
+- **Samy:** reproducible scenarios, C++ booking backend and controlled tests (RS-05/08/09).
+- **Ameen:** SQLite (RS-24), evidence persistence (RS-10), and independent review of booking-rule acceptance (RS-21).
 - **Shehab:** predefined rules (RS-25), plan validation (RS-13) and diagnosis (RS-12).
 - **Yazan:** lifecycle/recovery (RS-15), independent verification (RS-16), safe uncertain outcomes (RS-19), and coordinating, not solely writing, team tests (RS-22).
+- **Rawaa Hagrs:** wxWidgets desktop UI (RS-14), booking-rule acceptance and data-preservation tests (RS-21), documentation coordination (RS-27), and independent review of Samy's controlled failure fixtures (RS-09). Rawaa participates in shared integration, testing, fixes, documentation, presentation and submission work with the team; existing coordinators remain unchanged.
 
 See the [full approved assignment table](docs/backlog-seed.md). The index records the applied dependencies. [RS-31](https://trello.com/c/fk0HHQkw) is the separate React development card, not the phases tracker.
 
-Review rotation: Samy reviews Usama; Ameen reviews Samy; Shehab reviews Ameen; Yazan reviews Shehab; Usama reviews Yazan. Multi-author cards require an independent reviewer for each contribution. For RS-19, Usama reviews Yazan, and Samy reviews Usama's core changes. RS-23 fixes also require a non-author reviewer. Avatar order is not an ownership rule.
+Review assignments: Samy reviews Usama; Ameen reviews Samy's RS-05/08; Rawaa reviews Samy's RS-09; Shehab reviews Ameen; Yazan reviews Shehab; Usama reviews Yazan. Shehab reviews Rawaa's RS-14/27, and Ameen reviews Rawaa's RS-21. The card-specific assignment table governs other shared work. Multi-author cards require an independent reviewer for each contribution. For RS-19, Usama reviews Yazan, and Samy reviews Usama's core changes. RS-23 fixes also require a non-author reviewer. Avatar order is not an ownership rule.
 
-Each owner implements, tests, documents and fixes integration defects for their module. Keep one principal task in progress per person where feasible; sequence Ameen's storage, evidence and UI work, and schedule Samy's review load alongside Usama's development work. macOS acceptance is not implied by assigning work to Ameen.
+Each owner implements, tests, documents and fixes integration defects for their module. Keep one principal task in progress per person where feasible; sequence Ameen's storage and evidence work and Rawaa's UI, acceptance and documentation work according to their dependencies, and schedule Samy's review load alongside Usama's development work. macOS acceptance is not implied by assigning work to Ameen.
 
 ## Implementation status and verification
 
@@ -195,3 +198,4 @@ The first report is submitted as PDF with the Markdown sources, required images,
 ## Sources
 
 Course requirements: `1-rolling_assignment_course_project_en_v19.docx`, pages 2–6 and 8; `SDM_Initiation_proposal_v21.pdf`, pages 14–17 and 27–28; and `SDM_Teamwork_part2_en_v10.pdf`, pages 5–9. The earlier Rivive Shield proposal dated 28 October 2026 supplies the project concept. Official alternative-tool sources are linked in report section 1.2.
+
