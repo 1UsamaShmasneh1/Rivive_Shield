@@ -24,6 +24,7 @@ Predetermined repair rules do not predetermine the outcome. The application must
 | --- | --- |
 | Shared GitHub repository | https://github.com/1UsamaShmasneh1/Rivive_Shield |
 | Trello backlog board | https://trello.com/b/GeLevegk/riviveshield |
+| Updated project proposal (17 November 2026) | [English proposal](docs/01-proposal-updated-2026-11-17.md) |
 
 The [backlog transition index](docs/backlog-seed.md) links the existing RS cards and records the approved redistribution, including [RS-31 React](https://trello.com/c/fk0HHQkw). The earlier Trello synchronization was independently verified. The owner-approved 17 November 2026 assignment update is recorded below and has been verified against the live Trello cards. Documentation changes do not establish implementation completion. Use the live board for current progress and acceptance evidence. The original B01–B26 planning backlog is preserved as a [historical snapshot](docs/history/backlog-seed-2026-11-04.md), not a second active work plan.
 
