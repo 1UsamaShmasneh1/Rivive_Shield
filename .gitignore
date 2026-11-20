@@ -1,3 +1,5 @@
 .vs/
 bin/
 obj/
+/RiviveShieldWorkspace/out/
+/RiviveShieldWorkspace/CMakeUserPresets.json
