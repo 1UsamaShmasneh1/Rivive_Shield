@@ -53,14 +53,15 @@ add('RepairAttempt','struct','incident',['AttemptId id;','IncidentId incidentId;
 add('DispatchReceipt','struct','incident',['AttemptId attemptId;','IncidentId incidentId;','Version recordVersion;','UtcTime claimedAt;'])
 add('ExecutionResult','struct','incident',['AttemptId attemptId;','ExecutionOutcome outcome;','std::optional<ProcessObservation> resultingProcess;','std::optional<Error> failure;','UtcTime finishedAt;'],note='Maybe-invoked failure is Uncertain; no automatic retry.')
 add('VerificationBatch','struct','incident',['AttemptId attemptId;','CheckOutcome processCheck;','CheckOutcome databaseCheck;','CheckOutcome functionalCheck;','std::vector<Evidence> evidence;'],note='Functional confirmation comes from a separately labeled operator-driven synthetic test; no automatic modifying booking probe. NotRun blocks Recovered.')
-add('IncidentRecord','struct','incident',['Version recordVersion;','Incident incident;','std::vector<RepairAttempt> attempts;','std::vector<ExecutionResult> executions;','std::vector<VerificationBatch> verifications;','std::vector<EventId> acceptedEventIds;'])
+add('PreparedAttemptTermination','struct','incident',['AttemptId attemptId;','UtcTime terminatedAt;','std::string reasonCode;'])
+add('IncidentRecord','struct','incident',['Version recordVersion;','Incident incident;','std::vector<RepairAttempt> attempts;','std::vector<PreparedAttemptTermination> preparedTerminations;','std::vector<ExecutionResult> executions;','std::vector<VerificationBatch> verifications;','std::vector<EventId> acceptedEventIds;'])
 add('SaveReceipt','struct','incident',['IncidentId incidentId;','Version recordVersion;','UtcTime committedAt;'])
 add('ControlEvent','struct','incident',['ControlEventKind kind;','std::optional<RepairPlan> proposedPlan;','std::string reasonCode;'],note='Technical typed control event, never a magic Error. BeginDiagnosis/PlanInvalidated carry no plan; ManualStopProposal carries a proposed ForceStop plan bound to selected owned target. It is not approval or dispatch authority.')
 add('IncidentEvent','struct','incident',['EventId id;','IncidentId incidentId;','Version expectedRevision;','UtcTime observedAt;','std::variant<Evidence, DiagnosisResult, Approval, ExecutionResult, VerificationBatch, ControlEvent, Error> payload;'])
 add('Transition','struct','incident',['IncidentStatus from;','IncidentStatus to;','Version nextRevision;','std::string reason;'])
 add('OperatorView','struct','ui',['std::optional<IncidentRecord> current;','std::vector<HttpObservation> recentActivity;','std::optional<ProcessObservation> process;','bool durable;','bool repairsBlocked;','std::optional<Error> visibleError;'],note='Bounded metadata only; durable=false conspicuous; never show unsaved recovery.')
-add('IncidentRepository','class','incident',methods=['virtual ~IncidentRepository() = default;','virtual Result<SaveReceipt> save(const IncidentRecord& record, Version expectedRecordVersion) = 0;','virtual Result<IncidentRecord> load(const IncidentId& id) const = 0;','virtual Result<std::vector<IncidentRecord>> loadPending() const = 0;','virtual Result<DispatchReceipt> claimDispatch(const IncidentId& id, const AttemptId& attempt, Version expectedRecordVersion, UtcTime now) = 0;','virtual Result<std::vector<IncidentRecord>> history(std::size_t offset, std::size_t limit) const = 0;'])
-add('SqliteIncidentRepository','class','incident',base='IncidentRepository',methods=['explicit SqliteIncidentRepository(SqliteConfiguration configuration);','~SqliteIncidentRepository() override;','Result<SaveReceipt> save(const IncidentRecord& record, Version expectedRecordVersion) override;','Result<IncidentRecord> load(const IncidentId& id) const override;','Result<std::vector<IncidentRecord>> loadPending() const override;','Result<DispatchReceipt> claimDispatch(const IncidentId& id, const AttemptId& attempt, Version expectedRecordVersion, UtcTime now) override;','Result<std::vector<IncidentRecord>> history(std::size_t offset, std::size_t limit) const override;'],private=['SqliteConfiguration configuration_;','sqlite3* database_;','mutable std::mutex mutex_;'])
+add('IncidentRepository','class','incident',methods=['virtual ~IncidentRepository() = default;','virtual Result<SaveReceipt> save(const IncidentRecord& record, Version expectedRecordVersion) = 0;','virtual Result<IncidentRecord> load(const IncidentId& id) const = 0;','virtual Result<std::vector<IncidentRecord>> loadPending() const = 0;','virtual Result<DispatchReceipt> claimDispatch(const IncidentId& id, const AttemptId& attempt, Version expectedRecordVersion, UtcTime now) = 0;','virtual Result<SaveReceipt> terminatePreparedAttempt(const IncidentId& id, const AttemptId& attempt, Version expectedRecordVersion, UtcTime now, const std::string& reasonCode) = 0;','virtual Result<std::vector<IncidentRecord>> history(std::size_t offset, std::size_t limit) const = 0;'])
+add('SqliteIncidentRepository','class','incident',base='IncidentRepository',methods=['explicit SqliteIncidentRepository(SqliteConfiguration configuration);','~SqliteIncidentRepository() override;','Result<SaveReceipt> save(const IncidentRecord& record, Version expectedRecordVersion) override;','Result<IncidentRecord> load(const IncidentId& id) const override;','Result<std::vector<IncidentRecord>> loadPending() const override;','Result<DispatchReceipt> claimDispatch(const IncidentId& id, const AttemptId& attempt, Version expectedRecordVersion, UtcTime now) override;','Result<SaveReceipt> terminatePreparedAttempt(const IncidentId& id, const AttemptId& attempt, Version expectedRecordVersion, UtcTime now, const std::string& reasonCode) override;','Result<std::vector<IncidentRecord>> history(std::size_t offset, std::size_t limit) const override;'],private=['SqliteConfiguration configuration_;','sqlite3* database_;','mutable std::mutex mutex_;'])
 add('DatabaseVerifier','class','recovery',methods=['Result<DatabaseCheck> check(const std::string& databasePath, const ProcessObservation& stoppedProcess, Deadline deadline) const;'],note='Verify expected local configured DB and writers stopped; no CREATE; no repair SQL; no sidecar deletion. Other possible writers => Inconclusive.')
 add('PlanPolicy','class','recovery',methods=['explicit PlanPolicy(TargetConfiguration configuration);','Status validate(const RepairPlan& plan, const Incident& incident, UtcTime now) const;','Status revalidate(const RepairPlan& plan, const Approval& approval, const Incident& incident, const ProcessObservation& current, UtcTime now) const;'],private=['TargetConfiguration configuration_;'])
 add('DiagnosticAgent','class','recovery',methods=['DiagnosticAgent(const PlanPolicy& policy, Now now);','Result<DiagnosisResult> propose(const Incident& incident, const PlanId& newPlanId, Version newPlanRevision, UtcTime expiresAt) const;'],private=['const PlanPolicy& policy_;','Now now_;','DiagnosisResult evaluateCompiledRules(const Incident& incident, const PlanId& planId, Version revision, UtcTime expiresAt) const;'],note='Compiled-in versioned rules only. Unknown cause/ownership cannot become destructive authorization.')
@@ -123,6 +124,7 @@ for i in items:
     if i['kind']=='class' and i['name'] not in ['BookingRepository','IncidentRepository','OwnedDemoProcess','ConnectionObserver','PacketCapture','SettingsRepository','DesktopView']:
         i['methods'] += [i['name']+'(const '+i['name']+'&) = delete;',i['name']+'& operator=(const '+i['name']+'&) = delete;']
 pre='''#pragma once
+// RS-06 item 1 v2 review candidate; not the frozen P3-R2 contract.
 // P3 DRAFT FOR REVIEW ONLY. Not adopted; not an implementation. Do not replace P2 silently.
 #include <atomic>
 #include <chrono>
@@ -179,7 +181,11 @@ using EvidenceSink=std::function<void(const Evidence&)>;
 # Order values first but dependent classes use complete other structs already emitted in insertion order.
 header=pre
 for i in items:
- header+=f'\n// {i["note"]}\n{i["kind"]} {i["name"]}' + (f' : public {i["base"]}' if i['base'] else '')+' {\n'
+ if i['name']!='IncidentRecord':
+  header+=f'\n// {i["note"]}\n'
+ else:
+  header+='\n'
+ header+=f'{i["kind"]} {i["name"]}' + (f' : public {i["base"]}' if i['base'] else '')+' {\n'
  if i['kind']=='class':header+='public:\n'
  for x in i['fields']+i['methods']:header+='    '+x+'\n'
  if i['private']:
@@ -191,14 +197,14 @@ header+='\n} // namespace rivive::p3_draft\n'
 (root/'contracts/include_smoke.cpp').write_text('#include "p3_draft.hpp"\nint main() { return 0; }\n')
 (root/'docs/ENUMS_AND_ALIASES.md').write_text('# Exact P3 draft enums and aliases\n\nThese declarations are part of the review draft; no new values without review. IncidentStatus values/basic meanings are user-approved; transitions and other enums are not thereby approved. Never close an incident with unresolved side effects.\n\n```cpp\n'+pre.split('namespace rivive::p3_draft {')[1]+'\n```\n')
 (root/'catalog.json').write_text(json.dumps(items,indent=2))
-md='# P3 exact draft class catalog\n\n**Unapproved proposal. All signatures and fields are draft.**\n\n'
+md='# P3 exact draft class catalog\n\n**RS-06 item 1 v2 review candidate. The termination delta is not independently approved.**\n\n'
 for i in items:
- md+='## '+i['name']+'\n\n'+i['note']+'\n\n```cpp\n'+i['kind']+' '+i['name']+(f' : public {i["base"]}' if i['base'] else '')+' {\n'
+ md+='## '+i['name']+'\n\n'+(i['note']+'\n\n' if i['name']!='PreparedAttemptTermination' else '')+'```cpp\n'+i['kind']+' '+i['name']+(f' : public {i["base"]}' if i['base'] else '')+' {\n'
  if i['kind']=='class':md+='public:\n'
  md+=''.join('  '+x+'\n' for x in i['fields']+i['methods'])
  if i['private']:md+='private:\n'+''.join('  '+x+'\n' for x in i['private'])
  md+='};\n```\n\n'
-(root/'docs/EXACT_CATALOG.md').write_text(md)
+(root/'docs/EXACT_CATALOG.md').write_text(md.rstrip()+'\n')
 # Exact field/method UML, split by group; class overview SVG kept readable.
 for group in sorted(set(i['group'] for i in items)):
  puml='@startuml\ntitle P3 DRAFT - '+group+' - NOT APPROVED\nhide empty members\nskinparam classAttributeIconSize 0\n'
@@ -210,6 +216,9 @@ for group in sorted(set(i['group'] for i in items)):
   puml+='}\n'
   if i['base']:puml+=i['base']+' <|-- '+i['name']+'\n'
  puml+='@enduml\n'
+ if group=='incident':
+  puml=puml.replace('title P3 DRAFT - incident - NOT APPROVED','title RS-06 Item 1 v2 - incident review candidate')
+  puml=puml.replace('IncidentRepository <|-- SqliteIncidentRepository\n', 'IncidentRepository <|-- SqliteIncidentRepository\nIncidentRecord "1" *-- "0..*" PreparedAttemptTermination\n')
  (root/f'diagrams/{group}_exact.puml').write_text(puml)
 # Every class/struct gets own exact SVG from same catalog (no hand-transcribed drift).
 for i in items:

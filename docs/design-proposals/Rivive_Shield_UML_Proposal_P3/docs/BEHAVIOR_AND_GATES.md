@@ -1,5 +1,7 @@
 # Behavior, integration gates and proposed first-milestone contract
 
+> RS-06 Item 1 review candidate only. See `README.md` at the bundle root. No implementation or independent approval is implied.
+
 ## Application boundary
 Two independently running native executables: booking backend and Rivive Shield desktop. React assets are built separately and served by the booking backend. Multiple native projects can be in one Windows solution; that is not evidence `.sln` builds on Mac. Neither executable links the other's internal application services. Booking backend has no dependency on Rivive Shield or monitoring-specific health callback.
 
@@ -30,7 +32,14 @@ Connection snapshots are optional corroborating metadata. HTTP evidence alone is
 ## State and approval sequence
 `Detected → Diagnosing → AwaitingApproval → Executing → Verifying → Recovered` is only the successful restart path. Unknown diagnosis leads Unresolved/no plan; rejected approval leads Declined; stale/expired approval cannot execute; uncertain side effects or persistence lead NeedsReview. ForceStop applied transitions to NeedsReview with stopped-target evidence, not Recovered. A follow-up start gets a new plan revision and a new approval. No silent recovery replay.
 
-Store `Prepared` before dispatch. `claimDispatch` performs CAS Prepared→Dispatching in the same local incident store. Reload current authoritative plan/approval and target identity before invoking once. Duplicate event IDs are idempotent; mismatched payload with same ID is a conflict. A failed commit is not success. If process invocation may have started, return Uncertain rather than retryable failure. On controller restart, old session plans and in-flight attempts are NeedsReview; do not redispatch.
+**Approval and claim are distinct.** The state machine validates the approval, plan and current state without writing. The incident-store claim transaction alone atomically records the unique claim, changes the attempt to `Dispatching`, changes the incident to `Executing` once, and persists the committed history/version. The coordinator consumes the committed result, not a second transition. Revalidate the authorized target and current plan before any external call. A committed claim records authority for one dispatch by the claimant in the live session, not proof that a call was sent or succeeded. No dispatch on an unconfirmed commit. A duplicate event is a no-op, or a conflict if its payload differs; it grants no second dispatch authority.
+
+**Cancel or retire before claim.** If a plan is cancelled, invalidated, expired or belongs to the previous controller session, end a prepared attempt as not executed only after durable evidence shows it is unclaimed. Preserve the attempt and the reason. The candidate storage design is an append-only termination record: the incident-store transaction checks there is no claim and records termination without deleting the attempt; the claim transaction rejects terminated attempts. Either the claim or the termination may commit, never both for the same attempt. Any later action needs a new valid plan and fresh approval. Termination alone neither closes an incident nor clears unresolved effects.
+
+**Plan-invalidated transition.** Before applying AwaitingApproval → Diagnosing for PlanInvalidated, confirm the termination and reason of any unclaimed, unterminated Prepared attempt for that plan. Termination does not itself change incident status. If confirmation is unavailable, reconcile from durable records without replay or a new attempt; do not clear any outstanding claim or unresolved effect.
+**Manual stop proposal from AwaitingApproval.** Apply the same confirmed durable termination prerequisite before invalidating the old plan and moving to Diagnosing. If no applicable Prepared attempt exists, no termination record is needed. If execution was already claimed or the durable outcome is uncertain, do not use this path to invalidate the plan or start another attempt; reconcile first, without replay. The proposal is not execution approval.
+
+**Cancel or reconcile after claim.** Cancellation does not erase a claim, acknowledge a stop, or prove that nothing happened. After controller restart, reconcile durable attempts in the coordinator before allowing any new action. Do not replay a previous action even if a claim is found. If the record is unreadable, do not start a new action; if a claim or its effect is unresolved, keep the incident open for independent verification and block further actions. Report uncertainty without claiming a durable state change if storage cannot be read or written. The method for resolving an uncertain claimed attempt remains separately reviewed scope.
 
 ## Database and verification
 Approved scope: separate booking/incident files; no silent replacement for missing/corrupt existing files; verification after all writers stop. This does not approve WAL/synchronous defaults or unresolved transaction-opening mode/API details.
@@ -86,3 +95,6 @@ Persist UTC instants; the browser displays them in the client device timezone. R
 
 ## Completed UI contract routing (technical proposal)
 History and settings requests are queued, never queried/saved from GUI handlers. core.processPending services bounded history requests on the owner thread and publishes historyPage/historyOffset/pending/error under viewMutex_. runtime.processSettingsRequest validates stopped/no-active-incident before calling the store, then publishes result through core.publishSettingsResult. requestSettingsSave allows at most one pending request (Busy otherwise). A successful enqueue is not a successful save. Wire presenter to runtime after constructing both; stop/join before destroying either.
+
+## Item 1 v2 repository and history mapping
+The explicit C++/UML/SQLite delta in this candidate is defined in [Termination repository mapping](TERMINATION_REPOSITORY_MAPPING.md). It does not change any incident or attempt enum.

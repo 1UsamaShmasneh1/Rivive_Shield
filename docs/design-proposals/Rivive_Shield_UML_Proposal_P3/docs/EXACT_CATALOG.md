@@ -1,6 +1,6 @@
 # P3 exact draft class catalog
 
-**Unapproved proposal. All signatures and fields are draft.**
+**RS-06 item 1 v2 review candidate. The termination delta is not independently approved.**
 
 ## Error
 
@@ -749,6 +749,16 @@ struct VerificationBatch {
 };
 ```
 
+## PreparedAttemptTermination
+
+```cpp
+struct PreparedAttemptTermination {
+  AttemptId attemptId;
+  UtcTime terminatedAt;
+  std::string reasonCode;
+};
+```
+
 ## IncidentRecord
 
 
@@ -758,6 +768,7 @@ struct IncidentRecord {
   Version recordVersion;
   Incident incident;
   std::vector<RepairAttempt> attempts;
+  std::vector<PreparedAttemptTermination> preparedTerminations;
   std::vector<ExecutionResult> executions;
   std::vector<VerificationBatch> verifications;
   std::vector<EventId> acceptedEventIds;
@@ -849,6 +860,7 @@ public:
   virtual Result<IncidentRecord> load(const IncidentId& id) const = 0;
   virtual Result<std::vector<IncidentRecord>> loadPending() const = 0;
   virtual Result<DispatchReceipt> claimDispatch(const IncidentId& id, const AttemptId& attempt, Version expectedRecordVersion, UtcTime now) = 0;
+  virtual Result<SaveReceipt> terminatePreparedAttempt(const IncidentId& id, const AttemptId& attempt, Version expectedRecordVersion, UtcTime now, const std::string& reasonCode) = 0;
   virtual Result<std::vector<IncidentRecord>> history(std::size_t offset, std::size_t limit) const = 0;
 };
 ```
@@ -866,6 +878,7 @@ public:
   Result<IncidentRecord> load(const IncidentId& id) const override;
   Result<std::vector<IncidentRecord>> loadPending() const override;
   Result<DispatchReceipt> claimDispatch(const IncidentId& id, const AttemptId& attempt, Version expectedRecordVersion, UtcTime now) override;
+  Result<SaveReceipt> terminatePreparedAttempt(const IncidentId& id, const AttemptId& attempt, Version expectedRecordVersion, UtcTime now, const std::string& reasonCode) override;
   Result<std::vector<IncidentRecord>> history(std::size_t offset, std::size_t limit) const override;
   SqliteIncidentRepository(const SqliteIncidentRepository&) = delete;
   SqliteIncidentRepository& operator=(const SqliteIncidentRepository&) = delete;
@@ -1136,4 +1149,3 @@ private:
   std::atomic<bool> initialStartRequested_;
 };
 ```
-

@@ -1,4 +1,5 @@
 #pragma once
+// RS-06 item 1 v2 review candidate; not the frozen P3-R2 contract.
 // P3 DRAFT FOR REVIEW ONLY. Not adopted; not an implementation. Do not replace P2 silently.
 #include <atomic>
 #include <chrono>
@@ -570,10 +571,17 @@ struct VerificationBatch {
 };
 
 // 
+struct PreparedAttemptTermination {
+    AttemptId attemptId;
+    UtcTime terminatedAt;
+    std::string reasonCode;
+};
+
 struct IncidentRecord {
     Version recordVersion;
     Incident incident;
     std::vector<RepairAttempt> attempts;
+    std::vector<PreparedAttemptTermination> preparedTerminations;
     std::vector<ExecutionResult> executions;
     std::vector<VerificationBatch> verifications;
     std::vector<EventId> acceptedEventIds;
@@ -635,6 +643,7 @@ public:
     virtual Result<IncidentRecord> load(const IncidentId& id) const = 0;
     virtual Result<std::vector<IncidentRecord>> loadPending() const = 0;
     virtual Result<DispatchReceipt> claimDispatch(const IncidentId& id, const AttemptId& attempt, Version expectedRecordVersion, UtcTime now) = 0;
+    virtual Result<SaveReceipt> terminatePreparedAttempt(const IncidentId& id, const AttemptId& attempt, Version expectedRecordVersion, UtcTime now, const std::string& reasonCode) = 0;
     virtual Result<std::vector<IncidentRecord>> history(std::size_t offset, std::size_t limit) const = 0;
 };
 
@@ -647,6 +656,7 @@ public:
     Result<IncidentRecord> load(const IncidentId& id) const override;
     Result<std::vector<IncidentRecord>> loadPending() const override;
     Result<DispatchReceipt> claimDispatch(const IncidentId& id, const AttemptId& attempt, Version expectedRecordVersion, UtcTime now) override;
+    Result<SaveReceipt> terminatePreparedAttempt(const IncidentId& id, const AttemptId& attempt, Version expectedRecordVersion, UtcTime now, const std::string& reasonCode) override;
     Result<std::vector<IncidentRecord>> history(std::size_t offset, std::size_t limit) const override;
     SqliteIncidentRepository(const SqliteIncidentRepository&) = delete;
     SqliteIncidentRepository& operator=(const SqliteIncidentRepository&) = delete;
