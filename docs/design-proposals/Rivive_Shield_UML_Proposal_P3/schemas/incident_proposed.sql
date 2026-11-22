@@ -1,4 +1,4 @@
--- P3 TECHNICAL PROPOSAL, not user-approved persistence or migration policy.
+-- RS-06 ITEM 1 REVIEW CANDIDATE: storage approach proposed, not an approved schema or migration.
 -- Fresh DB only; caller enables foreign_keys ON on EVERY connection before transactions.
 -- UTC integer milliseconds. Canonical JSON/hashes are generated internally, never trusted UI input.
 -- One target_key denotes the reviewed immutable configuration for one target/session lineage.
@@ -66,6 +66,32 @@ CREATE TABLE dispatch_claims (
  expected_record_version INTEGER NOT NULL,
  claimed_at_ms INTEGER NOT NULL
 );
+-- Proposal: logical retirement of an unclaimed Prepared attempt without changing the C++ enum.
+CREATE TABLE prepared_attempt_terminations (
+ attempt_id TEXT PRIMARY KEY NOT NULL REFERENCES attempts(attempt_id),
+ terminated_at_ms INTEGER NOT NULL,
+ expected_record_version INTEGER NOT NULL CHECK(expected_record_version > 0),
+ reason_code TEXT NOT NULL CHECK(reason_code IN ('PlanCancelled','PlanInvalidated','PlanExpired','ControllerRestart'))
+);
+CREATE TRIGGER validate_prepared_attempt_termination BEFORE INSERT ON prepared_attempt_terminations
+WHEN NOT EXISTS (
+ SELECT 1 FROM attempts t JOIN incidents i USING(incident_id)
+ WHERE t.attempt_id=NEW.attempt_id AND t.status='Prepared'
+ AND t.dispatch_claimed_at_ms IS NULL AND i.closed_at_ms IS NULL
+ AND i.record_version=NEW.expected_record_version AND NEW.terminated_at_ms>=t.prepared_at_ms
+ AND NOT EXISTS (SELECT 1 FROM dispatch_claims c WHERE c.attempt_id=t.attempt_id)
+ AND NOT EXISTS (SELECT 1 FROM prepared_attempt_terminations x WHERE x.attempt_id=t.attempt_id)
+)
+BEGIN SELECT RAISE(ABORT,'termination_requires_unclaimed_prepared_attempt'); END;
+CREATE TRIGGER apply_prepared_attempt_termination AFTER INSERT ON prepared_attempt_terminations
+BEGIN
+ UPDATE incidents SET record_version=record_version+1
+ WHERE incident_id=(SELECT incident_id FROM attempts WHERE attempt_id=NEW.attempt_id);
+END;
+CREATE TRIGGER immutable_attempt_termination_update BEFORE UPDATE ON prepared_attempt_terminations
+BEGIN SELECT RAISE(ABORT,'immutable_history'); END;
+CREATE TRIGGER immutable_attempt_termination_delete BEFORE DELETE ON prepared_attempt_terminations
+BEGIN SELECT RAISE(ABORT,'immutable_history'); END;
 CREATE TABLE execution_observations (
  attempt_id TEXT PRIMARY KEY NOT NULL REFERENCES attempts(attempt_id),
  outcome TEXT NOT NULL CHECK(outcome IN ('Applied','KnownFailure','Uncertain')),
@@ -109,7 +135,10 @@ WHEN NEW.record_version<>OLD.record_version+1 OR NEW.incident_revision<OLD.incid
 BEGIN SELECT RAISE(ABORT,'invalid_record_revision'); END;
 CREATE TRIGGER no_uncertain_closure BEFORE UPDATE ON incidents
 WHEN NEW.closed_at_ms IS NOT NULL AND EXISTS(
- SELECT 1 FROM attempts WHERE incident_id=OLD.incident_id AND status IN ('Prepared','Dispatching','Uncertain'))
+ SELECT 1 FROM attempts t WHERE t.incident_id=OLD.incident_id AND (
+ t.status IN ('Dispatching','Uncertain') OR (t.status='Prepared' AND NOT EXISTS (
+  SELECT 1 FROM prepared_attempt_terminations x WHERE x.attempt_id=t.attempt_id
+ ))))
 BEGIN SELECT RAISE(ABORT,'unresolved_attempt_blocks_closure'); END;
 CREATE TRIGGER attempts_prepare_only BEFORE INSERT ON attempts
 WHEN NEW.status<>'Prepared' OR NOT EXISTS(
@@ -133,6 +162,7 @@ WHEN NOT EXISTS(
  JOIN approvals a ON a.approval_id=t.approval_id
  JOIN plans p ON p.incident_id=t.incident_id AND p.plan_id=t.plan_id AND p.plan_revision=t.plan_revision
  WHERE t.attempt_id=NEW.attempt_id AND t.status='Prepared'
+ AND NOT EXISTS (SELECT 1 FROM prepared_attempt_terminations x WHERE x.attempt_id=t.attempt_id)
  AND i.record_version=NEW.expected_record_version AND i.status='AwaitingApproval'
  AND i.closed_at_ms IS NULL AND i.unresolved_effects=0
  AND a.decision='Approve' AND a.incident_revision=i.incident_revision
@@ -184,6 +214,13 @@ CREATE TRIGGER no_delete_attempts BEFORE DELETE ON attempts BEGIN SELECT RAISE(A
 -- rows are compared for exact equality, not overwritten; same event ID + same canonical
 -- payload is an idempotent no-op, different payload is Conflict (never INSERT OR REPLACE).
 -- claimDispatch() appends record_history in the SAME transaction as claim insertion;
+-- claim_apply alone persists AwaitingApproval -> Executing; no repository second write.
+-- terminatePreparedAttempt uses BEGIN IMMEDIATE; the insert guard checks version and no claim,
+-- its trigger increments record_version once, and the repository appends record_history in
+-- the same transaction before COMMIT. See docs/TERMINATION_REPOSITORY_MAPPING.md.
+-- Interpret Prepared + termination row as logically retired; ignore it as a closure
+-- blocker, but never as a replacement for the other closure and unresolved-effect gates.
+-- Never reuse its attempt, approval or plan revision; no controller restart redispatch.
 -- SQLite triggers alone cannot validate the serialized C++ aggregate/metadata format.
 -- A failed/uncertain COMMIT blocks dispatch; reload/reconcile, never blindly invoke.
 -- Complete execution persistence must match attempt/action/process generation, and must

@@ -1,0 +1,10 @@
+# RS-06 Item 6: design candidate
+
+This branch reconciles the Item 1 review archive (revision 2) with the final Item 5 transition clarification (archive revision 2) and the separately reviewed Item 3 booking HTTP contract. It is a design-only candidate, not a final contract freeze, implementation, or migration. The [frozen P3-R2 baseline](https://github.com/1UsamaShmasneh1/Rivive_Shield/tree/406ab2d74e72aa53fe066222dc06d407c6e09980/docs/design-proposals/Rivive_Shield_UML_Proposal_P3) remains available unchanged at that commit. Historical filenames and review text do not describe the status of the whole candidate.
+
+- Item 1 adds one append-only termination value and its repository/history contract. An unclaimed prepared attempt can be retired without erasing history or dispatching it. The committed dispatch claim is the only durable owner of the transition to Executing.
+- Item 5 keeps the nine states and the same 24 transition edges. It distinguishes pre-claim guards from the durable claim result and requires confirmed termination before applicable plan invalidation, including an AwaitingApproval manual stop proposal. The final clarification was owner-directed, not independently rereviewed.
+- Item 3 incorporates the [reviewed booking HTTP wire contract](docs/BOOKING_HTTP_CONTRACT.md) and synchronized request schema, with no changes to C++ declarations, UML relationships, booking SQL or application code relative to `2a5ceed`. The previous proposal remains available at its pinned commit.
+- Local verification covers Linux GCC C++17 syntax/static traits, declaration/catalog/SVG consistency, state-policy structure and synthetic SQLite/JSON design fixtures. [Windows and macOS syntax evidence](https://trello.com/c/3M4GExqE#action-6b0356788cf825d12bb3c77e) applies to the predecessor `2a5ceed`, whose declarations are unchanged here. The new revision has not been rerun on those platforms. No linking, application/runtime behavior, concurrency stress, crash durability, or migration was verified.
+
+Publication for review does not close RS-06 or approve the candidate for implementation.

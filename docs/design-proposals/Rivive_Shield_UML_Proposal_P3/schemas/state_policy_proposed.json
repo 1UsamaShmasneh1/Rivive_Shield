@@ -1,5 +1,5 @@
 {
-  "status": "technical proposed exhaustive default-deny policy, not user-approved transitions",
+  "status": "RS-06 item 1 review candidate; proposed transition contract, not implementation or independent approval",
   "states": [
     "Detected",
     "Diagnosing",
@@ -65,15 +65,30 @@
         "targetBindingValid",
         "durableClaimWon",
         "noOtherAction"
-      ]
+      ],
+      "persistence_owner": "SQLite claim transaction only",
+      "semantics": "Durable outcome after one committed claim; no separate transition write by the state machine or coordinator.",
+      "guard_phases": {
+        "before_claim": [
+          "exactPlanMatch",
+          "approvalCurrent",
+          "targetBindingValid",
+          "noOtherAction"
+        ],
+        "durable_outcome": [
+          "durableClaimWon"
+        ]
+      }
     },
     {
       "source": "AwaitingApproval",
       "event": "PlanInvalidated",
       "target": "Diagnosing",
       "guards": [
-        "noDispatchInFlight"
-      ]
+        "noDispatchInFlight",
+        "preparedTerminationConfirmedIfRequired"
+      ],
+      "semantics": "When an unclaimed, unterminated Prepared attempt exists for this plan, persist its termination and reason and confirm the commit before applying invalidation. If persistence is unconfirmed, reconcile without replay or a new attempt. Do not clear any unresolved claim or effect."
     },
     {
       "source": "Executing",
@@ -172,8 +187,10 @@
         "noUncertainEffect",
         "noDispatchInFlight",
         "ownedTarget",
+        "preparedTerminationConfirmedIfRequired",
         "invalidateOldPlan"
-      ]
+      ],
+      "semantics": "Before invalidating the old plan, confirm durable termination and the reason for any unclaimed, unterminated Prepared attempt bound to that plan, using the same prerequisite as PlanInvalidated. If no such attempt exists, no termination record is required. An existing claim or unconfirmed durable outcome blocks this path: reconcile from durable records without replay, invalidation, or a new attempt. The proposal does not authorize execution; any later action requires a fresh valid plan and independent approval for that plan."
     },
     {
       "source": "NeedsReview",
@@ -257,7 +274,7 @@
     "AppendObservation": "Evidence",
     "PlanReady": "DiagnosisResult with valid plan",
     "NoPlan": "DiagnosisResult without plan",
-    "Approve": "Approval Approve",
+    "Approve": "Validate Approval Approve without writing; SQLite claim transaction persists the guarded transition",
     "Reject": "Approval Reject",
     "StopConfirmed": "ExecutionResult confirmed ForceStop",
     "StartConfirmed": "ExecutionResult confirmed Start",
@@ -265,9 +282,15 @@
     "ActionUncertain": "ExecutionResult uncertainty",
     "VerificationPassed": "VerificationBatch all required checks",
     "VerificationIncomplete": "VerificationBatch insufficient",
-    "PlanInvalidated": "ControlEvent PlanInvalidated",
+    "PlanInvalidated": "ControlEvent PlanInvalidated after any required durable Prepared termination; no new incident event",
     "StartPlanReady": "DiagnosisResult followup start plan",
     "ManualStopProposal": "ControlEvent ManualStopProposal; proposed ForceStop plan; not approval"
   },
-  "needs_review_policy": "No general dismiss/close event exists in this milestone contract. Remains active until guarded start-plan path; external adjudication is future reviewed scope."
+  "needs_review_policy": "No general dismiss/close event exists in this milestone contract. Remains active until guarded start-plan path; external adjudication is future reviewed scope.",
+  "coordinator_boundaries": {
+    "scope": "This transition table covers an existing incident; cancellation and restart reconciliation are coordinator responsibilities, not new incident states.",
+    "unclaimed": "Retire the attempt only on durable proof of no claim; preserve reason and history. No dispatch of a retired attempt.",
+    "claimed": "Cancellation does not prove stop or no side effect. Keep unresolved incidents open and block replay or a new action while unresolved.",
+    "restart": "Reconcile the durable record without replay. If unreadable, start no new action. Do not claim a persistent status update if storage is unavailable."
+  }
 }

@@ -1,6 +1,6 @@
 # P3 exact draft class catalog
 
-**Unapproved proposal. All signatures and fields are draft.**
+**RS-06 consolidated design candidate. See [review scope](../RS06_ITEM6_CANDIDATE.md).**
 
 ## Error
 
@@ -15,7 +15,7 @@ struct Error {
 
 ## TimeRange
 
-APPROVED: store UTC; client displays in its local timezone; start < end. Half-open interval permits adjacent bookings. Exact wire format remains proposed.
+APPROVED: store UTC; client displays in its local timezone; start < end. Half-open interval permits adjacent bookings. See the RS-06 Item 3 booking HTTP contract for the approved UTC wire format.
 
 ```cpp
 struct TimeRange {
@@ -37,7 +37,7 @@ struct Room {
 
 ## BookingRequest
 
-APPROVED scope: ID is an idempotency key; identical retry returns the prior result without duplicate booking. APPROVED scope: different payload with same ID is rejected; exact wire status remains open.
+APPROVED scope: ID is an idempotency key; identical retry returns the prior result without duplicate booking. APPROVED scope: different payload with same ID is rejected; HTTP 409 REQUEST_ID_CONFLICT applies to reuse with changed data.
 
 ```cpp
 struct BookingRequest {
@@ -50,7 +50,7 @@ struct BookingRequest {
 
 ## Booking
 
-
+Booking version is internal; do not serialize it in HTTP responses.
 
 ```cpp
 struct Booking {
@@ -65,7 +65,7 @@ struct Booking {
 
 ## BookingCreateResult
 
-Technical result: created=true only for newly committed booking; false for identical prior request. Enables proposed 201/200 distinction without re-query/race. Wire status mapping remains proposed.
+Technical result: created=true only for newly committed booking; false for identical prior request. Maps to HTTP 201 for new creation and 200 for an identical retry.
 
 ```cpp
 struct BookingCreateResult {
@@ -76,7 +76,7 @@ struct BookingCreateResult {
 
 ## BookingSnapshot
 
-
+Snapshot revision is internal; do not serialize it in HTTP responses.
 
 ```cpp
 struct BookingSnapshot {
@@ -169,7 +169,7 @@ private:
 
 ## BookingHttpServer
 
-Owns external httplib server; run blocks only backend main thread. APPROVED booking scope: list rooms, list bookings and create booking. APPROVED routes: GET /api/rooms, GET /api/bookings, POST /api/bookings. JSON schema, UTC wire representation and HTTP status mapping remain proposed. No dependency on Rivive Shield.
+Owns external httplib server; run blocks only backend main thread. APPROVED booking scope: list rooms, list bookings and create booking. APPROVED routes: GET /api/rooms, GET /api/bookings, POST /api/bookings. See docs/BOOKING_HTTP_CONTRACT.md for the approved JSON, UTC wire representation, limits and status mapping. No dependency on Rivive Shield.
 
 ```cpp
 class BookingHttpServer {
@@ -749,6 +749,16 @@ struct VerificationBatch {
 };
 ```
 
+## PreparedAttemptTermination
+
+```cpp
+struct PreparedAttemptTermination {
+  AttemptId attemptId;
+  UtcTime terminatedAt;
+  std::string reasonCode;
+};
+```
+
 ## IncidentRecord
 
 
@@ -758,6 +768,7 @@ struct IncidentRecord {
   Version recordVersion;
   Incident incident;
   std::vector<RepairAttempt> attempts;
+  std::vector<PreparedAttemptTermination> preparedTerminations;
   std::vector<ExecutionResult> executions;
   std::vector<VerificationBatch> verifications;
   std::vector<EventId> acceptedEventIds;
@@ -849,6 +860,7 @@ public:
   virtual Result<IncidentRecord> load(const IncidentId& id) const = 0;
   virtual Result<std::vector<IncidentRecord>> loadPending() const = 0;
   virtual Result<DispatchReceipt> claimDispatch(const IncidentId& id, const AttemptId& attempt, Version expectedRecordVersion, UtcTime now) = 0;
+  virtual Result<SaveReceipt> terminatePreparedAttempt(const IncidentId& id, const AttemptId& attempt, Version expectedRecordVersion, UtcTime now, const std::string& reasonCode) = 0;
   virtual Result<std::vector<IncidentRecord>> history(std::size_t offset, std::size_t limit) const = 0;
 };
 ```
@@ -866,6 +878,7 @@ public:
   Result<IncidentRecord> load(const IncidentId& id) const override;
   Result<std::vector<IncidentRecord>> loadPending() const override;
   Result<DispatchReceipt> claimDispatch(const IncidentId& id, const AttemptId& attempt, Version expectedRecordVersion, UtcTime now) override;
+  Result<SaveReceipt> terminatePreparedAttempt(const IncidentId& id, const AttemptId& attempt, Version expectedRecordVersion, UtcTime now, const std::string& reasonCode) override;
   Result<std::vector<IncidentRecord>> history(std::size_t offset, std::size_t limit) const override;
   SqliteIncidentRepository(const SqliteIncidentRepository&) = delete;
   SqliteIncidentRepository& operator=(const SqliteIncidentRepository&) = delete;
@@ -1136,4 +1149,3 @@ private:
   std::atomic<bool> initialStartRequested_;
 };
 ```
-
