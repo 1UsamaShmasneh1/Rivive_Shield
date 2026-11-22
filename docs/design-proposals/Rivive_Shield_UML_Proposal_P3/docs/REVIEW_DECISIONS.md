@@ -1,5 +1,7 @@
 # Review decisions and evidence limits
 
+> Historical P3 decision log. See the later [approved RS-06 Item 3 wire contract](BOOKING_HTTP_CONTRACT.md) for the decisions that supersede open wire details below.
+
 ## Newly approved scope decisions (user confirmation relayed by coordinating thread)
 - Force-stop requires approval of the concrete action first, followed by a stopped-writer SQLite check, then a new separate approval before starting. A target that is already stopped also requires approval before start. A successful force-stop alone is never Recovered.
 - Booking cancellation is deferred from this milestone. Prevention of overlapping bookings remains required. This approval does not authorize deleting historical P2 records.

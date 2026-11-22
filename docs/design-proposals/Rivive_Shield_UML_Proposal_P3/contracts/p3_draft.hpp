@@ -59,7 +59,7 @@ struct Error {
     std::string sanitizedMessage;
 };
 
-// APPROVED: store UTC; client displays in its local timezone; start < end. Half-open interval permits adjacent bookings. Exact wire format remains proposed.
+// APPROVED: store UTC; client displays in its local timezone; start < end. Half-open interval permits adjacent bookings. See the RS-06 Item 3 booking HTTP contract for the approved UTC wire format.
 struct TimeRange {
     UtcTime start;
     UtcTime end;
@@ -71,7 +71,7 @@ struct Room {
     std::string name;
 };
 
-// APPROVED scope: ID is an idempotency key; identical retry returns the prior result without duplicate booking. APPROVED scope: different payload with same ID is rejected; exact wire status remains open.
+// APPROVED scope: ID is an idempotency key; identical retry returns the prior result without duplicate booking. APPROVED scope: different payload with same ID is rejected; HTTP 409 REQUEST_ID_CONFLICT applies to reuse with changed data.
 struct BookingRequest {
     BookingId id;
     RoomId roomId;
@@ -79,7 +79,7 @@ struct BookingRequest {
     std::string syntheticLabel;
 };
 
-// 
+// Booking version is internal; do not serialize it in HTTP responses.
 struct Booking {
     BookingId id;
     RoomId roomId;
@@ -89,13 +89,13 @@ struct Booking {
     Version version;
 };
 
-// Technical result: created=true only for newly committed booking; false for identical prior request. Enables proposed 201/200 distinction without re-query/race. Wire status mapping remains proposed.
+// Technical result: created=true only for newly committed booking; false for identical prior request. Maps to HTTP 201 for new creation and 200 for an identical retry.
 struct BookingCreateResult {
     Booking booking;
     bool created;
 };
 
-// 
+// Snapshot revision is internal; do not serialize it in HTTP responses.
 struct BookingSnapshot {
     Version revision;
     std::vector<Booking> bookings;
@@ -158,7 +158,7 @@ private:
     Now now_;
 };
 
-// Owns external httplib server; run blocks only backend main thread. APPROVED booking scope: list rooms, list bookings and create booking. APPROVED routes: GET /api/rooms, GET /api/bookings, POST /api/bookings. JSON schema, UTC wire representation and HTTP status mapping remain proposed. No dependency on Rivive Shield.
+// Owns external httplib server; run blocks only backend main thread. APPROVED booking scope: list rooms, list bookings and create booking. APPROVED routes: GET /api/rooms, GET /api/bookings, POST /api/bookings. See docs/BOOKING_HTTP_CONTRACT.md for the approved JSON, UTC wire representation, limits and status mapping. No dependency on Rivive Shield.
 class BookingHttpServer {
 public:
     BookingHttpServer(BookingService& service, HttpServerConfiguration configuration);

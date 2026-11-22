@@ -1,11 +1,11 @@
 # Behavior, integration gates and proposed first-milestone contract
 
-> RS-06 Item 1 review candidate only. See `README.md` at the bundle root. No implementation or independent approval is implied.
+> RS-06 consolidated design candidate. See [review scope](../RS06_ITEM6_CANDIDATE.md). This does not imply implementation.
 
 ## Application boundary
 Two independently running native executables: booking backend and Rivive Shield desktop. React assets are built separately and served by the booking backend. Multiple native projects can be in one Windows solution; that is not evidence `.sln` builds on Mac. Neither executable links the other's internal application services. Booking backend has no dependency on Rivive Shield or monitoring-specific health callback.
 
-Approved API routes: `GET /api/rooms`, `GET /api/bookings`, `POST /api/bookings`. The following payload/time representation and status mapping remain proposed. POST accepts an idempotency ID, room ID, UTC start/end and synthetic label. Explicit JSON parsing dependency and schema validation are an integration decision before implementation. Use 201 for creation, 200 for identical retry, 400 malformed input, 409 overlap/conflicting ID, 503 storage busy/unavailable; never expose SQL or paths. HTTP outcomes are not used as a universal health predicate.
+The three approved booking routes, request and response shapes, timestamp rules, limits, idempotency and status mapping are specified in the [reviewed booking HTTP contract](BOOKING_HTTP_CONTRACT.md). JSON library selection is an implementation decision. HTTP outcomes are not used as a universal health predicate.
 
 Booking repository uses one write transaction to check same-room half-open overlaps and insert. All writers obey this path; SQL constraints/migrations enforce uniqueness and integrity. No public guard-disable switch. Interface deliberately has no generic SQL, delete, cancel or repair call.
 
@@ -79,18 +79,18 @@ The exhaustive technical proposed policy is `../schemas/state_policy_proposed.js
 ## Newly confirmed incident and booking invariants
 One configured target has at most one active incident, with incoming observations aggregated into it. No simultaneous mutation actions are allowed. Approval matches the exact incident/plan identity; historical approval is never reusable by a new incident. An unresolved or uncertain attempt cannot be bypassed by creating another incident. Exact closure rules and exhaustive transition mapping remain review gates, not inferred from the high-level approval.
 
-The three booking functions and identical-request ID deduplication are approved scope. Atomic deduplication belongs in createIfAvailable's transaction, not a React-only precheck. Exact wire schema/statuses/time representation and payload normalization remain proposed; different content under the same ID is rejected as approved. A duplicate must never create a second booking.
+The three booking functions and identical-request ID deduplication are approved scope. Atomic deduplication belongs in the createIfAvailable transaction, not a React-only precheck. Follow the [approved wire and comparison rules](BOOKING_HTTP_CONTRACT.md); a duplicate must never create a second booking.
 
 ## Approved atomic booking invariants; remaining technical choices
-The user approved atomic creation, explicit rollback, rejection of changed data under the same key, and concurrency/process-stop tests. This does not approve journal/synchronous or numeric retry settings. In `createIfAvailable`, deduplication and overlap prevention should execute within one write transaction. Enforce a unique request/booking ID in SQL, compare stored canonical request fields on reuse, return the existing result only for the same request, and reject different content under the same ID rather than overwrite it (rejection is approved; its exact HTTP mapping remains open).
+The user approved atomic creation, explicit rollback, rejection of changed data under the same key, and concurrency/process-stop tests. This does not approve journal/synchronous or numeric retry settings. In `createIfAvailable`, deduplication and overlap prevention should execute within one write transaction. Enforce a unique request/booking ID in SQL, compare stored canonical request fields on reuse, return the existing result only for the same request, and reject different content under the same ID rather than overwrite it (409 REQUEST_ID_CONFLICT).
 
-Use an explicit rollback path for every pre-commit failure; do not assume a constraint violation rolled back the whole transaction. SQLite's default ABORT conflict handling backs out the failing statement, not necessarily earlier statements in the transaction: https://www.sqlite.org/lang_conflict.html . Determine transaction state before cleanup. Treat SQLITE_BUSY/LOCKED with a bounded reviewed wait/retry policy; do not return success or retry side effects blindly. Handle commit failure/uncertain outcome without claiming a definite successful booking; an eventual same-ID retry must resolve the durable stored result without duplication.
+Use an explicit rollback path for every pre-commit failure; do not assume a constraint violation rolled back the whole transaction. SQLite's default ABORT conflict handling backs out the failing statement, not necessarily earlier statements in the transaction: https://www.sqlite.org/lang_conflict.html . Determine transaction state before cleanup. Treat SQLITE_BUSY/LOCKED with a bounded reviewed wait/retry policy; do not return success or retry side effects blindly. Handle commit failure/uncertain outcome without claiming a definite successful booking; the client must not automatically resend or generate a new ID for that attempt.
 
-Before integration acceptance, test concurrent same-ID requests, same ID/different content, overlapping requests with distinct IDs, non-overlapping intervals, explicit rollback after statement failure, busy/locked paths, and controlled process crashes immediately before/after commit. Assert no duplicate booking and no overlap; distinguish committed durable state from responses observed by clients. These process-crash tests are not power-loss proof. Final schema, transaction-opening mode, retry limits and wire error mapping remain open.
+Before integration acceptance, test concurrent same-ID requests, same ID/different content, overlapping requests with distinct IDs, non-overlapping intervals, explicit rollback after statement failure, busy/locked paths, and controlled process crashes immediately before/after commit. Assert no duplicate booking and no overlap; distinguish committed durable state from responses observed by clients. These process-crash tests are not power-loss proof. Final storage schema, transaction-opening mode, and storage retry limits remain open.
 
 
 ## Approved time semantics
-Persist UTC instants; the browser displays them in the client device timezone. Require start < end and permit adjacency using half-open intervals. Exact wire serialization/precision and ambiguous local-input handling still need schema review.
+Persist UTC instants; the browser displays them in the client device timezone. Require start < end and permit adjacency using half-open intervals. See the [approved timestamp format and local-input rules](BOOKING_HTTP_CONTRACT.md).
 
 
 ## Completed UI contract routing (technical proposal)
