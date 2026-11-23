@@ -36,15 +36,15 @@ The measurement plan and allocation of runs will be finalized **by 7 December 20
 
 ## 6. First version and boundaries
 
-The first version includes an isolated booking application, SQLite storage, bounded monitoring, predefined diagnostic and recovery rules, human approval and independent verification. The project targets Windows and macOS; each platform will be tested independently.
+The first version includes an isolated booking application, SQLite storage, bounded monitoring, predefined diagnostic and recovery rules, human approval and independent verification. For this local milestone, development and acceptance testing target Windows x64 with the full Visual Studio IDE, using CMake and vcpkg. The future Oracle backend remains a separate hosting scope.
 
 Booking cancellation and additional scenarios are deferred. Oracle deployment follows a successful local version and a review of the remote-operation design. The scope excludes monitoring unauthorized systems, decrypting HTTPS, executing arbitrary commands and arbitrarily modifying bookings as a repair.
 
 ## 7. Feasibility, constraints and risks
 
-Bounded feasibility experiments exist on Windows and macOS, and the initial build setup succeeded on Usama's computer. These results do not establish success of the integrated application or compatibility with the rest of the team's computers.
+Earlier bounded feasibility experiments were reported on Windows and macOS. The macOS results are historical evidence, not a current acceptance target. Setup and smoke checks do not establish success of the integrated application.
 
-Risks include incomplete observation evidence, differences in tools and permissions across platforms, identifying the correct process, protecting data and limited time. Insufficient evidence will be treated as inconclusive, and actions will be constrained by appropriate approval and verification. Effort and cost estimates and remote-operation details still require review.
+Risks include incomplete observation evidence, differences in tools and permissions across Windows workstations, identifying the correct process, protecting data and limited time. Insufficient evidence will be treated as inconclusive, and actions will be constrained by appropriate approval and verification. Effort and cost estimates and remote-operation details still require review.
 
 ## 8. Value and AI use
 

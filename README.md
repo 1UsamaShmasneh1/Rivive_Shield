@@ -10,7 +10,7 @@
 
 Rivive Shield is a proposed learning and resilience-testing system for one isolated study-room booking application. It connects fault detection, evidence-based diagnosis using predefined rules, an explicitly approved repair and independent verification. Its intended users are the demonstration operator and course participants working with fictitious data.
 
-The current planning direction is a desktop controller that observes an independently functioning study-room booking application, investigates supported failures using predefined rules, requests operator approval for a bounded recovery action, and verifies the result. The booking application must work normally without special diagnostic callbacks or dependencies on Rivive Shield. Start with local development on the team's Windows and macOS computers; bounded macOS feasibility results are now available, while integrated macOS acceptance remains pending.
+The current planning direction is a desktop controller that observes an independently functioning study-room booking application, investigates supported failures using predefined rules, requests operator approval for a bounded recovery action, and verifies the result. The booking application must work normally without special diagnostic callbacks or dependencies on Rivive Shield. For the current local milestone, use Windows x64 with the full Visual Studio IDE. macOS feasibility results are retained as historical evidence, not an active workstation, CI or acceptance target. Oracle hosting remains a separate backend scope.
 
 The first-submission report and P2 package record earlier designs, including the controlled overlapping-booking repair scenario. They must not be read as exact contracts for the new passive-monitoring/desktop direction. Ordinary booking validation must still prevent overlapping active reservations, but permission to rewrite booking records is not implied by the new recovery scope. The detailed scenario set and acceptance criteria must be synchronized in RS-05, RS-06, RS-07 and their dependent cards before implementation.
 
@@ -90,14 +90,14 @@ Preserve the incident core, separate booking and control processes, immutable ev
 
 ## Planning direction and system boundaries
 
-- **Rivive Shield:** C++ desktop application, targeting Windows and macOS, with wxWidgets as the current GUI choice after the Windows feasibility trial. Its approved four UI areas cover target application status, observed activity, the active incident with approvals, and history. Monitoring runs in the background without blocking UI interaction. Closing Rivive Shield must not close the independent booking application.
+- **Rivive Shield:** C++ desktop application, targeting Windows x64 for local development and acceptance, with wxWidgets as the current GUI choice after the Windows feasibility trial. Its approved four UI areas cover target application status, observed activity, the active incident with approvals, and history. Monitoring runs in the background without blocking UI interaction. Closing Rivive Shield must not close the independent booking application.
 - **Booking application:** C++ backend with cpp-httplib and SQLite, and a React browser frontend owned by Usama. No Java application is required. The booking backend and controller are separate executables; the React frontend is a separate web deliverable, not another C++ executable.
 - **Local first:** browser access and HTTP are required locally from the start using localhost. They are not postponed until Oracle deployment. First establish a functioning local prototype; then move the booking backend and web frontend to Oracle under a separately verified remote-operation design.
 - **Independent target:** the booking app must function without Rivive Shield running. Passive network observation and process-lifecycle evidence must not rely on the target reporting specially constructed diagnosis events to the controller.
 - **Process ownership:** initially manage one designated isolated application. Process identity and ownership must be established using the reviewed native platform mechanisms before an operation can target it. A port number, process name, PID alone or packet snapshot is not sufficient authorization to terminate a process.
 - **Recovery:** predefined evidence-based rules may propose bounded, allowlisted actions. Forced termination requires explicit, appropriately scoped approval. After confirmed termination, stop writers and perform the applicable SQLite checks; a new restart plan requires new approval. Passing a database check does not itself authorize restart. Permission to monitor does not authorize termination. Never replay saved requests, blindly retry uncertain writes, or claim recovery before independent checks pass.
 - **Storage:** booking data and incident records use separate SQLite stores. Local settings and incident history are retained locally for the initial prototype. No SQLite database file is shared directly over a network.
-- **Build organization:** `RiviveShieldWorkspace/` uses CMake, Ninja and a vcpkg manifest for two separate C++17 executables: `RiviveShield` and `BookingBackend`. See [the setup evidence below](#cross-platform-setup-and-smoke-checks-rs-03) for verified scope and build instructions.
+- **Build organization:** `RiviveShieldWorkspace/` uses CMake, Ninja and a vcpkg manifest for two separate C++17 executables: `RiviveShield` and `BookingBackend`. See the [Windows setup](#windows-x64-workstation-setup) and [historical RS-03 smoke checks](#historical-cross-platform-setup-and-smoke-checks-rs-03).
 
 ### Observation limits
 
@@ -134,13 +134,21 @@ See the [full approved assignment table](docs/backlog-seed.md). The index record
 
 Review assignments: Samy reviews Usama; Ameen reviews Samy's RS-05/08; Rawaa reviews Samy's RS-09; Shehab reviews Ameen; Yazan reviews Shehab; Usama reviews Yazan. Shehab reviews Rawaa's RS-14/27, and Ameen reviews Rawaa's RS-21. The card-specific assignment table governs other shared work. Multi-author cards require an independent reviewer for each contribution. For RS-19, Usama reviews Yazan, and Samy reviews Usama's core changes. RS-23 fixes also require a non-author reviewer. Avatar order is not an ownership rule.
 
-Each owner implements, tests, documents and fixes integration defects for their module. Keep one principal task in progress per person where feasible; sequence Ameen's storage and evidence work and Rawaa's UI, acceptance and documentation work according to their dependencies, and schedule Samy's review load alongside Usama's development work. macOS acceptance is not implied by assigning work to Ameen.
+Each owner implements, tests, documents and fixes integration defects for their module. Keep one principal task in progress per person where feasible; sequence Ameen's storage and evidence work and Rawaa's UI, acceptance and documentation work according to their dependencies, and schedule Samy's review load alongside Usama's development work. macOS is not part of the current local acceptance scope; this platform decision does not change team assignments.
 
 ## Implementation status and verification
 
 The earlier reviewed commit `f93302721c4b5700920418184aed1dbacbba6f62` contained design documents and the declaration-only P2 package. Commit `8c9ffbd34bec69712dea5f57b241f0f674a22d2d` subsequently published the adopted P3-R2 design package and updated documentation; that publication is not implemented application code. The merged setup workspace does not implement the end-to-end application. The earlier feasibility experiments were performed separately and do not establish application, deployment or CI readiness.
 
-### Cross-platform setup and smoke checks (RS-03)
+### Windows x64 workstation setup
+
+1. In Visual Studio Installer, install **Desktop development with C++**, including MSVC x64, a Windows SDK and C++ CMake tools (CMake and Ninja). Use the full Visual Studio IDE, not the empty historical solution file.
+2. Install and bootstrap vcpkg if needed. Open `RiviveShieldWorkspace/` as a folder in Visual Studio. Copy `CMakeUserPresets.example.json` to `CMakeUserPresets.json` and adjust `CMAKE_TOOLCHAIN_FILE` if vcpkg is not installed at `C:/dev/vcpkg`. Keep the `x64-windows` triplet. The user preset and build output are local and should not be committed.
+3. Select `team-x64-debug` as the active configure preset. Configure and build both `RiviveShield` and `BookingBackend`. Start the targets separately in Visual Studio. The backend should report the SQLite version and that a cpp-httplib server object was created, then exit successfully. The desktop target should display its llhttp result, IPv4 address and wxWidgets test window. Record the tested commit, Windows and tool versions and actual outcomes. This is a smoke check, not integrated acceptance.
+
+The existing `linux-debug` preset is retained as a separate starting point for possible Linux backend work on Oracle; its presence does not establish a backend-only build, working deployment, selected server OS or Linux desktop support. The existing x86 presets are not part of the supported Windows x64 workflow. No macOS preset or macOS acceptance run is part of this local milestone.
+
+### Historical cross-platform setup and smoke checks (RS-03)
 
 [PR #2](https://github.com/1UsamaShmasneh1/Rivive_Shield/pull/2) merged the CMake workspace into `main` at [`0ffb8aa`](https://github.com/1UsamaShmasneh1/Rivive_Shield/commit/0ffb8aa7dcdeef54bbeccc18b4b9de73a18c0116). All six members reported successful configuration, build and basic startup of both targets on [`d9a9577`](https://github.com/1UsamaShmasneh1/Rivive_Shield/commit/d9a9577d30bad3d3aad5704f965da8103c00a478) (five Windows x64 systems and one macOS ARM64 system). [The comparison](https://github.com/1UsamaShmasneh1/Rivive_Shield/compare/d9a9577d30bad3d3aad5704f965da8103c00a478...0ffb8aa7dcdeef54bbeccc18b4b9de73a18c0116) shows only documentation changes between the tested and merged revisions; no separate run on the merge revision was recorded. See [RS-03](https://trello.com/c/ICpHY3nI) for build and launch instructions and platform notes.
 
@@ -163,7 +171,7 @@ The following outcomes were reported through the operator's command output and m
 
 For the final local session experiment, the client and server completed POST then GET on one connection; the passive monitor reported `pairs=2`, `capture_uncertain=0`, and exit code 0. In negative incomplete/no-response tests, `INCONCLUSIVE` and exit code 3 were expected, not claims of recovery. These are bounded feasibility results, not a security or full-compatibility certification.
 
-### macOS feasibility evidence: reported results reviewed 2026-11-15
+### Historical macOS feasibility evidence: reported results reviewed 2026-11-15
 
 Ameen's supplied reports now establish bounded native macOS experiment results, not full application acceptance. See the [evidence summary and remaining limits](docs/testing/MAC_FEASIBILITY_2026-11-15.md). These were reviewed reports from Ameen's device, not an independent rerun by the documentation author.
 
@@ -173,7 +181,7 @@ Ameen's supplied reports now establish bounded native macOS experiment results, 
 - Earlier passive-capture SKIP results were caused by BPF access permission and then a declined consent prompt. The later successful bounded rerun supersedes those SKIPs only for these experiments; capture is not established as available without permission.
 - Direct compiler invocations required the explicit SDK option `-isysroot "$(xcrun --show-sdk-path)"`. This is experiment build guidance, not a newly adopted project build system.
 
-The final report retains `INCONCLUSIVE` for project readiness. Packet-to-process attribution, full application integration, production recovery, HTTPS/HTTP2, power-loss durability and booking business-rule acceptance remain unverified by these experiments. Keep implementation and native-platform acceptance gates open; no card becomes Done solely from this evidence update.
+The final report retains `INCONCLUSIVE` for project readiness. Packet-to-process attribution, full application integration, production recovery, HTTPS/HTTP2, power-loss durability and booking business-rule acceptance remain unverified by these experiments. Implementation and current Windows x64 acceptance still require separate evidence; no card becomes Done solely from these historical results.
 
 ### Remaining acceptance gates
 
@@ -183,7 +191,7 @@ The final report retains `INCONCLUSIVE` for project readiness. Packet-to-process
 - Design and test per-request timeout classification; the curl timeouts in feasibility tests are not a controller feature.
 - Resolve process-attribution uncertainty and validate platform-specific ownership safeguards before approval/execution can target an application.
 - Verify approved recovery, SQLite checks after forced termination, preservation of valid bookings and durable incident recording end to end.
-- Retain the reviewed macOS feasibility results and limitations; verify the actual integrated application and document its supported OS/tool versions before native-platform acceptance.
+- Verify the integrated application on Windows x64 and record the OS/tool versions. Retain the prior macOS feasibility results and limitations as historical evidence only.
 - Verify Oracle hosting and GitHub Actions build/test/deployment before the final presentation. These remain required, not implemented or waived.
 
 Oracle's operating system, remote management/repair channel, deployment configuration, capacity and cost boundaries remain explicit review items. The local controller cannot inspect a remote machine's process table or SQLite files using the local-only mechanisms demonstrated here. No remote agent, transport or remote access permission is implied by this README.
