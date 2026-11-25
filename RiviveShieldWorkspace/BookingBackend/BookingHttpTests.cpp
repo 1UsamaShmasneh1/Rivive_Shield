@@ -39,6 +39,28 @@ namespace rivive::p3_draft
             const BookingRequest& request,
             UtcTime now) override
         {
+            if (request.roomId != "room-01" &&
+                request.roomId != "room-02")
+            {
+                return Error{
+                    ErrorCode::NotFound,
+                    "The requested room does not exist."
+                };
+            }
+
+            if (request.id == "req-test-020" &&
+                savedBooking_ &&
+                request.roomId == savedBooking_->roomId &&
+                BookingService::overlaps(
+                    savedBooking_->interval,
+                    request.interval))
+            {
+                return Error{
+                    ErrorCode::OverlapRejected,
+                    "Test repository: booking overlap."
+                };
+            }
+
             if (request.id != "req-test-009")
             {
                 return Error{
@@ -716,6 +738,81 @@ int main()
         << (test18 ? "PASS" : "FAIL")
         << '\n';
 
+    // Test 19: Booking a room that does not exist.
+    bool test19 = false;
+
+    const std::string missingRoomJson = R"({
+        "requestId": "req-test-019",
+        "roomId": "room-does-not-exist",
+        "startsAt": "2026-11-26T08:00:00.000Z",
+        "endsAt": "2026-11-26T09:00:00.000Z",
+        "label": "Missing room test"
+    })";
+
+    auto missingRoomResponse = client.Post(
+        "/api/bookings",
+        missingRoomJson,
+        "application/json"
+    );
+
+    if (missingRoomResponse &&
+        missingRoomResponse->status == 404)
+    {
+        auto json = nlohmann::json::parse(
+            missingRoomResponse->body, nullptr, false);
+
+        if (json.is_object() &&
+            json.contains("error") &&
+            json["error"].is_object())
+        {
+            test19 =
+                json["error"].value(
+                    "code", std::string{}) ==
+                "ROOM_NOT_FOUND";
+        }
+    }
+
+    std::cout << "Test 19 (HTTP room not found): "
+        << (test19 ? "PASS" : "FAIL")
+        << '\n';
+
+    // Test 20: Reject overlapping booking over HTTP.
+    bool test20 = false;
+
+    const std::string overlappingBookingJson = R"({
+        "requestId": "req-test-020",
+        "roomId": "room-01",
+        "startsAt": "2026-11-26T08:30:00.000Z",
+        "endsAt": "2026-11-26T09:30:00.000Z",
+        "label": "Overlapping booking"
+    })";
+
+    auto overlapResponse = client.Post(
+        "/api/bookings",
+        overlappingBookingJson,
+        "application/json"
+    );
+
+    if (overlapResponse && overlapResponse->status == 409)
+    {
+        auto json = nlohmann::json::parse(
+            overlapResponse->body, nullptr, false);
+
+        if (json.is_object() &&
+            json.contains("error") &&
+            json["error"].is_object())
+        {
+            test20 =
+                json["error"].value(
+                    "code", std::string{}) ==
+                "BOOKING_OVERLAP";
+        }
+    }
+
+    std::cout << "Test 20 (HTTP booking overlap): "
+        << (test20 ? "PASS" : "FAIL")
+        << '\n';
+
     httpServer.requestStop();
     serverThread.join();
 
@@ -730,5 +827,5 @@ int main()
         test5 && test6 && test7 && test8 &&
         test9 && test10 && test11 && test12 &&
         test13 && test14 && test15 && test16 &&
-        test17 && test18) ? 0 : 1;
+        test17 && test18 && test19 && test20) ? 0 : 1;
 }
