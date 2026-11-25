@@ -312,4 +312,100 @@ namespace rivive::p3_draft
         return std::monostate{};
     }
 
+    BookingService::BookingService(
+        BookingRepository& repository,
+        Now now)
+        : repository_(repository),
+        now_(std::move(now))
+    {
+    }
+
+    Result<std::vector<Room>> BookingService::listRooms() const
+    {
+        return repository_.listRooms();
+    }
+
+    Result<BookingSnapshot> BookingService::listBookings() const
+    {
+        return repository_.snapshot();
+    }
+
+    Result<BookingCreateResult> BookingService::createBooking(
+        const BookingRequest& request)
+    {
+        Status validation = validate(request);
+
+        if (const auto* error = std::get_if<Error>(&validation))
+        {
+            return *error;
+        }
+
+        return repository_.createIfAvailable(request, now_());
+    }
+
+    BookingHttpServer::BookingHttpServer(
+        BookingService& service,
+        HttpServerConfiguration configuration)
+        : service_(service),
+        configuration_(std::move(configuration)),
+        server_(new httplib::Server())
+    {
+    }
+
+    BookingHttpServer::~BookingHttpServer()
+    {
+        delete server_;
+    }
+
+    void BookingHttpServer::requestStop()
+    {
+        server_->stop();
+    }
+
+    Status BookingHttpServer::run()
+    {
+        if (configuration_.bindAddress != "127.0.0.1" ||
+            configuration_.port == 0)
+        {
+            return Error{
+                ErrorCode::InvalidArgument,
+                "Invalid local HTTP server configuration."
+            };
+        }
+
+        Status routesStatus = registerRoutes();
+
+        if (const auto* error = std::get_if<Error>(&routesStatus))
+        {
+            return *error;
+        }
+
+        if (!server_->listen(
+            configuration_.bindAddress,
+            configuration_.port))
+        {
+            return Error{
+                ErrorCode::InternalError,
+                "Failed to start HTTP server."
+            };
+        }
+
+        return std::monostate{};
+    }
+
+    Status BookingHttpServer::registerRoutes()
+    {
+        server_->Get("/api/rooms",
+            [](const httplib::Request&, httplib::Response& res)
+            {
+                res.status = 503;
+                res.set_content(
+                    R"({"error":{"code":"STORAGE_UNAVAILABLE","message":"Booking storage is not connected yet."}})",
+                    "application/json"
+                );
+            });
+
+        return std::monostate{};
+    }
+
 }
