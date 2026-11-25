@@ -7,6 +7,8 @@
 #include <iomanip>
 #include <sstream>
 
+#ifndef RS08_HTTP_TESTS
+
 int main()
 {
     std::cout << "SQLite version: " << sqlite3_libversion() << '\n';
@@ -220,6 +222,8 @@ int main()
 }
 
 
+#endif
+
 namespace rivive::p3_draft
 {
     bool BookingService::overlaps(
@@ -384,6 +388,45 @@ namespace rivive::p3_draft
             };
         }
 
+        if (configuration_.maxRequestBytes != 8192)
+        {
+            return Error{
+                ErrorCode::InvalidArgument,
+                "Booking request limit must be 8192 bytes."
+            };
+        }
+
+        server_->set_payload_max_length(
+            configuration_.maxRequestBytes);
+
+        server_->set_error_handler(
+            [](const httplib::Request&, httplib::Response& response)
+            {
+                if (response.status == 413)
+                {
+                    response.set_content(
+                        R"({"error":{"code":"REQUEST_TOO_LARGE","message":"Request body exceeds the 8192-byte limit."}})",
+                        "application/json"
+                    );
+                }
+            }
+        );
+
+        if (configuration_.requestTimeout <=
+            std::chrono::milliseconds::zero())
+        {
+            return Error{
+                ErrorCode::InvalidArgument,
+                "HTTP timeout must be positive."
+            };
+        }
+
+        server_->set_read_timeout(
+            configuration_.requestTimeout);
+
+        server_->set_write_timeout(
+            configuration_.requestTimeout);
+
         Status routesStatus = registerRoutes();
 
         if (const auto* error = std::get_if<Error>(&routesStatus))
@@ -424,10 +467,19 @@ namespace rivive::p3_draft
 
                 std::tm utc{};
 
+
+#ifdef _WIN32
                 if (gmtime_s(&utc, &raw) != 0)
                 {
                     return {};
                 }
+#else
+                if (gmtime_r(&raw, &utc) == nullptr)
+                {
+                    return {};
+                }
+#endif
+
 
                 std::ostringstream output;
 
