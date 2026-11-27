@@ -1,0 +1,45 @@
+digraph RiviveShieldUseCase {
+  graph [
+    rankdir=LR,
+    bgcolor="white",
+    pad="0.36",
+    nodesep="0.65",
+    ranksep="1.0",
+    splines=polyline,
+    fontname="DejaVu Sans",
+    fontsize=20,
+    fontcolor="#1f3148",
+    label="Rivive Shield — Midterm Use Case Diagram\nP3-R2 design alignment (draft; no runtime claim)",
+    labelloc=t,
+    labeljust=c,
+    compound=true
+  ];
+  node [fontname="DejaVu Sans", fontsize=11, color="#315170", fontcolor="#18324c", penwidth=1.4];
+  edge [color="#5c7590", penwidth=1.3, arrowhead=none];
+
+  bookingUser [shape=box, style="rounded,filled", fillcolor="#e8f3ff", label="«actor»\nBooking App User"];
+  operator [shape=box, style="rounded,filled", fillcolor="#e8f3ff", label="«actor»\nRivive Shield Operator"];
+
+  subgraph cluster_booking {
+    graph [label="Independent Study-Room Booking Application\n(React + C++ backend + SQLite)", style="rounded,filled", color="#8aa6c5", fillcolor="#f8fbff", penwidth=1.7, margin=20, fontname="DejaVu Sans", fontsize=13];
+    bookingView [shape=ellipse, style=filled, fillcolor="#ffffff", label="View rooms\nand bookings"];
+    bookingCreate [shape=ellipse, style=filled, fillcolor="#ffffff", label="Create a\nstudy-room booking\n[US-01]"];
+  }
+
+  subgraph cluster_controller {
+    graph [label="Rivive Shield Desktop Controller\n(C++ / wxWidgets; separate incident store)", style="rounded,filled", color="#5a8a9c", fillcolor="#f5fbf9", penwidth=1.7, margin=24, fontname="DejaVu Sans", fontsize=13];
+    observe [shape=ellipse, style=filled, fillcolor="#ffffff", label="View monitored status\nand recent activity"];
+    investigate [shape=ellipse, style=filled, fillcolor="#d7f0e5", color="#32816c", penwidth=2.0, label="Investigate and\nrecover an incident\n[UC-01 / US-02 — CENTRAL]"];
+    decide [shape=ellipse, style=filled, fillcolor="#ffffff", label="Review and approve /\nreject exact recovery plan"];
+    outcome [shape=ellipse, style=filled, fillcolor="#ffffff", label="Review independent\nverification outcome"];
+    history [shape=ellipse, style=filled, fillcolor="#ffffff", label="Inspect incident\nhistory [US-03]"];
+  }
+
+  bookingUser -> bookingView;
+  bookingUser -> bookingCreate;
+  operator -> observe;
+  operator -> investigate;
+  operator -> decide;
+  operator -> outcome;
+  operator -> history;
+}
