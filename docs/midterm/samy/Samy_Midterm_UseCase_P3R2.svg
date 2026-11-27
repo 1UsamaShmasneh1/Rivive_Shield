@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1060" viewBox="0 0 1200 1060">
+<rect width="1200" height="1060" fill="white"/>
+<g font-family="Arial, sans-serif">
+<text x="600" y="40" text-anchor="middle" font-size="21" font-weight="bold" fill="#24394d">Rivive Shield — Midterm Use Case Diagram</text><text x="600" y="65" text-anchor="middle" font-size="21" font-weight="bold" fill="#24394d">P3-R2 design alignment (review draft; no runtime claim)</text>
+<rect x="355" y="105" width="828" height="650" rx="20" fill="#f3faf8" stroke="#62919d" stroke-width="3"/>
+<text x="770" y="138" text-anchor="middle" font-size="19" font-weight="bold" fill="#24394d">Rivive Shield Desktop Controller</text><text x="770" y="161" text-anchor="middle" font-size="19" font-weight="bold" fill="#24394d">(C++ / wxWidgets; separate incident store)</text>
+<rect x="355" y="783" width="828" height="252" rx="20" fill="#f4f7fc" stroke="#82a4c7" stroke-width="3"/>
+<text x="770" y="817" text-anchor="middle" font-size="19" font-weight="bold" fill="#24394d">Independent Study-Room Booking Application</text><text x="770" y="840" text-anchor="middle" font-size="19" font-weight="bold" fill="#24394d">(React + C++ backend + SQLite)</text>
+<g stroke="#7086a0" stroke-width="2" fill="none">
+<path d="M303 431 L358 431 L540 245"/><path d="M303 431 L358 431 L540 355"/><path d="M303 431 L358 431 L540 467"/><path d="M303 431 L358 431 L540 575"/><path d="M303 431 L358 431 L540 690"/>
+<path d="M303 902 L356 902 L542 872"/><path d="M303 902 L356 902 L542 968"/>
+</g>
+<rect x="32" y="393" width="272" height="75" rx="14" fill="#e4f2ff" stroke="#476789" stroke-width="2"/>
+<text x="168" y="421" text-anchor="middle" font-size="18" font-weight="normal" fill="#24394d">«actor»</text><text x="168" y="443" text-anchor="middle" font-size="18" font-weight="normal" fill="#24394d">Rivive Shield Operator</text>
+<rect x="32" y="866" width="272" height="75" rx="14" fill="#e4f2ff" stroke="#476789" stroke-width="2"/>
+<text x="168" y="894" text-anchor="middle" font-size="18" font-weight="normal" fill="#24394d">«actor»</text><text x="168" y="916" text-anchor="middle" font-size="18" font-weight="normal" fill="#24394d">Booking App User</text>
+<ellipse cx="780" cy="245" rx="230" ry="36" fill="#fff" stroke="#365976" stroke-width="2"/><text x="780" y="240" text-anchor="middle" font-size="17" font-weight="normal" fill="#24394d">View monitored status</text><text x="780" y="261" text-anchor="middle" font-size="17" font-weight="normal" fill="#24394d">and recent activity</text>
+<ellipse cx="780" cy="355" rx="230" ry="36" fill="#dbf2e5" stroke="#32816c" stroke-width="2"/><text x="780" y="350" text-anchor="middle" font-size="17" font-weight="normal" fill="#24394d">Investigate and recover an incident</text><text x="780" y="371" text-anchor="middle" font-size="17" font-weight="normal" fill="#24394d">[UC-01 / US-02 — CENTRAL]</text>
+<ellipse cx="780" cy="467" rx="230" ry="36" fill="#fff" stroke="#365976" stroke-width="2"/><text x="780" y="462" text-anchor="middle" font-size="17" font-weight="normal" fill="#24394d">Review and approve / reject</text><text x="780" y="483" text-anchor="middle" font-size="17" font-weight="normal" fill="#24394d">exact recovery plan</text>
+<ellipse cx="780" cy="575" rx="230" ry="36" fill="#fff" stroke="#365976" stroke-width="2"/><text x="780" y="570" text-anchor="middle" font-size="17" font-weight="normal" fill="#24394d">Review independent</text><text x="780" y="591" text-anchor="middle" font-size="17" font-weight="normal" fill="#24394d">verification outcome</text>
+<ellipse cx="780" cy="690" rx="230" ry="36" fill="#fff" stroke="#365976" stroke-width="2"/><text x="780" y="696" text-anchor="middle" font-size="17" font-weight="normal" fill="#24394d">Inspect incident history [US-03]</text>
+<ellipse cx="780" cy="872" rx="230" ry="36" fill="#fff" stroke="#365976" stroke-width="2"/><text x="780" y="878" text-anchor="middle" font-size="17" font-weight="normal" fill="#24394d">View rooms and bookings</text>
+<ellipse cx="780" cy="968" rx="230" ry="36" fill="#fff" stroke="#365976" stroke-width="2"/><text x="780" y="974" text-anchor="middle" font-size="17" font-weight="normal" fill="#24394d">Create a study-room booking [US-01]</text>
+</g>
+</svg>
